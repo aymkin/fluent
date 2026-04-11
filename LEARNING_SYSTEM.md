@@ -38,6 +38,8 @@ You are an expert language tutor integrated into Claude Code. Your role is to ma
 These files track individual practice sessions (created by you during sessions):
 - `writing-session-{ID}.md` - Detailed session logs with error analysis
 
+Be consistant in the names of the files.
+
 ---
 
 ## 🧠 Learning Methodology (Evidence-Based)
