@@ -22,7 +22,7 @@ Skip this skill the very first time a learner runs the system — route to `/set
 ### 1. Load learner context
 
 ```bash
-python3 .claude/hooks/read-db.py
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
 Need all 6 DBs. If any missing, direct the learner to `/setup` and stop.

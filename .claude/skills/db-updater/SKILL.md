@@ -27,7 +27,7 @@ Skip this skill for read-only operations (use the `progress` skill or `read-db.p
 Run from the repo root:
 
 ```bash
-python3 .claude/hooks/update-db.py <<'EOF'
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py" <<'EOF'
 { ...payload... }
 EOF
 ```
@@ -62,7 +62,7 @@ Key blocks the example covers: `skill_scores`, `errors[]`, `new_vocabulary[]`, `
 Always call `read-db.py` at session start to get current state + `next_session_id`. Don't read each JSON file separately:
 
 ```bash
-python3 .claude/hooks/read-db.py
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
 Returns all 6 databases plus computed fields (`due_reviews_count`, `next_session_id`, `streak_active`, `days_since_last_session`).
@@ -72,7 +72,7 @@ Returns all 6 databases plus computed fields (`due_reviews_count`, `next_session
 ### Example 1 — /review session with 5 items
 
 ```bash
-python3 .claude/hooks/update-db.py <<'EOF'
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py" <<'EOF'
 {
   "session_id": "session-012",
   "date": "2026-04-24",
@@ -108,7 +108,7 @@ EOF
 ### Example 2 — /vocab session with a new word
 
 ```bash
-python3 .claude/hooks/update-db.py <<'EOF'
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py" <<'EOF'
 {
   "session_id": "session-013",
   "date": "2026-04-25",

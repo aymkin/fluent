@@ -22,7 +22,7 @@ Skip this skill below A1 mastery 2 — the learner needs a basic word bank and v
 ### 1. Load context
 
 ```bash
-python3 .claude/hooks/read-db.py
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
 Need: `learner-profile` (level, target language), `mastery-db.skills_mastery.speaking`.

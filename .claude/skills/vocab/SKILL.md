@@ -22,7 +22,7 @@ Skip this skill if no vocabulary items are due and no new words are queued — o
 ### 1. Load vocabulary data
 
 ```bash
-python3 .claude/hooks/read-db.py
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
 If the helper is unavailable, resolve `<data_dir>` via `fluent_paths.data_dir()` then read:

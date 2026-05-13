@@ -22,7 +22,7 @@ Skip this skill in favor of `/vocab` if the learner has not yet hit mastery 2 in
 ### 1. Load context
 
 ```bash
-python3 .claude/hooks/read-db.py
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
 Need: `learner-profile` (level, target language, focus areas), `mistakes-db` (weak writing patterns), `mastery-db` (writing sub-skills).

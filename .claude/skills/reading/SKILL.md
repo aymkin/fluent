@@ -22,7 +22,7 @@ Skip this skill below A1 mastery 3 — shorter flashcard drills (`/vocab`) are m
 ### 1. Load context
 
 ```bash
-python3 .claude/hooks/read-db.py
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
 Need: `learner-profile` (level, target language, interests), `mastery-db.skills_mastery.reading`.

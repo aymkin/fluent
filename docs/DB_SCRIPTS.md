@@ -7,13 +7,16 @@ Two Python scripts under `.claude/hooks/` manage the six learner databases:
 | `read-db.py` | Load all 6 databases (+ computed fields) in one call |
 | `update-db.py` | Apply a session report to all 6 databases atomically |
 
-Both operate on files in `data/` relative to the repo root. Always run them
-from the repo root.
+Both scripts resolve the data directory internally (see `fluent_paths.data_dir()`)
+and produce identical output regardless of CWD. Always invoke them with the
+`${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}` prefix so the script path
+itself resolves whether Fluent is installed as a plugin (CWD is the data
+directory) or cloned (CWD is the repo root).
 
 ## Reading
 
 ```bash
-python3 .claude/hooks/read-db.py
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
 Outputs a single JSON object:
@@ -45,7 +48,7 @@ Exit codes: `0` OK, `1` one or more files missing (partial result with
 ## Writing
 
 ```bash
-python3 .claude/hooks/update-db.py <<'EOF'
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py" <<'EOF'
 {
   "session_id": "session-005",
   "date": "2026-04-24",

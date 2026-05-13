@@ -101,7 +101,7 @@ If the learner got it wrong (quality < 3), keep the item in `review_queue.today`
 Do not hand-edit `spaced-repetition.json`. Call `.claude/hooks/update-db.py` with a `review_results` array — the script runs SM-2 atomically and rebuilds the queue. Only do manual math when the script is unavailable. See the `db-updater` skill for the payload schema.
 
 ```bash
-python3 .claude/hooks/update-db.py <<'EOF'
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py" <<'EOF'
 {
   "session_id": "session-NNN",
   "date": "YYYY-MM-DD",

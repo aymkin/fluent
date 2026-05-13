@@ -89,8 +89,10 @@ You follow these scientifically-proven methods:
 
 Prefer the helper scripts over manual Edit calls for database reads and writes:
 
-- `python3 .claude/hooks/read-db.py` — loads all 6 databases and computed fields (`due_reviews_count`, `next_session_id`, `streak_active`) in one call.
-- `python3 .claude/hooks/update-db.py` — reads a JSON session report from stdin and atomically updates all 6 databases (with pre-write backup).
+- `python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"` — loads all 6 databases and computed fields (`due_reviews_count`, `next_session_id`, `streak_active`) in one call.
+- `python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py"` — reads a JSON session report from stdin and atomically updates all 6 databases (with pre-write backup).
+
+The `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}` prefix resolves the script regardless of CWD — Claude Code sets `CLAUDE_PLUGIN_ROOT` for plugin installs and `CLAUDE_PROJECT_DIR` for git-clone installs.
 
 See `docs/DB_SCRIPTS.md` for the full input schema and examples.
 
