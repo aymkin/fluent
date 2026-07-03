@@ -208,12 +208,18 @@ class UpdateDbSmokeTest(unittest.TestCase):
         # FSRS fields present on a reviewed item
         reviewed = sr["items"][REVIEWED_ID]
         self.assertIn("stability", reviewed)
-        self.assertIn("difficulty", reviewed)
+        self.assertIn("fsrs_difficulty", reviewed)
         self.assertIn("last_rating", reviewed)
         self.assertIsInstance(reviewed["stability"], (int, float))
         # due_date is interval_days after the session date
         exp = (date.fromisoformat(SESSION_DATE) + timedelta(days=reviewed["interval_days"])).isoformat()
         self.assertEqual(reviewed["due_date"], exp)
+
+        # Regression: CEFR "difficulty" (a domain field distinct from FSRS's
+        # numeric difficulty) must survive the review untouched, while the
+        # FSRS difficulty lands in its own "fsrs_difficulty" key.
+        self.assertEqual(reviewed["difficulty"], "A1")
+        self.assertIsInstance(reviewed["fsrs_difficulty"], float)
 
         # New vocabulary item fully populated
         huis = sr["items"]["het_huis"]

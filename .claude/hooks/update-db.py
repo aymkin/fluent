@@ -385,9 +385,14 @@ def update_spaced_repetition(sr: dict, session: dict):
             weights = sr.get("metadata", {}).get("weights")
             score = review.get("score", quality * 2)
             rating = 1 if score <= 4 else 2 if score <= 6 else 3 if score <= 8 else 4
-            r = fsrs.schedule(item, rating, today, weights)
+            fsrs_state = {
+                "stability": item.get("stability"),
+                "difficulty": item.get("fsrs_difficulty"),
+                "last_reviewed": item.get("last_reviewed"),
+            }
+            r = fsrs.schedule(fsrs_state, rating, today, weights)
             item["stability"] = r["stability"]
-            item["difficulty"] = r["difficulty"]
+            item["fsrs_difficulty"] = r["difficulty"]
             item["interval_days"] = r["interval_days"]
             item["due_date"] = r["due_date"]
             item["last_rating"] = rating
@@ -436,7 +441,7 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "repetitions": 0,
                 "easiness_factor": 2.5,
                 "stability": None,
-                "difficulty": None,
+                "fsrs_difficulty": None,
                 "consecutive_correct": 0,
                 "consecutive_incorrect": 0,
                 "last_reviewed": today,
@@ -462,7 +467,7 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "repetitions": 0,
                 "easiness_factor": 2.5,
                 "stability": None,
-                "difficulty": None,
+                "fsrs_difficulty": None,
                 "consecutive_correct": 0,
                 "consecutive_incorrect": 1,
                 "last_reviewed": today,
