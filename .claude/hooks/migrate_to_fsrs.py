@@ -64,13 +64,13 @@ def main():
             card.setdefault("fsrs_difficulty", None)
 
     meta = sr.setdefault("metadata", {})
-    meta.update({
-        "scheduler": "fsrs-6",
-        "target_retention": 0.9,
-        "weights": None,
-        "last_optimized": None,
-        "reviews_at_last_optimize": 0,
-    })
+    # Config keys are safe to (re)assert. Optimizer-owned keys use setdefault so
+    # a re-run never clobbers fitted weights / counters written by the optimizer.
+    meta["scheduler"] = "fsrs-6"
+    meta["target_retention"] = 0.9
+    meta.setdefault("weights", None)
+    meta.setdefault("last_optimized", None)
+    meta.setdefault("reviews_at_last_optimize", 0)
 
     tmp = SR_PATH.with_suffix(".json.tmp")
     tmp.write_text(json.dumps(sr, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
