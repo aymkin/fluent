@@ -23,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fluent_paths import ensure_data_dir, ensure_backups_dir, force_utf8_io  # noqa: E402
+import fsrs  # noqa: E402
 
 force_utf8_io()
 DATA_DIR = ensure_data_dir()
@@ -381,11 +382,16 @@ def update_spaced_repetition(sr: dict, session: dict):
         quality = review["quality"]
         if item_id in items:
             item = items[item_id]
-            result = calculate_sm2(item, quality)
-            item["easiness_factor"] = result["easiness_factor"]
-            item["interval_days"] = result["interval_days"]
-            item["repetitions"] = result["repetitions"]
-            item["due_date"] = date_plus_days(today, result["interval_days"])
+            weights = sr.get("metadata", {}).get("weights")
+            score = review.get("score", quality * 2)
+            rating = 1 if score <= 4 else 2 if score <= 6 else 3 if score <= 8 else 4
+            r = fsrs.schedule(item, rating, today, weights)
+            item["stability"] = r["stability"]
+            item["difficulty"] = r["difficulty"]
+            item["interval_days"] = r["interval_days"]
+            item["due_date"] = r["due_date"]
+            item["last_rating"] = rating
+            item["repetitions"] = item.get("repetitions", 0) + 1 if quality >= 3 else 0
             item["last_reviewed"] = today
             item["last_quality"] = quality
             item["total_reviews"] = item.get("total_reviews", 0) + 1
@@ -429,6 +435,8 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "interval_days": 1,
                 "repetitions": 0,
                 "easiness_factor": 2.5,
+                "stability": None,
+                "difficulty": None,
                 "consecutive_correct": 0,
                 "consecutive_incorrect": 0,
                 "last_reviewed": today,
@@ -453,6 +461,8 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "interval_days": 1,
                 "repetitions": 0,
                 "easiness_factor": 2.5,
+                "stability": None,
+                "difficulty": None,
                 "consecutive_correct": 0,
                 "consecutive_incorrect": 1,
                 "last_reviewed": today,

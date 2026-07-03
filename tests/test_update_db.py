@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import date, timedelta
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -135,13 +136,18 @@ SESSION_PAYLOAD = {
         "difficulty": "A1",
         "initial_quality": 4
     }],
-    "review_results": [{"item_id": "vocab_dag", "quality": 5}],
+    "review_results": [{"item_id": "vocab_dag", "quality": 5, "score": 8}],
     "topics_covered": ["house_vocab"],
     "breakthroughs": ["Got 'het huis' on first try"],
     "focus_next_session": ["de/het drill"],
     "session_notes": "Good session.",
     "milestones": []
 }
+
+# The single review_results entry above targets this item on this session
+# date — reused by the FSRS assertions in test_happy_path.
+REVIEWED_ID = "vocab_dag"
+SESSION_DATE = SESSION_PAYLOAD["date"]
 
 
 class UpdateDbSmokeTest(unittest.TestCase):
@@ -198,6 +204,16 @@ class UpdateDbSmokeTest(unittest.TestCase):
             self.assertIn(k, dag, f"lost field {k} on vocab_dag")
         self.assertEqual(dag["total_reviews"], 2)  # was 1, +1 review
         self.assertEqual(dag["last_quality"], 5)
+
+        # FSRS fields present on a reviewed item
+        reviewed = sr["items"][REVIEWED_ID]
+        self.assertIn("stability", reviewed)
+        self.assertIn("difficulty", reviewed)
+        self.assertIn("last_rating", reviewed)
+        self.assertIsInstance(reviewed["stability"], (int, float))
+        # due_date is interval_days after the session date
+        exp = (date.fromisoformat(SESSION_DATE) + timedelta(days=reviewed["interval_days"])).isoformat()
+        self.assertEqual(reviewed["due_date"], exp)
 
         # New vocabulary item fully populated
         huis = sr["items"]["het_huis"]
