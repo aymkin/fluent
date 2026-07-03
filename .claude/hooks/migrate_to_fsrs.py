@@ -5,7 +5,7 @@ Usage: python3 .claude/hooks/migrate_to_fsrs.py
 Seeds stability/difficulty for reviewed cards; stamps metadata.
 """
 import json, os, shutil, sys
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -16,7 +16,6 @@ DATA = ensure_data_dir()
 BACKUPS = ensure_backups_dir()
 SR_PATH = DATA / "spaced-repetition.json"
 
-DEFAULT_WEIGHTS = None  # optimizer fills this later; hook falls back to fsrs.DEFAULT_W
 
 
 def _clamp(x, lo, hi):
@@ -46,7 +45,7 @@ def main():
     items = sr.get("items", {})
 
     # backup
-    stamp = date.today().isoformat()
+    stamp = datetime.now().strftime("%Y-%m-%dT%H%M%S")
     dest = BACKUPS / f"pre-migrate-fsrs-{stamp}"
     dest.mkdir(parents=True, exist_ok=True)
     for f in DATA.glob("*.json"):
