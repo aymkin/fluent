@@ -61,6 +61,7 @@ class TestCrossCheck(unittest.TestCase):
                     card.stability,
                     delta=max(card.stability * 0.02, 1e-6),
                 )
+                self.assertAlmostEqual(out["difficulty"], card.difficulty, delta=0.01)
                 self.assertGreaterEqual(out["difficulty"], 1.0)
                 self.assertLessEqual(out["difficulty"], 10.0)
                 item = {
