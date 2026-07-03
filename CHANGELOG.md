@@ -2,6 +2,26 @@
 
 All notable changes to Fluent will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+
+- Scheduler switched from SM-2 to a stdlib FSRS-6 port
+  (`.claude/hooks/fsrs.py`). Reviews are scheduled via `fsrs.schedule` using the
+  0-10 tutor score mapped to an FSRS rating (1-4). Cards gain `stability` and
+  `fsrs_difficulty` (the pre-existing `difficulty` key keeps the CEFR level);
+  `spaced_repetition.metadata` records `scheduler`, `target_retention`, and an
+  optional optimized `weights` vector. One-time migration in
+  `migrate_to_fsrs.py` seeds `stability`/`fsrs_difficulty` from existing
+  intervals. `calculate_sm2` is retained as a rollback branch.
+
+### Added
+
+- `.claude/hooks/optimize_weights.py`: a guarded, offline FSRS-6 weight
+  optimizer (uses `fsrs-optimizer` in a separate venv). No-ops until ≥ 400
+  reviews and ≥ 50 new reviews since the last run, then writes optimized
+  `weights` back to `spaced_repetition.metadata`. Intended to run weekly.
+
 ## [0.3.0] — 2026-06-15
 
 ### Added
