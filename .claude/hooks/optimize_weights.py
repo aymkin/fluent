@@ -34,19 +34,35 @@ def should_optimize(total, meta):
 
 
 def train(logs):
-    """Fit FSRS-6 weights. Imports fsrs-optimizer lazily (torch).
+    """Fit FSRS-6 weights. Imports fsrs-optimizer lazily (torch, venv-only).
 
-    NOTE: fsrs-optimizer is not installed and the guard above prevents this
-    from ever running against current data (165 < 400 reviews). The exact
-    Optimizer API (constructor args, log format, .optimize() signature) is
-    reconciled during venv provisioning, a later deferred task. This shape
-    follows fsrs-optimizer's documented usage: a FSRSItem/FSRSReviewLog-style
-    log feed into Optimizer, producing a fitted weight vector.
+    fsrs-optimizer 6.5.0 reads ./revlog.csv from the cwd with columns
+    card_id, review_time (epoch ms), review_rating (1-4), then runs
+    create_time_series -> define_model -> pretrain -> train; fitted
+    weights land in Optimizer.w (train() itself returns plots).
     """
+    import csv, tempfile
+    from datetime import datetime, timezone
     from fsrs_optimizer import Optimizer  # noqa: import isolated to venv
-    opt = Optimizer()
-    weights = opt.optimize(logs)  # adapt to fsrs-optimizer's actual API at impl time
-    return [float(x) for x in weights]
+
+    with tempfile.TemporaryDirectory() as td:
+        with open(Path(td) / "revlog.csv", "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            w.writerow(["card_id", "review_time", "review_rating"])
+            for cid, day, rating in logs:
+                dt = datetime.strptime(day, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                w.writerow([cid, int(dt.timestamp() * 1000), rating])
+        cwd = os.getcwd()
+        os.chdir(td)  # the package hardcodes ./revlog.csv
+        try:
+            opt = Optimizer()
+            opt.create_time_series("Europe/Amsterdam", "2006-01-01", 4)
+            opt.define_model()
+            opt.pretrain(verbose=False)
+            opt.train(verbose=False)
+        finally:
+            os.chdir(cwd)
+    return [float(x) for x in opt.w]
 
 
 def main(dry_data=None):
