@@ -10,14 +10,19 @@ https://github.com/user-attachments/assets/66d68aad-210a-452d-b405-b58c13f42f53
 
 ---
 
-
+> **This is a personal fork** of [m98/fluent](https://github.com/m98/fluent), maintained at
+> [aymkin/fluent](https://github.com/aymkin/fluent). It tracks upstream but has diverged:
+> FSRS-6 scheduling (replacing SM-2) with a guarded weekly weight optimizer, and a trimmed
+> `/fluent-review` data payload for faster response times. See [CHANGELOG.md](CHANGELOG.md)
+> for the full list. The plugin/marketplace name stays `fluent@m98` regardless of which repo
+> you install from — that key comes from `.claude-plugin/marketplace.json`, not the git remote.
 
 ## 🚀 Quick Start
 
 ### 1. Install
 
 ```bash
-claude plugin marketplace add m98/fluent && claude plugin install fluent@m98
+claude plugin marketplace add aymkin/fluent && claude plugin install fluent@m98
 ```
 
 One line. Registers the marketplace, installs the plugin. Works globally from any directory after this.
@@ -54,7 +59,7 @@ claude plugin uninstall fluent@m98    # remove entirely
 Prefer to hack on the skills or keep per-project state?
 
 ```bash
-git clone https://github.com/m98/fluent.git
+git clone https://github.com/aymkin/fluent.git
 cd fluent
 claude          # launch from repo root
 /fluent-setup
@@ -429,7 +434,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support & Community
 
 - 📖 **Documentation:** [Full docs in this repo](docs/)
-- 🐛 **Bug Reports & Questions:** [GitHub Issues](https://github.com/m98/fluent/issues)
+- 🐛 **Bug Reports & Questions:** [GitHub Issues](https://github.com/aymkin/fluent/issues) (fork) or [upstream](https://github.com/m98/fluent/issues)
 - 📧 **Email:** For sensitive issues
 
 ---
@@ -450,7 +455,7 @@ It helps others discover this project and motivates us to keep improving it!
 - **Install paths:** 2 (Claude Code plugin + git clone — both supported)
 - **Languages Supported:** All (system is fully language-agnostic)
 - **Learning Methods:** 6 evidence-based principles
-- **Contributors:** [See contributors](https://github.com/m98/fluent/graphs/contributors)
+- **Contributors:** [See contributors](https://github.com/m98/fluent/graphs/contributors) (upstream) / [fork](https://github.com/aymkin/fluent/graphs/contributors)
 
 ---
 
@@ -528,7 +533,7 @@ But feel free to experiment and share your findings!
 *Start your language learning journey today!* 🚀
 
 ```bash
-git clone https://github.com/m98/fluent.git
+git clone https://github.com/aymkin/fluent.git
 cd fluent
 claude
 /fluent-setup

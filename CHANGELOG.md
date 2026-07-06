@@ -22,6 +22,18 @@ All notable changes to Fluent will be documented in this file.
   reviews and ≥ 50 new reviews since the last run, then writes optimized
   `weights` back to `spaced_repetition.metadata`. Intended to run weekly.
 
+### Performance
+
+- `read-db.py --review` (used by `/fluent-review`'s first step) now dumps
+  compact JSON instead of `indent=2`, pre-sorts and caps
+  `spaced_repetition.review_queue.today` at `daily_limits.review_items_per_day`
+  server-side instead of shipping every due item's full record, and drops
+  `mastery_db`/`progress_db`/`session_log` plus unreferenced `mistakes_db`
+  patterns — none of which the review flow's opening/exercise steps read.
+  Payload for a 369-item queue capped at 30: 444KB → 43KB (-90.3%), cutting
+  time-to-first-token on `/fluent-review` accordingly. Default (non-review)
+  mode is untouched.
+
 ## [0.3.0] — 2026-06-15
 
 ### Added
