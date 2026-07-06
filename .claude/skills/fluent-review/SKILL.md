@@ -22,10 +22,10 @@ Skip this skill when the queue is empty — suggest `/fluent-vocab` or `/fluent-
 ### 1. Load review queue
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py" --review
 ```
 
-Read `spaced-repetition.review_queue.today` and `daily_limits.review_items_per_day`. Sort items by `priority` (critical → high → medium → low). Cap at the daily limit (usually 20).
+`--review` sorts `spaced-repetition.review_queue.today` by `priority` (critical → high → medium → low) and caps it at `daily_limits.review_items_per_day` server-side, so only the items you'll actually use come back expanded. Use `computed.due_reviews_count` for the true total due when writing the opening message — it can be larger than the trimmed queue.
 
 If the queue is empty:
 

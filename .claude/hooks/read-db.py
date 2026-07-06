@@ -5,6 +5,10 @@ Loads all 6 learning databases and outputs a single JSON object to stdout.
 
 Usage:
     python3 .claude/hooks/read-db.py
+    python3 .claude/hooks/read-db.py --review   # pre-sort + cap today's
+                                                  # review queue server-side
+                                                  # instead of dumping every
+                                                  # due item's full record
 
 Exit codes: 0=success, 1=partial (some files missing), 2=critical error
 """
@@ -13,6 +17,8 @@ import re
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
+
+PRIORITY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fluent_paths import data_dir, force_utf8_io  # noqa: E402
@@ -92,10 +98,21 @@ def main():
         },
     }
 
+    if "--review" in sys.argv[1:]:
+        limit = sr.get("daily_limits", {}).get("review_items_per_day", 20)
+        today_ids = sr.get("review_queue", {}).get("today", [])
+        capped = sorted(
+            today_ids,
+            key=lambda iid: PRIORITY_RANK.get(items.get(iid, {}).get("priority"), 4),
+        )[:limit]
+        sr.setdefault("review_queue", {})["today"] = capped
+        sr["items"] = {iid: items[iid] for iid in capped if iid in items}
+        result["computed"]["review_queue_trimmed_to"] = len(capped)
+
     if missing:
         result["_warnings"] = [f"Missing file: {m}" for m in missing]
 
-    json.dump(result, sys.stdout, indent=2, ensure_ascii=False)
+    json.dump(result, sys.stdout, separators=(",", ":"), ensure_ascii=False)
     print()
 
     sys.exit(1 if missing else 0)
