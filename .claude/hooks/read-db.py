@@ -6,9 +6,12 @@ Loads all 6 learning databases and outputs a single JSON object to stdout.
 Usage:
     python3 .claude/hooks/read-db.py
     python3 .claude/hooks/read-db.py --review   # pre-sort + cap today's
-                                                  # review queue server-side
-                                                  # instead of dumping every
-                                                  # due item's full record
+                                                  # review queue server-side,
+                                                  # and drop DB sections the
+                                                  # review flow never reads
+                                                  # (mastery_db, progress_db,
+                                                  # session_log, unreferenced
+                                                  # mistakes_db patterns)
 
 Exit codes: 0=success, 1=partial (some files missing), 2=critical error
 """
@@ -108,6 +111,25 @@ def main():
         sr.setdefault("review_queue", {})["today"] = capped
         sr["items"] = {iid: items[iid] for iid in capped if iid in items}
         result["computed"]["review_queue_trimmed_to"] = len(capped)
+
+        # Steps 1-3 of /fluent-review only touch spaced_repetition, mistakes_db
+        # (error_pattern content) and learner_profile (name for the greeting).
+        # mastery_db/progress_db feed /fluent-progress; session_log's per-session
+        # detail feeds it too (next_session_id above already used the full log).
+        # Step 7 persists via update-db.py, which rereads all 6 files from disk,
+        # so nothing here needs to round-trip through this payload.
+        databases["mastery_db"] = {}
+        databases["progress_db"] = {}
+        databases["session_log"] = {}
+
+        referenced_patterns = {
+            iid for iid, item in sr["items"].items() if item.get("type") == "error_pattern"
+        }
+        mistakes = databases.get("mistakes_db", {})
+        all_patterns = mistakes.get("error_patterns", {})
+        mistakes["error_patterns"] = {
+            pid: p for pid, p in all_patterns.items() if pid in referenced_patterns
+        }
 
     if missing:
         result["_warnings"] = [f"Missing file: {m}" for m in missing]

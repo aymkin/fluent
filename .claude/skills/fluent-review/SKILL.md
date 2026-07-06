@@ -25,7 +25,7 @@ Skip this skill when the queue is empty — suggest `/fluent-vocab` or `/fluent-
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py" --review
 ```
 
-`--review` sorts `spaced-repetition.review_queue.today` by `priority` (critical → high → medium → low) and caps it at `daily_limits.review_items_per_day` server-side, so only the items you'll actually use come back expanded. Use `computed.due_reviews_count` for the true total due when writing the opening message — it can be larger than the trimmed queue.
+`--review` sorts `spaced-repetition.review_queue.today` by `priority` (critical → high → medium → low) and caps it at `daily_limits.review_items_per_day` server-side, so only the items you'll actually use come back expanded. Use `computed.due_reviews_count` for the true total due when writing the opening message — it can be larger than the trimmed queue. It also empties `mastery_db`/`progress_db`/`session_log` (unused by this flow — `computed.next_session_id` already covers what session_log would've been needed for) and narrows `mistakes_db.error_patterns` to just the patterns referenced by today's capped queue.
 
 If the queue is empty:
 
