@@ -11,7 +11,10 @@ Usage:
                                                   # review flow never reads
                                                   # (mastery_db, progress_db,
                                                   # session_log, unreferenced
-                                                  # mistakes_db patterns)
+                                                  # mistakes_db patterns,
+                                                  # learner_profile fields
+                                                  # beyond name + streak,
+                                                  # per-item review_history)
 
 Exit codes: 0=success, 1=partial (some files missing), 2=critical error
 """
@@ -94,7 +97,6 @@ def main():
         "computed": {
             "today": today,
             "due_reviews_count": len(due_items),
-            "due_review_items": due_items,
             "next_session_id": next_session_id(sessions),
             "streak_active": streak_active,
             "days_since_last_session": days_since,
@@ -112,8 +114,16 @@ def main():
         sr["items"] = {iid: items[iid] for iid in capped if iid in items}
         result["computed"]["review_queue_trimmed_to"] = len(capped)
 
+        # review_history is write-only from this flow's perspective: the
+        # template only reads last_reviewed/easiness_factor/etc (top-level
+        # fields), and update-db.py appends to history by rereading the file
+        # from disk, not from this payload.
+        for item in sr["items"].values():
+            item.pop("review_history", None)
+
         # Steps 1-3 of /fluent-review only touch spaced_repetition, mistakes_db
-        # (error_pattern content) and learner_profile (name for the greeting).
+        # (error_pattern content) and learner_profile (name for the greeting +
+        # current_streak_days for the closing summary's streak line).
         # mastery_db/progress_db feed /fluent-progress; session_log's per-session
         # detail feeds it too (next_session_id above already used the full log).
         # Step 7 persists via update-db.py, which rereads all 6 files from disk,
@@ -121,6 +131,10 @@ def main():
         databases["mastery_db"] = {}
         databases["progress_db"] = {}
         databases["session_log"] = {}
+        databases["learner_profile"] = {
+            "learner": {"name": profile.get("learner", {}).get("name")},
+            "current_streak_days": profile.get("current_streak_days"),
+        }
 
         referenced_patterns = {
             iid for iid, item in sr["items"].items() if item.get("type") == "error_pattern"

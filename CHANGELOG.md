@@ -33,6 +33,13 @@ All notable changes to Fluent will be documented in this file.
   Payload for a 369-item queue capped at 30: 444KB → 43KB (-90.3%), cutting
   time-to-first-token on `/fluent-review` accordingly. Default (non-review)
   mode is untouched.
+- `read-db.py --review` additionally drops `computed.due_review_items` (the
+  full list of due item ids — every skill that calls `read-db.py` only ever
+  reads the `due_reviews_count` integer), trims `learner_profile` down to
+  `learner.name` + `current_streak_days` (the only two fields the review
+  template reads), and strips each capped item's `review_history` (write-only
+  from this flow's perspective — `update-db.py` appends to it by rereading the
+  files from disk). 35.0KB → 22.9KB (-34.6%) on top of the reduction above.
 
 ## [0.3.0] — 2026-06-15
 
