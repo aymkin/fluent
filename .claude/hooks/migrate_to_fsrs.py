@@ -66,6 +66,7 @@ def main():
     meta = sr.setdefault("metadata", {})
     # Config keys are safe to (re)assert. Optimizer-owned keys use setdefault so
     # a re-run never clobbers fitted weights / counters written by the optimizer.
+    meta["algorithm"] = "FSRS-6"
     meta["scheduler"] = "fsrs-6"
     meta["target_retention"] = 0.9
     meta.setdefault("weights", None)

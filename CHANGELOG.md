@@ -41,6 +41,12 @@ All notable changes to Fluent will be documented in this file.
   from this flow's perspective — `update-db.py` appends to it by rereading the
   files from disk). 35.0KB → 22.9KB (-34.6%) on top of the reduction above.
 
+### Fixed
+
+- `migrate_to_fsrs.py` set `metadata.scheduler = "fsrs-6"` but never updated
+  the neighboring `metadata.algorithm`, which stayed `"SM-2"` even after the
+  scheduler had fully switched to FSRS-6. Now stamps both.
+
 ## [0.3.0] — 2026-06-15
 
 ### Added
