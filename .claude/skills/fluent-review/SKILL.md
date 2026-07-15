@@ -1,6 +1,6 @@
 ---
 name: fluent-review
-description: Run today's spaced-repetition review queue — items scheduled by SM-2 that need reinforcement before the learner forgets them. Triggered only when the learner types /fluent-review. Pulls due items from spaced-repetition.review_queue.today, generates a targeted exercise for each, evaluates the response, updates SM-2 parameters, and reshelves items into the correct future queue.
+description: Run today's spaced-repetition review queue — items scheduled by FSRS-6 that need reinforcement before the learner forgets them. Triggered only when the learner types /fluent-review. Pulls due items from spaced-repetition.review_queue.today, generates a targeted exercise for each, evaluates the response, submits the score so update-db.py reschedules via FSRS, and reshelves items into the correct future queue.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -13,7 +13,7 @@ Replay items the learner learned before, timed so they hit just before the forge
 
 ## When to Use
 
-Trigger this skill only when the learner types `/fluent-review`. The skill is gated with `disable-model-invocation: true` — mutating SM-2 state from a misread prompt would cascade through every future session.
+Trigger this skill only when the learner types `/fluent-review`. The skill is gated with `disable-model-invocation: true` — mutating spaced-repetition state from a misread prompt would cascade through every future session.
 
 Skip this skill when the queue is empty — suggest `/fluent-vocab` or `/fluent-learn` instead.
 
@@ -94,7 +94,7 @@ Present one at a time:
 **Type your answer:**
 ```
 
-### 4. Evaluate + update SM-2
+### 4. Evaluate + submit the score
 
 Use the `fluent-feedback-formatter` skill for per-answer feedback.
 
@@ -104,7 +104,7 @@ Then stage the item for the end-of-session update. Do NOT hand-edit `spaced-repe
 { "item_id": "vocab_huis", "quality": 4 }
 ```
 
-The `update-db.py` script runs the SM-2 math (see `fluent-sm2-calculator` skill) and rebuilds the queue. Mapping: `quality = floor(score / 2)`.
+The `update-db.py` script maps the score to an FSRS rating, reschedules via FSRS-6, and rebuilds the queue (see `fluent-fsrs-reference` skill). Mapping: `quality = floor(score / 2)`.
 
 ### 5. Progress pulse every 5 items
 
@@ -203,12 +203,12 @@ Learner: "niet"
 >
 > **Score: 10/10** 🎯
 >
-> (Logged: quality=5 → `interval_days = round(14 * EF)`, queue: `later`. `consecutive_correct` = 5, mastery → 5 ⭐⭐⭐⭐⭐.)
+> (Logged: quality=5 → FSRS reschedules to a longer interval, queue: `later`. `consecutive_correct` = 5, mastery → 5 ⭐⭐⭐⭐⭐.)
 
 ## Critical Rules
 
 - **Daily.** The whole system assumes the learner runs `/fluent-review` every day. Missing a day breaks the intended spacing.
-- **Never auto-invoke.** Gated; must fire only on explicit `/fluent-review`. Long interactive + SM-2 mutation.
+- **Never auto-invoke.** Gated; must fire only on explicit `/fluent-review`. Long interactive + spaced-repetition mutation.
 - **One item at a time.** Rushing = false positives.
 - **Let the learner struggle.** If they don't remember, that's useful data (quality 0-2). The algorithm needs honest signals.
 - **Never hand-edit `spaced-repetition.json`.** Queue is rebuilt on every `update-db.py` call.
