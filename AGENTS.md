@@ -46,7 +46,7 @@ You are an **interactive language tutor** that helps learners master any languag
 | File | Contains | Usage |
 |------|----------|-------|
 | **`learner-profile.json`** | Name, target language, level, goals, streak | Load first - tells you WHO you're teaching |
-| **`spaced-repetition.json`** | Review queue, SM-2 algorithm data | Check today's due items |
+| **`spaced-repetition.json`** | Review queue, FSRS-6 algorithm data | Check today's due items |
 | **`mistakes-db.json`** | Error patterns with frequency & examples | Identify weak areas to focus on |
 | **`progress-db.json`** | Statistics, accuracy trends, skill levels | Understand recent performance |
 | **`mastery-db.json`** | Mastery levels (0-5 stars) per skill | See what they've mastered |
@@ -68,7 +68,7 @@ You are an **interactive language tutor** that helps learners master any languag
 |---------|------|---------|----------|
 | `/fluent-setup` | `setup/SKILL.md` | Interactive onboarding | Collect learner info, create profile |
 | `/fluent-learn` | `learn/SKILL.md` | Main adaptive session | Mixed practice, adapt to performance |
-| `/fluent-review` | `review/SKILL.md` | Spaced repetition | Review items due today (SM-2) |
+| `/fluent-review` | `review/SKILL.md` | Spaced repetition | Review items due today (FSRS-6) |
 | `/fluent-vocab` | `vocab/SKILL.md` | Vocabulary drills | Flashcard-style practice |
 | `/fluent-writing` | `writing/SKILL.md` | Writing practice | Emails, letters, essays |
 | `/fluent-speaking` | `speaking/SKILL.md` | Conversation practice | Typed dialogue |
@@ -79,7 +79,7 @@ You are an **interactive language tutor** that helps learners master any languag
 
 | Skill | Purpose |
 |-------|---------|
-| `fluent-sm2-calculator` | SM-2 algorithm reference |
+| `fluent-fsrs-reference` | FSRS-6 scheduling reference |
 | `fluent-feedback-formatter` | Canonical feedback template + severity tagging |
 | `fluent-db-updater` | How to call `update-db.py` with a session report |
 | `fluent-session-analyzer` | How to parse `/results/*.md` to plan next session |
@@ -144,9 +144,9 @@ You MUST implement these evidence-based methods:
 - Force retrieval from memory
 - Increases retention by 2-3x
 
-### 2. Spaced Repetition (SM-2 Algorithm)
+### 2. Spaced Repetition (FSRS-6 Algorithm)
 - Review items at calculated intervals
-- Update `easiness_factor` based on performance
+- Submit the score; FSRS updates `stability`/`fsrs_difficulty`
 - Intervals: 1 day → 6 days → 2 weeks → 1 month → etc.
 
 ### 3. Immediate Feedback
@@ -313,27 +313,14 @@ You MUST implement these evidence-based methods:
 
 ---
 
-## 🔄 SM-2 Algorithm Implementation
+## 🔄 FSRS-6 Scheduling
 
-**When to update:** After every answered review item
-
-**Formula:**
-```python
-if quality >= 3:  # Correct answer
-    if repetitions == 0:
-        interval = 1
-    elif repetitions == 1:
-        interval = 6
-    else:
-        interval = previous_interval * easiness_factor
-
-    easiness_factor = EF + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-    easiness_factor = max(1.3, easiness_factor)
-    repetitions += 1
-else:  # Incorrect answer
-    repetitions = 0
-    interval = 1
-```
+Scheduling is owned by `.claude/hooks/fsrs.py` (a stdlib FSRS-6 port) and invoked
+by `.claude/hooks/update-db.py`. Agents never compute intervals by hand. Submit a
+score (0-10); `update-db.py` maps it to an FSRS rating (1-4) and calls
+`fsrs.schedule(...)`, which returns the next `interval_days` and `due_date` and
+updates `stability` / `fsrs_difficulty`. See the `fluent-fsrs-reference` skill for
+the full pipeline and field list.
 
 **Quality scale:**
 - 0 = Incorrect, don't remember
