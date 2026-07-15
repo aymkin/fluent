@@ -190,7 +190,7 @@ After 4 exercises, accuracy is 55% (target zone). Hold difficulty; introduce pat
 - **Always load all 6 DBs at start.** Missing context → generic, demotivating content.
 - **One exercise at a time.**
 - **Interleave.** Don't drill one pattern for 20 min — mix 2-3 patterns to force discrimination.
-- **Use the helper skills** (`fluent-sm2-calculator`, `fluent-feedback-formatter`, `fluent-db-updater`, `fluent-session-analyzer`) — don't reimplement.
+- **Use the helper skills** (`fluent-fsrs-reference`, `fluent-feedback-formatter`, `fluent-db-updater`, `fluent-session-analyzer`) — don't reimplement.
 - **Use the learner's name + target-language greetings** throughout.
 - **Celebrate progress.** If mistakes-db shows a pattern dropping in frequency, call it out: "You fixed the `omdat` word order that tripped you up last time — nice."
 
