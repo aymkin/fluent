@@ -304,9 +304,14 @@ git commit -m "docs(readme): FSRS-6 is the current scheduler, SM-2 is history"
   - L149 `- Update \`easiness_factor\` based on performance` → `- Submit the score; FSRS updates \`stability\`/\`fsrs_difficulty\``
   - L196 leave `"easiness_factor": 2.5,` in the sample item (it is still written at init — vestigial but present).
 
-- [ ] **Step 3: AGENTS.md — replace the whole SM-2 implementation section (L316-331).**
-  Delete the `## 🔄 SM-2 Algorithm Implementation` heading and its pseudo-code block
-  (through the `easiness_factor = max(1.3, easiness_factor)` line) and replace with:
+- [ ] **Step 3: AGENTS.md — replace the SM-2 implementation section (heading + fenced
+  code block only).** Replace from the `## 🔄 SM-2 Algorithm Implementation` heading
+  through the CLOSING ```` ``` ```` fence of its python code block (the block that ends a
+  few lines after `easiness_factor = max(1.3, easiness_factor)`, past `repetitions += 1` /
+  `else:` / `interval = 1`) with the exact FSRS-6 block below. Do NOT delete what follows
+  the code fence: the `**Quality scale:**` subsection (0-5 grades) and its `---` separator
+  are KEPT — the 0-5 `quality` grade is still the tutor's input (score→quality→rating), so
+  it remains valid under FSRS. Replacement block:
 
 ```markdown
 ## 🔄 FSRS-6 Scheduling
