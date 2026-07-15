@@ -16,8 +16,8 @@ a score/quality and let `update-db.py` do the scheduling.
 ```
 tutor score (0-10)
   → quality (0-5)      quality = floor(score / 2)
-  → rating (1-4)       1 if score<=4, 2 if <=6, 3 if <=8, else 4  (update-db.py:386-387)
-  → fsrs.schedule(...) → interval_days + due_date            (update-db.py:393)
+  → rating (1-4)       1 if score<=4, 2 if <=6, 3 if <=8, else 4
+  → fsrs.schedule(...) → interval_days + due_date
 ```
 
 You send `{ "item_id": "...", "quality": <0-5> }` (optionally `"score": <0-10>`)

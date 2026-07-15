@@ -13,7 +13,7 @@ All notable changes to Fluent will be documented in this file.
   `spaced_repetition.metadata` records `scheduler`, `target_retention`, and an
   optional optimized `weights` vector. One-time migration in
   `migrate_to_fsrs.py` seeds `stability`/`fsrs_difficulty` from existing
-  intervals. `calculate_sm2` is retained as a rollback branch.
+  intervals.
 - Docs and skills updated to describe FSRS-6: replaced the `fluent-sm2-calculator`
   skill and `sm2-worked-examples` reference with a thin `fluent-fsrs-reference`,
   and removed the unused `calculate_sm2()` function from `update-db.py`. The
