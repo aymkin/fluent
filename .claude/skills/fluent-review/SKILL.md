@@ -66,6 +66,8 @@ Each item has:
   "repetitions": 2,
   "due_date": "YYYY-MM-DD",
   "priority": "critical | high | medium | low",
+  "fsrs_difficulty": 7.24,
+  "stability": 1.95,
   "content": "...",
   "answer": "..."
 }
@@ -85,6 +87,7 @@ Present one at a time:
 **Type:** {item_type}
 **Last reviewed:** {X} days ago
 **Current mastery:** {stars}
+**FSRS difficulty:** {fsrs_difficulty}/10
 
 {exercise}
 
