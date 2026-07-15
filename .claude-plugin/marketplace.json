@@ -1,10 +1,11 @@
 {
-  "name": "m98",
+  "name": "aymkin",
   "owner": {
-    "name": "Mohammad Kermani"
+    "name": "Alex Naymkin",
+    "url": "https://github.com/aymkin"
   },
   "metadata": {
-    "description": "Fluent — AI Language Learning Kit for Claude Code. Single-plugin marketplace hosting the fluent plugin.",
+    "description": "Personal fork of Fluent (FSRS-6 scheduler) — single-plugin marketplace hosting the fluent plugin. Original by Mohammad Kermani (github.com/m98).",
     "version": "0.3.0"
   },
   "plugins": [
@@ -14,8 +15,8 @@
       "description": "Fluent — AI Language Learning Kit. Personal AI tutor for any target language (Dutch, Spanish, French, German, Japanese, Korean, Arabic, and more). Uses spaced repetition (SM-2), active recall, adaptive difficulty, and progress tracking across 6 databases. Run /fluent-setup to onboard, then /fluent-learn, /fluent-vocab, /fluent-writing, /fluent-speaking, /fluent-reading, /fluent-review daily.",
       "category": "education",
       "tags": ["language", "learning", "tutor", "spaced-repetition", "education", "sm2", "flashcards"],
-      "homepage": "https://github.com/m98/fluent",
-      "repository": "https://github.com/m98/fluent",
+      "homepage": "https://github.com/aymkin/fluent",
+      "repository": "https://github.com/aymkin/fluent",
       "license": "MIT",
       "author": {
         "name": "Mohammad Kermani",
