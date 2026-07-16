@@ -10,7 +10,7 @@ This directory contains **template files** showing the structure of the learning
 | `progress-db-template.json` | `/data/progress-db.json` | Statistics and accuracy trends |
 | `mistakes-db-template.json` | `/data/mistakes-db.json` | Error patterns you're working on |
 | `mastery-db-template.json` | `/data/mastery-db.json` | Skill mastery levels (0-5 stars) |
-| `spaced-repetition-template.json` | `/data/spaced-repetition.json` | Review schedule (SM-2 algorithm) |
+| `spaced-repetition-template.json` | `/data/spaced-repetition.json` | Review schedule (FSRS-6 algorithm) |
 | `session-log-template.json` | `/data/session-log.json` | Complete session history |
 
 ## 🎯 Purpose

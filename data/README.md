@@ -12,7 +12,7 @@ When you run `/fluent-setup` for the first time, the system will automatically c
 - `progress-db.json` - Overall statistics and trends
 - `mistakes-db.json` - Error patterns you're working on
 - `mastery-db.json` - Skill mastery levels (0-5 stars)
-- `spaced-repetition.json` - Review schedule (SM-2 algorithm)
+- `spaced-repetition.json` - Review schedule (FSRS-6 algorithm)
 - `session-log.json` - Complete session history
 
 ## 🔒 Privacy
@@ -81,7 +81,7 @@ Tracks mastery levels for each skill:
 ```
 
 ### spaced-repetition.json
-Manages review scheduling (SM-2 algorithm):
+Manages review scheduling (FSRS-6 algorithm):
 ```json
 {
   "review_queue": {

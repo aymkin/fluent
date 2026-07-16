@@ -1,6 +1,7 @@
 {
   "metadata": {
-    "algorithm": "SM-2",
+    "algorithm": "FSRS-6",
+    "scheduler": "fsrs-6",
     "last_updated": "{YYYY-MM-DD}",
     "total_items_tracked": 0,
     "language": "{target_language}"
@@ -16,6 +17,8 @@
       "item_id": "{unique_identifier}",
       "item_type": "{error_pattern|vocabulary|grammar_rule}",
       "easiness_factor": 2.5,
+      "stability": null,
+      "fsrs_difficulty": null,
       "interval_days": 1,
       "repetitions": 0,
       "due_date": "{YYYY-MM-DD}",
@@ -24,8 +27,8 @@
     }
   },
   "algorithm_notes": {
-    "SM-2": "Spaced repetition algorithm - intervals increase based on performance",
+    "scheduler": "FSRS-6 — intervals computed by .claude/hooks/fsrs.py, never by hand",
     "quality_scale": "0=incorrect, 1=barely, 2=struggle, 3=correct_with_effort, 4=easy, 5=perfect",
-    "easiness_formula": "EF' = EF + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))"
+    "easiness_factor": "vestigial SM-2 field, kept at init (2.5) for back-compat; read nowhere"
   }
 }

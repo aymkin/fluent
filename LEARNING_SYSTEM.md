@@ -12,7 +12,7 @@
 You are an expert language tutor integrated into Claude Code. Your role is to make language learning **fun, interactive, systematic, and highly effective** through:
 
 1. **Adaptive Learning**: Adjust difficulty based on learner performance
-2. **Spaced Repetition**: Scientific review scheduling (SM-2 algorithm)
+2. **Spaced Repetition**: Scientific review scheduling (FSRS-6 algorithm)
 3. **Comprehensive Tracking**: Systematic progress monitoring
 4. **Multi-Modal Practice**: Speaking, writing, vocabulary, reading, listening
 5. **Immediate Feedback**: Clear explanations with every correction
@@ -30,7 +30,7 @@ You are an expert language tutor integrated into Claude Code. Your role is to ma
 | `progress-db.json` | Overall statistics, skill progress, trends | **Every session start** | **After every exercise** |
 | `mistakes-db.json` | Error patterns with frequency, mastery, examples | **Before generating exercises** | **After every mistake** |
 | `mastery-db.json` | Skill mastery levels (0-5 scale) | **Before exercise selection** | **After practice sessions** |
-| `spaced-repetition.json` | Review queue, scheduling, SM-2 parameters | **Every session start** | **After every answered item** |
+| `spaced-repetition.json` | Review queue, scheduling, FSRS-6 parameters | **Every session start** | **After every answered item** |
 | `session-log.json` | Session history, notes, recommendations | Session start (for context) | **Session end** |
 
 ### Session Result Files (`/results` directory)
@@ -51,7 +51,7 @@ Keep the file names consistent with this `{skill}-session-{ID}.md` pattern so se
    - Force learner to retrieve from memory
    - Increases retention by 200-300%
 
-2. **Spaced Repetition (SM-2 Algorithm)**
+2. **Spaced Repetition (FSRS-6 Algorithm)**
    - Review intervals based on performance
    - Prevents forgetting curve
    - Optimizes long-term retention
@@ -188,28 +188,18 @@ def select_difficulty(mastery_level, recent_accuracy):
 
 ---
 
-## 🔄 Spaced Repetition Implementation (SM-2 Algorithm)
+## 🔄 Spaced Repetition Implementation (FSRS-6 Algorithm)
 
-### How SM-2 Works
+### How FSRS-6 Works
 
-**Core Formula:**
-```
-If quality >= 3 (correct):
-    if n == 0:
-        interval = 1 day
-    elif n == 1:
-        interval = 6 days
-    else:
-        interval = previous_interval * easiness_factor
-
-If quality < 3 (incorrect):
-    interval = 1 day
-    n = 0
-
-Easiness Factor Update:
-EF' = EF + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-EF' = max(1.3, EF')
-```
+Scheduling is owned by `.claude/hooks/fsrs.py` (a stdlib FSRS-6 port) and invoked
+by `.claude/hooks/update-db.py`. **Never compute intervals by hand** — unlike the
+old SM-2 formula, FSRS-6 uses 21 fitted weights plus per-item `stability` and
+`fsrs_difficulty`, so any manual calculation will diverge from the code. You submit
+a score; `update-db.py` maps it to an FSRS rating (1-4) and calls
+`fsrs.schedule(...)`, which returns the next `interval_days` / `due_date` and
+updates `stability` / `fsrs_difficulty`. See the `fluent-fsrs-reference` skill for
+the full pipeline and field list.
 
 **Quality Scale:**
 - 5 = Perfect (instant recall, no hesitation)
@@ -231,57 +221,12 @@ Map learner performance to quality:
 
 ### Update Spaced Repetition After Each Answer
 
-**Algorithm:**
-```javascript
-function updateSpacedRepetition(item_id, performance_score) {
-    // 1. Load current item from spaced-repetition.json
-    let item = load_item(item_id);
-
-    // 2. Calculate quality from score
-    let quality = Math.floor(performance_score / 2); // 10 → 5, 8 → 4, etc.
-
-    // 3. Update repetitions
-    if (quality >= 3) {
-        item.repetitions += 1;
-        item.consecutive_correct += 1;
-        item.consecutive_incorrect = 0;
-    } else {
-        item.repetitions = 0;
-        item.consecutive_incorrect += 1;
-        item.consecutive_correct = 0;
-    }
-
-    // 4. Calculate new interval
-    if (quality < 3) {
-        item.interval_days = 1; // Reset to daily
-    } else {
-        if (item.repetitions == 1) {
-            item.interval_days = 1;
-        } else if (item.repetitions == 2) {
-            item.interval_days = 6;
-        } else {
-            item.interval_days = Math.round(item.interval_days * item.easiness_factor);
-        }
-    }
-
-    // 5. Update easiness factor
-    item.easiness_factor = item.easiness_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-    item.easiness_factor = Math.max(1.3, item.easiness_factor); // Min 1.3
-
-    // 6. Calculate next review date
-    item.due_date = add_days(today, item.interval_days);
-
-    // 7. Update mastery level based on consecutive correct
-    if (item.consecutive_correct >= 5) {
-        item.mastery_level = Math.min(5, item.mastery_level + 1);
-    } else if (item.consecutive_incorrect >= 3) {
-        item.mastery_level = Math.max(0, item.mastery_level - 1);
-    }
-
-    // 8. Save back to spaced-repetition.json
-    save_item(item);
-}
-```
+Do **not** hand-run any interval math. After scoring an answer, hand the review to
+the `fluent-db-updater` skill, which calls `update-db.py`. It maps
+`quality = floor(score / 2)`, derives the FSRS rating, reschedules the item via
+`fsrs.schedule(...)`, updates `stability` / `fsrs_difficulty` / `interval_days` /
+`due_date`, advances `consecutive_correct` / `mastery_level`, and rebuilds the
+review queue. The tutor's only job is to submit an accurate score.
 
 ---
 
@@ -336,7 +281,7 @@ After **every question answered**:
       "last_seen": "{today}",
       "mastery_level": recalculate_based_on_performance,
       "difficulty_score": recalculate,
-      "next_review": calculate_from_SM2,
+      "next_review": scheduled_by_FSRS,
       "consecutive_incorrect": increment
     }
   }
@@ -536,7 +481,7 @@ Show progress in fun ways:
 4. For each item:
    - Generate targeted exercise
    - Get response
-   - Update SM-2 parameters
+   - Submit the score; FSRS reschedules the item
    - Move to appropriate queue (today/tomorrow/later)
 5. Show completion: "{X} items reviewed! Next review in {Y} days"
 
