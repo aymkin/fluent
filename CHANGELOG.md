@@ -18,6 +18,13 @@ All notable changes to Fluent will be documented in this file.
   skill and `sm2-worked-examples` reference with a thin `fluent-fsrs-reference`,
   and removed the unused `calculate_sm2()` function from `update-db.py`. The
   legacy `easiness_factor` field is kept (init-only) for back-compat.
+- Migrated the remaining doc/data stragglers to FSRS-6: `LEARNING_SYSTEM.md` now
+  describes the FSRS-6 pipeline instead of the SM-2 formula/`updateSpacedRepetition`
+  block, the `data`/`data-examples` READMEs and the `spaced-repetition` template
+  stamp `scheduler: fsrs-6` (template item gains `stability`/`fsrs_difficulty`),
+  and the plugin manifest + marketplace metadata replace the `sm2` tag with `fsrs`.
+  Historical mentions (CHANGELOG, CONTRIBUTING, migration plan) and the vestigial
+  `easiness_factor` field are intentionally kept.
 
 ### Added
 
