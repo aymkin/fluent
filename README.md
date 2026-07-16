@@ -124,7 +124,7 @@ Most language learning apps fail because they're built for engagement metrics, n
 This is a comprehensive, **open-source language learning system** that transforms [Claude Code](https://code.claude.com) into your personal AI language tutor.
 
 The system uses **evidence-based learning methodologies** including:
-- **Spaced Repetition (SM-2 algorithm)** - Review at optimal intervals
+- **Spaced Repetition (FSRS-6 algorithm)** - Review at optimal intervals
 - **Active Recall** - Test yourself before seeing answers
 - **Adaptive Difficulty** - Always challenging, never frustrating
 - **Comprehensive Tracking** - Every answer tracked and analyzed
@@ -133,7 +133,7 @@ The system uses **evidence-based learning methodologies** including:
 
 - 🎯 **Multi-Language Support** - Learn any language (French, Spanish, German, Japanese, Korean, Arabic, Dutch, etc.)
 - 📊 **Comprehensive Tracking** - Automatic progress monitoring with detailed statistics
-- 🧠 **Spaced Repetition** - SM-2 algorithm schedules reviews just before you forget
+- 🧠 **Spaced Repetition** - FSRS-6 algorithm schedules reviews just before you forget
 - 🎮 **Gamification** - Streaks, achievements, mastery levels (0-5 stars)
 - 🔄 **Adaptive Difficulty** - Automatically adjusts to your performance (targets 60-70% success rate)
 - 📝 **Multi-Modal Practice** - Writing, speaking, vocabulary, reading, listening
@@ -161,7 +161,7 @@ Every practice session follows this intelligent cycle:
 **What Gets Tracked:**
 - ✅ **Error Patterns** - Which grammar/vocab you struggle with
 - ✅ **Mastery Levels** - Your skill rating (0-5 stars) for each topic
-- ✅ **Review Schedule** - When to review based on SM-2 algorithm
+- ✅ **Review Schedule** - When to review based on FSRS-6 algorithm
 - ✅ **Progress Stats** - Accuracy trends, streak days, total practice time
 
 ### Evidence-Based Methods
@@ -171,7 +171,7 @@ This system implements proven learning science:
 **1. Active Recall** - You retrieve from memory before seeing answers
 - 🔬 Research shows: **2-3x better retention** than passive review
 
-**2. Spaced Repetition (SM-2 Algorithm)** - Reviews appear just before you forget
+**2. Spaced Repetition (FSRS-6 Algorithm)** - Reviews appear just before you forget
 - 🔬 Research shows: **Prevents forgetting curve**, optimizes long-term retention
 
 **3. Immediate Feedback** - Mistakes corrected within seconds
@@ -193,7 +193,7 @@ This system implements proven learning science:
 Fluent is built as **Claude Code skills** — 12 of them. Skills work two ways:
 
 1. **Type the slash command** (`/fluent-learn`, `/fluent-vocab`, etc.) — you explicitly start a session. Learner-facing skills are gated so they only run this way. No accidental 20-minute session triggered by a chat message.
-2. **Ask naturally** — read-only skills like `/fluent-progress` auto-trigger when you ask "how am I doing?" or "what's my streak?". Helper skills (SM-2 math, feedback formatter, DB updater, session analyzer) auto-load whenever Claude needs them during a session.
+2. **Ask naturally** — read-only skills like `/fluent-progress` auto-trigger when you ask "how am I doing?" or "what's my streak?". Helper skills (FSRS reference, feedback formatter, DB updater, session analyzer) auto-load whenever Claude needs them during a session.
 
 All 12 skills appear in your `/` menu so you can always invoke any of them manually.
 
@@ -207,7 +207,7 @@ These are the commands you'll use daily. Each is backed by a dedicated skill und
 |---------|--------------|----------------------|
 | **`/fluent-setup`** | **One-time onboarding** - Asks you questions about your name, target language, current level, goals, and timeline. Creates your personalized learning profile. | **First time only** - Run this once to set up your account. The system generates a custom learning plan based on your answers. |
 | **`/fluent-learn`** | **Adaptive mixed practice** - Combines different exercise types (vocabulary, grammar, sentences) based on your weak areas. Adjusts difficulty in real-time based on your performance. | **Daily core practice** - Your main command for general improvement. The AI decides what you need to practice most. Best after `/fluent-review`. |
-| **`/fluent-review`** | **Spaced repetition session** - Shows you items that are due for review today based on the SM-2 algorithm. Focuses on things you learned before that need reinforcement. | **Start every day here!** - Review before learning new content. This is scientifically proven to be the most effective way to retain what you've learned. |
+| **`/fluent-review`** | **Spaced repetition session** - Shows you items that are due for review today based on the FSRS-6 algorithm. Focuses on things you learned before that need reinforcement. | **Start every day here!** - Review before learning new content. This is scientifically proven to be the most effective way to retain what you've learned. |
 
 #### Skill-Specific Commands
 
@@ -230,7 +230,7 @@ These skills don't change what the learner-facing commands do — they let Claud
 
 | Skill | What It Does | When It Runs |
 |-------|--------------|--------------|
-| **`/fluent-sm2-calculator`** | SM-2 spaced-repetition algorithm reference: quality scale, interval formula, easiness-factor update, mastery-level transitions. | Auto-loaded whenever a review item is scored. |
+| **`/fluent-fsrs-reference`** | FSRS-6 scheduling reference: score→quality→rating→FSRS pipeline, live vs vestigial fields, intervals computed by code. | Auto-loaded whenever scheduling must be reasoned about. |
 | **`/fluent-feedback-formatter`** | Canonical per-answer feedback template — severity tagging (🔴 critical / 🟡 moderate / 🟢 minor), category labels, tone rules. | Auto-loaded every time Claude grades an answer. |
 | **`/fluent-db-updater`** | How to call `update-db.py` with a single JSON payload that atomically updates all 6 databases at session end. | Auto-loaded when a session ends. |
 | **`/fluent-session-analyzer`** | Parses `/results/fluent-{skill}-session-{ID}.md` files to extract error patterns, strengths, and focus areas for the next session. | Auto-loaded when planning the next session. |
@@ -271,7 +271,7 @@ These skills don't change what the learner-facing commands do — they let Claud
 | `progress-db.json` | Overall statistics and trends | `/fluent-setup` - Updated every session |
 | `mistakes-db.json` | Error patterns with frequency and examples | `/fluent-setup` - Updated when you make mistakes |
 | `mastery-db.json` | Skill mastery levels (0-5 stars) | `/fluent-setup` - Updated after practice |
-| `spaced-repetition.json` | Review queue (SM-2 algorithm) | `/fluent-setup` - Updated after each answer |
+| `spaced-repetition.json` | Review queue (FSRS-6 algorithm) | `/fluent-setup` - Updated after each answer |
 | `session-log.json` | Complete session history | `/fluent-setup` - New entry each session |
 
 **📋 Want to see the structure?** Check `/data-examples/` for template files showing the complete schema.
@@ -285,11 +285,11 @@ The AI follows these guides:
 - **`LEARNING_SYSTEM.md`** - Complete methodology (how to teach)
 - **`CLAUDE.md`** - AI tutor's role and personality
 - **`PRACTICE.md`** - Pattern analysis and tracking
-- **`.claude/references/`** - Shared templates (SM-2 worked examples, feedback template, DB payload schema, session-file format) that every skill references
+- **`.claude/references/`** - Shared templates (feedback template, DB payload schema, session-file format) that every skill references
 
 ### Interface Layer
 
-- **Skills** (`.claude/skills/`) — 12 skills total. 8 learner-facing (`/fluent-setup`, `/fluent-learn`, `/fluent-vocab`, `/fluent-writing`, `/fluent-speaking`, `/fluent-reading`, `/fluent-review`, `/fluent-progress`) run when you invoke them. 4 helper skills (`/fluent-sm2-calculator`, `/fluent-feedback-formatter`, `/fluent-db-updater`, `/fluent-session-analyzer`) auto-load whenever Claude needs them during a session — and are also directly `/`-invokable if you want to read the reference.
+- **Skills** (`.claude/skills/`) — 12 skills total. 8 learner-facing (`/fluent-setup`, `/fluent-learn`, `/fluent-vocab`, `/fluent-writing`, `/fluent-speaking`, `/fluent-reading`, `/fluent-review`, `/fluent-progress`) run when you invoke them. 4 helper skills (`/fluent-fsrs-reference`, `/fluent-feedback-formatter`, `/fluent-db-updater`, `/fluent-session-analyzer`) auto-load whenever Claude needs them during a session — and are also directly `/`-invokable if you want to read the reference.
 - **Plugin manifests** (`.claude-plugin/`) — `plugin.json` + `marketplace.json` make Fluent installable via `/plugin marketplace add m98/fluent`.
 - **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, SessionEnd backups, PostToolUse JSON validation + backups, PreCompact safety backup. Both `hooks.json` (plugin mode) and `.claude/settings.json` (clone mode) wire them up.
 - **Session Results** (`/results/`) — Detailed practice logs per session, parsed by `fluent-session-analyzer` to plan future sessions.
@@ -298,7 +298,7 @@ The AI follows these guides:
 
 ## 🎯 Learning Principles
 
-### Spaced Repetition (SM-2 Algorithm)
+### Spaced Repetition (FSRS-6 Algorithm)
 
 **Example progression for a difficult word:**
 
@@ -346,7 +346,7 @@ The system automatically adjusts:
 - **Data Format:** JSON (human-readable)
 - **Skills:** Markdown `SKILL.md` files with YAML frontmatter (12 total — 8 learner-facing + 4 helper)
 - **Hooks:** Python + Bash, triggered on SessionStart / SessionEnd / PostToolUse / PreCompact
-- **Algorithm:** SM-2 (SuperMemo 2)
+- **Algorithm:** FSRS-6 (Free Spaced Repetition Scheduler)
 - **Version Control:** Git
 
 ### Data Privacy & Security
@@ -424,7 +424,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Claude** by Anthropic - For the amazing AI capabilities
-- **SuperMemo** - For the SM-2 algorithm
+- **SuperMemo** - For SM-2, Fluent's original scheduler
 - **Anki** - For inspiring the flashcard approach
 - **Language learning research** - Krashen, Bjork, Ebbinghaus, and many others
 - **Open-source community** - For making this possible
@@ -495,7 +495,8 @@ Or from inside a session: `/plugin list`. If the plugin is disabled, enable it: 
 
 - [Claude Code Documentation](https://code.claude.com/docs)
 - [Claude Code Plugins](https://code.claude.com/docs/en/plugins)
-- [SM-2 Algorithm Explained](https://www.supermemo.com/en/archives1990-2015/english/ol/sm2)
+- [FSRS Algorithm](https://github.com/open-spaced-repetition/fsrs4anki/wiki) — current scheduler
+- [SM-2 Algorithm](https://www.supermemo.com/en/archives1990-2015/english/ol/sm2) — Fluent's original scheduler
 - [CEFR Levels](https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions)
 - [Spaced Repetition Research](https://www.gwern.net/Spaced-repetition)
 - [Active Recall Benefits](https://en.wikipedia.org/wiki/Testing_effect)

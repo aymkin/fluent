@@ -94,7 +94,7 @@ Use the `fluent-feedback-formatter` skill's template. Score out of 10, tag sever
 
 Track the answer for the end-of-session DB update:
 
-- Add to `review_results[]` with `quality = floor(score / 2)` (see `fluent-sm2-calculator` skill).
+- Add to `review_results[]` with `quality = floor(score / 2)` (see `fluent-fsrs-reference` skill).
 - If the learner met a new word, stage it for `new_vocabulary[]`.
 - If the learner made an error, stage it for `errors[]`.
 

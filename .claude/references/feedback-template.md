@@ -79,6 +79,6 @@ These feed `mistakes-db.json`:
 >
 > **Score: 5/10** 💪 Two patterns to drill — both fixable.
 
-## Score → SM-2 Quality
+## Score → Quality
 
-`quality = floor(score / 2)`. See `sm2-worked-examples.md`.
+`quality = floor(score / 2)`. See the `fluent-fsrs-reference` skill.

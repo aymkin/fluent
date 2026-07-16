@@ -144,37 +144,6 @@ def backup_all(tag: str):
         shutil.copy2(f, backup_path / f.name)
 
 
-# --- SM-2 Algorithm ---
-
-def calculate_sm2(item: dict, quality: int) -> dict:
-    """Classic SM-2. Uses ceil() for interval growth (standard)."""
-    import math
-    ef = item.get("easiness_factor", 2.5)
-    interval = item.get("interval_days", 1)
-    reps = item.get("repetitions", 0)
-
-    if quality >= 3:
-        if reps == 0:
-            interval = 1
-        elif reps == 1:
-            interval = 6
-        else:
-            interval = int(math.ceil(interval * ef))
-        reps += 1
-    else:
-        reps = 0
-        interval = 1
-
-    ef = ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-    ef = max(1.3, ef)
-
-    return {
-        "easiness_factor": round(ef, 2),
-        "interval_days": interval,
-        "repetitions": reps,
-    }
-
-
 # --- Updater functions ---
 # Each mutates in place. Confidence in learner-profile is 0-100 int.
 # Session-log preserves the existing rich schema (skills_practiced array,
@@ -439,6 +408,7 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "due_date": tomorrow(today),
                 "interval_days": 1,
                 "repetitions": 0,
+                # ponytail: vestigial SM-2 field, kept for back-compat with existing data
                 "easiness_factor": 2.5,
                 "stability": None,
                 "fsrs_difficulty": None,
@@ -465,6 +435,7 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "due_date": tomorrow(today),
                 "interval_days": 1,
                 "repetitions": 0,
+                # ponytail: vestigial SM-2 field, kept for back-compat with existing data
                 "easiness_factor": 2.5,
                 "stability": None,
                 "fsrs_difficulty": None,

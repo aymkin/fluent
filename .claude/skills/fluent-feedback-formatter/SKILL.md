@@ -70,9 +70,9 @@ These feed `mistakes-db.json`:
 - **Celebrate progress.** `"You didn't miss this last time — well done."` when `mistakes-db` shows improvement.
 - **Emojis on.** The learner's profile has `use_emojis: true` by default. Keep them.
 
-### 5. Hand score to SM-2
+### 5. Hand score to the scheduler
 
-After scoring, feed the score into the SM-2 update via the `fluent-sm2-calculator` skill: `quality = floor(score / 2)`.
+After scoring, feed the score into the scheduler via the `fluent-db-updater` skill; see `fluent-fsrs-reference` for the pipeline: `quality = floor(score / 2)`.
 
 ## Examples
 
