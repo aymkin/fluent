@@ -76,9 +76,7 @@ After scoring, feed the score into the scheduler via the `fluent-db-updater` ski
 
 ## Examples
 
-See `.claude/references/feedback-template.md` for fully-rendered examples (mostly-correct answer with a minor slip; critical error with severity tagging). The reference file is the authoritative version — keep it and this skill in sync if updating.
-
-Quick pattern:
+This skill is the authoritative version of the template. Quick pattern:
 
 - Fully correct: open with ✅, skip ❌ block, list 1-2 ✅ strengths, show "Correct version" for echo, score 9-10/10.
 - Mistakes: open with warm ❌, list each correction with severity emoji + category + brief why, show full correct version, score with breakdown if the answer is long.
@@ -94,5 +92,5 @@ Quick pattern:
 
 Structured, consistent feedback:
 1. Lets the learner scan for what to fix at a glance.
-2. Makes session files parseable so `PRACTICE.md` analysis + `/results` mining work.
+2. Makes session files parseable so `fluent-session-analyzer` can mine `/results` for patterns.
 3. Populates `mistakes-db.json` categories cleanly — which feeds spaced repetition, which drives the whole system.

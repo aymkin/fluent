@@ -11,9 +11,9 @@ All notable changes to Fluent will be documented in this file.
   0-10 tutor score mapped to an FSRS rating (1-4). Cards gain `stability` and
   `fsrs_difficulty` (the pre-existing `difficulty` key keeps the CEFR level);
   `spaced_repetition.metadata` records `scheduler`, `target_retention`, and an
-  optional optimized `weights` vector. One-time migration in
-  `migrate_to_fsrs.py` seeds `stability`/`fsrs_difficulty` from existing
-  intervals.
+  optional optimized `weights` vector. Existing cards were seeded with
+  `stability`/`fsrs_difficulty` from their old intervals by a one-time migration
+  script, since removed.
 - Docs and skills updated to describe FSRS-6: replaced the `fluent-sm2-calculator`
   skill and `sm2-worked-examples` reference with a thin `fluent-fsrs-reference`,
   and removed the unused `calculate_sm2()` function from `update-db.py`. The
@@ -26,12 +26,44 @@ All notable changes to Fluent will be documented in this file.
   Historical mentions (CHANGELOG, CONTRIBUTING, migration plan) and the vestigial
   `easiness_factor` field are intentionally kept.
 
-### Added
+### Removed
 
-- `.claude/hooks/optimize_weights.py`: a guarded, offline FSRS-6 weight
-  optimizer (uses `fsrs-optimizer` in a separate venv). No-ops until ≥ 400
-  reviews and ≥ 50 new reviews since the last run, then writes optimized
-  `weights` back to `spaced_repetition.metadata`. Intended to run weekly.
+- **Clone installs now need one extra command.** Hooks are registered in exactly
+  one place (`.claude/hooks/hooks.json`, wired in through the plugin manifest);
+  the duplicate registration in `.claude/settings.json` is gone. With both files
+  present every hook fired twice — the SessionStart briefing printed itself
+  twice on startup. If you use Fluent from a git clone rather than a plugin
+  install, run `claude plugin marketplace add ./ && claude plugin install
+  fluent@aymkin` once from the repo root, or you get the slash commands with no
+  SessionStart briefing, no JSON validation, and no automatic backups.
+- Two of the four backup layers. Every save is still backed up (10 rotating
+  generations per file at `<data_dir>/<name>.json.backup-<timestamp>`), and
+  `update-db.py` still snapshots all six databases before a session write. The
+  end-of-session daily snapshot and the pre-compaction copy are gone: both wrote
+  the same six files to the same `.backups/` directory that already held them,
+  and nothing writes to your data during conversation compaction.
+- The weekly FSRS-6 weight optimizer, along with its `fsrs-optimizer`/torch
+  dependency. Nothing scheduled it — no hook, no command — and it needed 400
+  accumulated reviews before it would act, so no weights were ever fitted. The
+  scheduler already ran on the pinned py-fsrs defaults and continues to.
+- The one-time SM-2 → FSRS-6 migration script. It ran, it was idempotent, and it
+  had no callers left.
+- `PRACTICE.md` (Dutch-writing methodology in a language-agnostic kit; its
+  content lives in the `fluent-writing` and `fluent-session-analyzer` skills),
+  the finished FSRS migration plan/spec under `docs/superpowers/`, and two
+  `.claude/references/` files that duplicated the session-file format and the
+  feedback template verbatim. `AGENTS.md` is now a 44-line pointer for
+  non-Claude CLIs instead of a 470-line restatement of `LEARNING_SYSTEM.md`.
+
+### Changed
+
+- New spaced-repetition items no longer carry `easiness_factor`, and new mistake
+  patterns no longer carry the `last_occurred` alias of `last_seen`. Both were
+  written on every insert and read by nothing. Existing items keep their copies
+  and reschedule normally — nothing migrates or strips your data.
+- `read-db.py` no longer emits `computed.days_since_last_session`, which no
+  skill consumed. `due_reviews_count`, `next_session_id`, `streak_active`, and
+  `today` are unchanged.
 
 ### Performance
 
@@ -54,9 +86,13 @@ All notable changes to Fluent will be documented in this file.
 
 ### Fixed
 
-- `migrate_to_fsrs.py` set `metadata.scheduler = "fsrs-6"` but never updated
-  the neighboring `metadata.algorithm`, which stayed `"SM-2"` even after the
-  scheduler had fully switched to FSRS-6. Now stamps both.
+- The README's install commands used the ref `fluent@m98`, which does not exist.
+  The `@` suffix is the marketplace name from `.claude-plugin/marketplace.json`
+  (`"name": "aymkin"`), so the working ref is `fluent@aymkin` — corrected in the
+  Quick Start, the verify/update/uninstall block, and the troubleshooting steps.
+- The SM-2 → FSRS-6 migration set `metadata.scheduler = "fsrs-6"` but never
+  updated the neighboring `metadata.algorithm`, which stayed `"SM-2"` even after
+  the scheduler had fully switched. Both are stamped in existing data.
 
 ## [0.3.0] — 2026-06-15
 

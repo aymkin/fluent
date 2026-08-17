@@ -14,15 +14,16 @@ https://github.com/user-attachments/assets/66d68aad-210a-452d-b405-b58c13f42f53
 > [aymkin/fluent](https://github.com/aymkin/fluent). It tracks upstream but has diverged:
 > FSRS-6 scheduling (replacing SM-2), and a trimmed
 > `/fluent-review` data payload for faster response times. See [CHANGELOG.md](CHANGELOG.md)
-> for the full list. The plugin/marketplace name stays `fluent@m98` regardless of which repo
-> you install from — that key comes from `.claude-plugin/marketplace.json`, not the git remote.
+> for the full list. The install ref is `fluent@aymkin` — the `@` suffix is the *marketplace*
+> name from `.claude-plugin/marketplace.json` (`"name": "aymkin"`), not the git remote or the
+> upstream author.
 
 ## 🚀 Quick Start
 
 ### 1. Install
 
 ```bash
-claude plugin marketplace add aymkin/fluent && claude plugin install fluent@m98
+claude plugin marketplace add aymkin/fluent && claude plugin install fluent@aymkin
 ```
 
 One line. Registers the marketplace, installs the plugin. Works globally from any directory after this.
@@ -48,9 +49,9 @@ That's it.
 ### Verify, update, uninstall
 
 ```bash
-claude plugin list                    # expect: fluent@m98  enabled
-claude plugin update fluent@m98       # pull latest version
-claude plugin uninstall fluent@m98    # remove entirely
+claude plugin list                    # expect: fluent@aymkin  enabled
+claude plugin update fluent@aymkin    # pull latest version
+claude plugin uninstall fluent@aymkin # remove entirely
 ```
 
 ### Alternative: git clone
@@ -60,11 +61,17 @@ Prefer to hack on the skills or keep per-project state?
 ```bash
 git clone https://github.com/aymkin/fluent.git
 cd fluent
+claude plugin marketplace add ./ && claude plugin install fluent@aymkin
 claude          # launch from repo root
 /fluent-setup
 ```
 
 Learner data lives in `./data/` inside the cloned repo instead of `~/.claude/fluent-data/`.
+
+The `marketplace add ./` step is not optional if you want the hooks. Skills load from a bare
+clone, but hooks are registered only through `.claude/hooks/hooks.json`, which Claude Code
+reads via the plugin manifest. Skip the step and you get the slash commands with **no
+SessionStart briefing, no JSON validation, and no automatic backups**.
 
 ### Where your data lives
 
@@ -290,8 +297,8 @@ The AI follows these guides:
 ### Interface Layer
 
 - **Skills** (`.claude/skills/`) — 12 skills total. 8 learner-facing (`/fluent-setup`, `/fluent-learn`, `/fluent-vocab`, `/fluent-writing`, `/fluent-speaking`, `/fluent-reading`, `/fluent-review`, `/fluent-progress`) run when you invoke them. 4 helper skills (`/fluent-fsrs-reference`, `/fluent-feedback-formatter`, `/fluent-db-updater`, `/fluent-session-analyzer`) auto-load whenever Claude needs them during a session — and are also directly `/`-invokable if you want to read the reference.
-- **Plugin manifests** (`.claude-plugin/`) — `plugin.json` + `marketplace.json` make Fluent installable via `/plugin marketplace add m98/fluent`.
-- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, SessionEnd session summary, PostToolUse JSON validation + timestamped backups. `hooks.json` (plugin mode) and `.claude/settings.json` (clone mode) wire them up.
+- **Plugin manifests** (`.claude-plugin/`) — `plugin.json` + `marketplace.json` make Fluent installable via `/plugin marketplace add aymkin/fluent`.
+- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, SessionEnd session summary, PostToolUse JSON validation + timestamped backups. `hooks.json` is the single registration for both install paths, wired in through `plugin.json`.
 - **Session Results** (`/results/`) — Detailed practice logs per session, parsed by `fluent-session-analyzer` to plan future sessions.
 
 ---
@@ -435,11 +442,11 @@ The PostToolUse hook exits with status 2 if it finds malformed JSON. The last 10
 Restart Claude Code. If still missing, verify install:
 
 ```bash
-claude plugin list                              # should show fluent@m98 enabled
-claude plugin validate fluent@m98
+claude plugin list                              # should show fluent@aymkin enabled
+claude plugin validate fluent@aymkin
 ```
 
-Or from inside a session: `/plugin list`. If the plugin is disabled, enable it: `claude plugin enable fluent@m98`.
+Or from inside a session: `/plugin list`. If the plugin is disabled, enable it: `claude plugin enable fluent@aymkin`.
 
 ---
 
