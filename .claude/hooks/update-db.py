@@ -8,7 +8,7 @@ Usage:
     { "session_id": "session-005", "date": "2026-04-24", ... }
     EOF
 
-See docs/DB_SCRIPTS.md for the full input schema.
+See .claude/skills/fluent-db-updater/SKILL.md for the full input schema.
 
 Exit codes: 0=success, 1=validation error, 2=blocking/data error
 """
@@ -67,14 +67,9 @@ def get_week_start(today_str: str) -> str:
 def normalize_milestones(session: dict) -> list:
     """Validate + canonicalize session['milestones'] in place.
 
-    Accepts each entry as either a bare string or an object
-    {"milestone": <required non-empty str>, "date": <optional YYYY-MM-DD>}.
-    Returns a list of canonical dicts and rewrites session['milestones'] to it.
-
-    Decisions: a milestone's own date is honored (falling back to the session
-    date if missing/blank/unparseable); the authoritative top-level session_id
-    always wins (any nested session_id is ignored). Malformed entries exit 1
-    (validation error) before any DB is touched.
+    Each entry must be a bare non-empty string; it is dated with the session
+    date and stamped with the authoritative top-level session_id. Malformed
+    entries exit 1 (validation error) before any DB is touched.
 
     Each canonical dict carries a private '_achievement_id' key used by
     update_learner_profile; it is harmless because `session` is never persisted
@@ -93,33 +88,15 @@ def normalize_milestones(session: dict) -> list:
     normalized = []
 
     for i, ms in enumerate(raw):
-        if isinstance(ms, str):
-            text = ms.strip()
-            if not text:
-                print(f"[Fluent] Error: milestone at index {i} is an empty string", file=sys.stderr)
-                sys.exit(1)
-            when = outer_date
-        elif isinstance(ms, dict):
-            text = ms.get("milestone")
-            if not isinstance(text, str) or not text.strip():
-                print(f"[Fluent] Error: milestone at index {i} must have a non-empty string 'milestone' field", file=sys.stderr)
-                sys.exit(1)
-            text = text.strip()
-            when = outer_date
-            d = ms.get("date")
-            if isinstance(d, str) and d.strip():
-                try:
-                    parse_date(d.strip())
-                    when = d.strip()
-                except (ValueError, TypeError):
-                    when = outer_date  # malformed date falls back to session date
-        else:
-            print(f"[Fluent] Error: milestone at index {i} must be a string or object, got {type(ms).__name__}", file=sys.stderr)
+        if not isinstance(ms, str) or not ms.strip():
+            print(f"[Fluent] Error: milestone at index {i} must be a non-empty string "
+                  f"(got {type(ms).__name__}) — pass a plain string; the "
+                  f"'milestone'/'date' object form is no longer accepted", file=sys.stderr)
             sys.exit(1)
-
+        text = ms.strip()
         slug = re.sub(r'[^a-z0-9]+', '_', text[:30].lower()).strip('_') or "milestone"
         normalized.append({
-            "date": when,
+            "date": outer_date,
             "milestone": text,
             "session_id": outer_sid,
             "_achievement_id": f"session_{outer_sid}_{i}_{slug}",
@@ -332,6 +309,33 @@ def update_mastery_db(mastery: dict, session: dict, progress: dict):
     mastery.setdefault("metadata", {})["last_updated"] = today
 
 
+def new_sr_item(item_id, today, item_type, content, answer, category, difficulty,
+                *, consecutive_incorrect, last_quality, priority):
+    """A fresh spaced-repetition item. Key set and order are the on-disk
+    contract for the learner's scheduling state — don't add/drop/reorder."""
+    return {
+        "id": item_id,
+        "type": item_type,
+        "content": content,
+        "answer": answer,
+        "category": category,
+        "difficulty": difficulty,
+        "created_date": today,
+        "due_date": date_plus_days(today, 1),
+        "interval_days": 1,
+        "repetitions": 0,
+        "stability": None,
+        "fsrs_difficulty": None,
+        "consecutive_correct": 0,
+        "consecutive_incorrect": consecutive_incorrect,
+        "last_reviewed": today,
+        "last_quality": last_quality,
+        "mastery_level": 0,
+        "total_reviews": 0,
+        "priority": priority,
+    }
+
+
 def update_spaced_repetition(sr: dict, session: dict):
     today = session["date"]
     items = sr.setdefault("items", {})
@@ -387,52 +391,21 @@ def update_spaced_repetition(sr: dict, session: dict):
     for vocab in session.get("new_vocabulary", []):
         item_id = vocab["item_id"]
         if item_id not in items:
-            items[item_id] = {
-                "id": item_id,
-                "type": vocab.get("item_type", "vocabulary"),
-                "content": vocab.get("content", ""),
-                "answer": vocab.get("answer", ""),
-                "category": vocab.get("category", ""),
-                "difficulty": vocab.get("difficulty", ""),
-                "created_date": today,
-                "due_date": date_plus_days(today, 1),
-                "interval_days": 1,
-                "repetitions": 0,
-                "stability": None,
-                "fsrs_difficulty": None,
-                "consecutive_correct": 0,
-                "consecutive_incorrect": 0,
-                "last_reviewed": today,
-                "last_quality": vocab.get("initial_quality", 3),
-                "mastery_level": 0,
-                "total_reviews": 0,
-                "priority": vocab.get("priority", "medium"),
-            }
+            items[item_id] = new_sr_item(
+                item_id, today, vocab.get("item_type", "vocabulary"),
+                vocab.get("content", ""), vocab.get("answer", ""),
+                vocab.get("category", ""), vocab.get("difficulty", ""),
+                consecutive_incorrect=0,
+                last_quality=vocab.get("initial_quality", 3),
+                priority=vocab.get("priority", "medium"))
 
     for error in session.get("errors", []):
         item_id = error["pattern_id"]
         if item_id not in items:
-            items[item_id] = {
-                "id": item_id,
-                "type": "error_pattern",
-                "content": error.get("your_answer", ""),
-                "answer": error.get("correct_answer", ""),
-                "category": error.get("category", ""),
-                "difficulty": "",
-                "created_date": today,
-                "due_date": date_plus_days(today, 1),
-                "interval_days": 1,
-                "repetitions": 0,
-                "stability": None,
-                "fsrs_difficulty": None,
-                "consecutive_correct": 0,
-                "consecutive_incorrect": 1,
-                "last_reviewed": today,
-                "last_quality": 2,
-                "mastery_level": 0,
-                "total_reviews": 0,
-                "priority": "high",
-            }
+            items[item_id] = new_sr_item(
+                item_id, today, "error_pattern", error.get("your_answer", ""),
+                error.get("correct_answer", ""), error.get("category", ""), "",
+                consecutive_incorrect=1, last_quality=2, priority="high")
 
     # Rebuild review queue
     sr["review_queue"] = {"today": [], "tomorrow": [], "this_week": [], "later": []}

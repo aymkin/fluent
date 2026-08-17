@@ -317,37 +317,39 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(ach["earned_date"], "2026-04-24")
         self.assertTrue(ach["id"].startswith("session_session-100_"))
 
-    def test_milestone_object_form(self):
-        ms = {"milestone": "Wrote first paragraph", "date": "2026-04-24",
-              "session_id": "session-101"}
-        proc = self._run(self._payload_with("session-101", [ms]))
-        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+    def test_milestone_object_form_rejected(self):
+        # Breaking change (post-v0.3.0): only bare strings are accepted. The
+        # old object form — including its "date" override and any nested
+        # "session_id" — must fail loudly, before any DB is written.
+        objects = [
+            {"milestone": "Wrote first paragraph"},
+            {"milestone": "Backdated win", "date": "2026-04-20"},
+            {"milestone": "Typo date", "date": "not-a-date"},
+            {"milestone": "X", "session_id": "WRONG-999"},
+        ]
+        for n, ms in enumerate(objects):
+            with self.subTest(case=ms):
+                proc = self._run(self._payload_with(f"session-1{n:02d}", [ms]))
+                self.assertEqual(proc.returncode, 1,
+                                 msg=f"case={ms!r} stdout={proc.stdout!r}")
+                err = proc.stderr.decode()
+                self.assertIn("index 0", err)
+                self.assertIn("string", err)
+                # No DB written: session-log keeps its single original session.
+                log = self._load("session-log.json")
+                self.assertEqual(len(log["sessions"]), 1)
+                self.assertEqual(log["milestones"], [])
+                self.assertEqual(self._load("learner-profile.json")["achievements"], [])
 
-        log = self._load("session-log.json")
-        m = log["milestones"][-1]
-        self.assertEqual(m["milestone"], "Wrote first paragraph")  # flat string
-        self.assertEqual(m["date"], "2026-04-24")
-        self.assertEqual(m["session_id"], "session-101")
-
-        profile = self._load("learner-profile.json")
-        self.assertEqual(profile["achievements"][-1]["name"], "Wrote first paragraph")
-
-    def test_milestone_object_preserves_own_date(self):
-        ms = {"milestone": "Backdated win", "date": "2026-04-20"}
-        proc = self._run(self._payload_with("session-102", [ms], date="2026-04-24"))
-        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-
-        log = self._load("session-log.json")
-        self.assertEqual(log["milestones"][-1]["date"], "2026-04-20")
-        profile = self._load("learner-profile.json")
-        self.assertEqual(profile["achievements"][-1]["earned_date"], "2026-04-20")
-
-    def test_milestone_bad_date_falls_back_to_session_date(self):
-        ms = {"milestone": "Typo date", "date": "not-a-date"}
-        proc = self._run(self._payload_with("session-103", [ms], date="2026-04-24"))
+    def test_milestone_date_is_always_session_date(self):
+        # The per-milestone date override is gone; the session date governs.
+        proc = self._run(self._payload_with("session-102", ["Backdated win"],
+                                            date="2026-04-24"))
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
         log = self._load("session-log.json")
         self.assertEqual(log["milestones"][-1]["date"], "2026-04-24")
+        profile = self._load("learner-profile.json")
+        self.assertEqual(profile["achievements"][-1]["earned_date"], "2026-04-24")
 
     def test_milestone_malformed_exits_1_no_mutation(self):
         bad_cases = [
@@ -356,8 +358,11 @@ class UpdateDbSmokeTest(unittest.TestCase):
             {"milestone": ""},
             {"milestone": "   "},
             {"milestone": 5},
-            42,                              # neither str nor dict
-            "",                              # empty string form
+            42,                              # not a string
+            None,
+            ["Nested list"],
+            "",                              # empty string
+            "   ",                           # whitespace-only string
         ]
         for n, bad in enumerate(bad_cases):
             with self.subTest(case=bad):
@@ -370,12 +375,12 @@ class UpdateDbSmokeTest(unittest.TestCase):
                 self.assertEqual(len(log["sessions"]), 1)
                 self.assertEqual(log["milestones"], [])
 
-    def test_milestone_nested_session_id_overridden(self):
-        ms = {"milestone": "X", "session_id": "WRONG-999"}
-        proc = self._run(self._payload_with("session-104", [ms]))
+    def test_milestone_stamped_with_top_level_session_id(self):
+        proc = self._run(self._payload_with("session-104", ["First", "Second"]))
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
         log = self._load("session-log.json")
-        self.assertEqual(log["milestones"][-1]["session_id"], "session-104")
+        self.assertEqual([m["session_id"] for m in log["milestones"][-2:]],
+                         ["session-104", "session-104"])
 
     def test_milestone_distinct_achievement_ids(self):
         # Two strings sharing the first 30 chars would slugify identically;

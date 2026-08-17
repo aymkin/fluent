@@ -49,8 +49,5 @@
   "focus_next_session": ["Drill de/het article gender"],
   "session_notes": "Strong session. Article gender still tricky.",
   "achievements_earned": [],
-  "milestones": [
-    { "milestone": "Reached 100 words learned", "date": "2026-04-24" },
-    "Completed first full conversation"
-  ]
+  "milestones": ["Reached 100 words learned", "Completed first full conversation"]
 }

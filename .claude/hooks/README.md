@@ -173,166 +173,26 @@ copy it elsewhere if you want off-box durability.
 
 ### Restoring
 
+`[Fluent] ⚠️ WARNING: Invalid JSON in data/<file>.json` means `validate-data.py`
+blocked the write. Learner data is gitignored, so these backups are the only
+recovery path:
+
 ```bash
-ls -t data/learner-profile.json.backup-* | head -1        # newest single-file backup
+python3 -m json.tool data/<file>.json                     # see what's broken
+ls -t data/<file>.json.backup-* | head -1                 # newest single-file backup
 ls -t data/.backups/pre-update-*/                         # newest full-set snapshot
-cp data/learner-profile.json.backup-20231117-143022 data/learner-profile.json
-```
-
----
-
-## 🛠️ Customization
-
-### Adding Custom Validation
-
-Edit `validate-data.py` to add custom validation logic:
-
-```python
-# Example: Validate specific field exists
-if file_path == "data/learner-profile.json":
-    if "learner" not in data or "target_language" not in data["learner"]:
-        print("[Fluent] ⚠️ Missing required field: target_language", file=sys.stderr)
-        sys.exit(2)  # Block operation
-```
-
-### Adding Session Analytics
-
-Edit `session-end.py` to add custom analytics:
-
-```python
-# Example: Calculate accuracy trend
-progress_path = data_dir() / "progress-db.json"
-if progress_path.exists():
-    with open(progress_path, 'r') as f:
-        progress = json.load(f)
-
-    accuracy = progress.get("overall_stats", {}).get("accuracy_rate", 0)
-    print(f"[Fluent] 📈 Overall accuracy: {accuracy:.1%}")
-```
-
-### Adding New Hooks
-
-To add a new hook type:
-
-1. **Create script** in `.claude/hooks/your-hook.py`
-2. **Make it executable**: `chmod +x .claude/hooks/your-hook.py`
-3. **Add to `hooks.json`** (the only registration — do not add a second copy elsewhere):
-   ```json
-   {
-     "hooks": {
-       "YourHookEvent": [
-         {
-           "hooks": [
-             {
-               "type": "command",
-               "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/.claude/hooks/your-hook.py\""
-             }
-           ]
-         }
-       ]
-     }
-   }
-   ```
-
----
-
-## 🔍 Debugging Hooks
-
-### Enable Debug Mode
-
-Run Claude Code with debug flag:
-```bash
-claude --debug
-```
-
-This shows detailed hook execution logs:
-```
-[DEBUG] Executing hooks for PostToolUse:Write
-[DEBUG] Hook command: .claude/hooks/validate-data.py
-[DEBUG] Hook completed with status 0
-```
-
-### View Hook Output
-
-Enable verbose mode during session:
-- Press **Ctrl+O** to toggle transcript mode
-- Shows all hook stdout/stderr output
-
-### Test Hooks Manually
-
-You can test hooks directly:
-
-```bash
-# Test validate-data hook
-echo '{"tool_name":"Write","tool_input":{"file_path":"data/test.json"}}' | python3 .claude/hooks/validate-data.py
-
-# Test session-start hook
-echo '{}' | python3 .claude/hooks/session-start.py
-
-# Test session-end hook
-echo '{}' | python3 .claude/hooks/session-end.py
-```
-
----
-
-## 📊 Hook Events Reference
-
-| Hook Event | When It Fires | Use Case |
-|------------|---------------|----------|
-| `PostToolUse` | After Write/Edit/Read/etc | **Used by Fluent** — validation + backups |
-| `SessionEnd` | When session ends | **Used by Fluent** — session summary |
-| `SessionStart` | When session starts | **Used by Fluent** — welcome + due reviews |
-| `PreCompact` | Before compaction | Unused — nothing writes to `data/` during compaction |
-| `UserPromptSubmit` | Before processing user input | Unused |
-| `PreToolUse` | Before tool execution | Unused |
-
----
-
-## 🚨 Troubleshooting
-
-### Hook Not Running
-
-**Problem:** Hook doesn't execute
-**Solution:**
-1. Check hook is registered: `grep hooks .claude/hooks/hooks.json`
-2. Confirm the plugin is installed (`claude plugin list`) — hooks.json is only
-   read for plugin installs; a bare clone registers nothing
-3. Verify script is executable: `ls -la .claude/hooks/`
-4. Test script manually (see "Test Hooks Manually" above)
-
-### Invalid JSON Error
-
-**Problem:** `[Fluent] ⚠️ WARNING: Invalid JSON`
-**Solution:**
-1. Check the last backup: `ls -t data/*.backup-* | head -1`
-2. Validate JSON: `python3 -m json.tool data/file.json`
-3. Restore from backup if needed: `cp data/file.json.backup-XXXXXX data/file.json`
-
-### Permission Denied
-
-**Problem:** `Permission denied` when running hook
-**Solution:**
-```bash
-chmod +x .claude/hooks/*.py
-```
-
-### Hook Timeout
-
-**Problem:** Hook times out (default 60s)
-**Solution:** Increase timeout in `hooks.json`:
-```json
-{
-  "type": "command",
-  "command": "...",
-  "timeout": 120
-}
+cp data/<file>.json.backup-YYYYMMDD-HHMMSS data/<file>.json
 ```
 
 ---
 
 ## 📚 Additional Resources
 
-- [Claude Code Hooks Documentation](https://code.claude.com/docs/en/hooks-guide)
+Writing, customizing, debugging, and configuring hooks in general — the full
+event list, `claude --debug`, transcript mode, timeouts — is upstream Claude Code
+documentation, not something Fluent redefines:
+
+- [Claude Code Hooks Guide](https://code.claude.com/docs/en/hooks-guide)
 - [Hooks Reference](https://code.claude.com/docs/en/hooks-reference)
 - [Fluent Main README](../../README.md)
 - [Learning System Guide](../../LEARNING_SYSTEM.md)
