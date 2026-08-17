@@ -13,18 +13,6 @@
         ]
       }
     ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "description": "Display session summary",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/.claude/hooks/session-end.py\"",
-            "timeout": 15
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "hooks": [

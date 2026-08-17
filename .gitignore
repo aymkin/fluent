@@ -6,6 +6,9 @@
 !/data/README.md
 !/results/README.md
 
+# Machine-local Claude Code permission grants - not source
+/.claude/settings.local.json
+
 # Personal writing/practice files
 myfile.txt
 

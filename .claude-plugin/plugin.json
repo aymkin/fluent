@@ -15,14 +15,7 @@
     "spaced-repetition",
     "fsrs",
     "tutor",
-    "flashcards",
-    "dutch",
-    "spanish",
-    "french",
-    "german",
-    "japanese",
-    "korean",
-    "arabic"
+    "flashcards"
   ],
   "skills": "./.claude/skills/",
   "hooks": "./.claude/hooks/hooks.json"
