@@ -104,7 +104,7 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         self.assertIn("achievements", out["databases"]["learner_profile"])
 
     def test_computed_fields_are_exactly_the_documented_four(self):
-        # docs/DB_SCRIPTS.md and the skills advertise these and only these.
+        # The skills advertise these and only these.
         self.assertEqual(
             set(self._run()["computed"]),
             {"today", "due_reviews_count", "next_session_id", "streak_active"},

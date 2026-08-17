@@ -93,7 +93,7 @@ Prefer the helper scripts over manual Edit calls for database reads and writes:
 
 The `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}` prefix resolves the script regardless of CWD — Claude Code sets `CLAUDE_PLUGIN_ROOT` for plugin installs and `CLAUDE_PROJECT_DIR` for git-clone installs.
 
-See `docs/DB_SCRIPTS.md` for the full input schema and examples.
+See the `fluent-db-updater` skill for the full input schema and examples.
 
 **IMPORTANT:** Use these scripts instead of manual Edit calls for database updates.
 
