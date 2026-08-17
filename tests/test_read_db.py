@@ -78,6 +78,7 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         out = self._run("--review")
 
         self.assertNotIn("due_review_items", out["computed"])
+        self.assertNotIn("review_queue_trimmed_to", out["computed"])
 
         profile = out["databases"]["learner_profile"]
         self.assertEqual(set(profile.keys()), {"learner", "current_streak_days"})
@@ -101,6 +102,13 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         self.assertEqual(out["computed"]["due_reviews_count"], 2)
         # plain mode does not trim learner_profile
         self.assertIn("achievements", out["databases"]["learner_profile"])
+
+    def test_computed_fields_are_exactly_the_documented_four(self):
+        # docs/DB_SCRIPTS.md and the skills advertise these and only these.
+        self.assertEqual(
+            set(self._run()["computed"]),
+            {"today", "due_reviews_count", "next_session_id", "streak_active"},
+        )
 
 
 if __name__ == "__main__":

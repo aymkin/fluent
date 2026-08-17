@@ -34,10 +34,8 @@ Outputs a single JSON object:
   "computed": {
     "today": "2026-04-24",
     "due_reviews_count": 3,
-    "due_review_items": ["vocab_dag", ...],
     "next_session_id": "session-005",
-    "streak_active": true,
-    "days_since_last_session": 1
+    "streak_active": true
   }
 }
 ```

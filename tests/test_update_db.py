@@ -202,6 +202,11 @@ class UpdateDbSmokeTest(unittest.TestCase):
                   "mastery_level", "total_reviews", "priority",
                   "content", "answer", "category", "difficulty"):
             self.assertIn(k, dag, f"lost field {k} on vocab_dag")
+        # Back-compat: the fixture item predates the FSRS migration and still
+        # carries the legacy SM-2 easiness_factor. Updating it must not crash,
+        # and the untouched legacy key must survive (we stopped writing it, we
+        # do not strip it from existing data).
+        self.assertEqual(dag["easiness_factor"], 2.5)
         self.assertEqual(dag["total_reviews"], 2)  # was 1, +1 review
         self.assertEqual(dag["last_quality"], 5)
 
@@ -225,16 +230,23 @@ class UpdateDbSmokeTest(unittest.TestCase):
         huis = sr["items"]["het_huis"]
         for k in ("id", "type", "content", "answer", "category",
                   "difficulty", "due_date", "interval_days", "repetitions",
-                  "easiness_factor", "consecutive_correct",
-                  "consecutive_incorrect", "mastery_level",
-                  "total_reviews", "priority"):
+                  "consecutive_correct", "consecutive_incorrect",
+                  "mastery_level", "total_reviews", "priority"):
             self.assertIn(k, huis, f"new item missing {k}")
+        # ...and carries no vestigial SM-2 field. Same for the SR item auto-
+        # created from the session's error pattern.
+        self.assertNotIn("easiness_factor", huis)
+        self.assertNotIn("easiness_factor", sr["items"]["verb_spreek"])
 
         with open(self.tmp / "data" / "mistakes-db.json") as f:
             mistakes = json.load(f)
         self.assertIn("verb_spreek", mistakes["error_patterns"])
         pat = mistakes["error_patterns"]["verb_spreek"]
         self.assertEqual(pat["consecutive_incorrect"], 1)
+        # last_seen is the only "when did we last hit this" field; the
+        # last_occurred alias is gone.
+        self.assertEqual(pat["last_seen"], SESSION_DATE)
+        self.assertNotIn("last_occurred", pat)
         self.assertEqual(pat["examples"][-1]["incorrect"], "Hij spreek")
         self.assertEqual(pat["examples"][-1]["correct"], "Hij spreekt")
 
@@ -242,6 +254,22 @@ class UpdateDbSmokeTest(unittest.TestCase):
         # with other plugins when the global fallback ~/.claude/fluent-data is used).
         backup = self.tmp / "data" / ".backups" / "pre-update-session-002"
         self.assertTrue(backup.exists(), "pre-update backup missing")
+
+    def test_repeat_error_pattern_updates_last_seen_only(self):
+        # Second sighting of the same pattern takes the "already tracked"
+        # branch, which used to also write a last_occurred alias.
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        payload = dict(SESSION_PAYLOAD)
+        payload["session_id"] = "session-003"
+        payload["date"] = "2026-04-25"
+        proc = self._run(payload)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+
+        pat = self._load("mistakes-db.json")["error_patterns"]["verb_spreek"]
+        self.assertEqual(pat["frequency"], 2)
+        self.assertEqual(pat["last_seen"], "2026-04-25")
+        self.assertNotIn("last_occurred", pat)
+        self.assertEqual(pat["next_review"], "2026-04-26")
 
     def test_missing_required_field_exits_1(self):
         proc = self._run({"date": "2026-04-24"})  # no session_id

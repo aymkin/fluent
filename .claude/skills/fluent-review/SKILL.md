@@ -61,7 +61,6 @@ Each item has:
 {
   "item_id": "...",
   "item_type": "error_pattern | vocabulary | grammar_rule",
-  "easiness_factor": 2.5,
   "interval_days": 6,
   "repetitions": 2,
   "due_date": "YYYY-MM-DD",

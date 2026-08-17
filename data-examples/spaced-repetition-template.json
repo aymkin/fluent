@@ -16,7 +16,6 @@
     "example_item_id": {
       "item_id": "{unique_identifier}",
       "item_type": "{error_pattern|vocabulary|grammar_rule}",
-      "easiness_factor": 2.5,
       "stability": null,
       "fsrs_difficulty": null,
       "interval_days": 1,
@@ -28,7 +27,6 @@
   },
   "algorithm_notes": {
     "scheduler": "FSRS-6 — intervals computed by .claude/hooks/fsrs.py, never by hand",
-    "quality_scale": "0=incorrect, 1=barely, 2=struggle, 3=correct_with_effort, 4=easy, 5=perfect",
-    "easiness_factor": "vestigial SM-2 field, kept at init (2.5) for back-compat; read nowhere"
+    "quality_scale": "0=incorrect, 1=barely, 2=struggle, 3=correct_with_effort, 4=easy, 5=perfect"
   }
 }
