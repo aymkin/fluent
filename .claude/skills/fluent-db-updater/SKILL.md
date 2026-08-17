@@ -66,7 +66,7 @@ Always call `read-db.py` at session start to get current state + `next_session_i
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
-Returns all 6 databases plus computed fields (`due_reviews_count`, `next_session_id`, `streak_active`, `days_since_last_session`).
+Returns all 6 databases plus computed fields (`due_reviews_count`, `next_session_id`, `streak_active`).
 
 ## Examples
 

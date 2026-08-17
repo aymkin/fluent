@@ -87,10 +87,6 @@ def main():
     profile = databases.get("learner_profile", {})
     last_updated = profile.get("last_updated", "")
     streak_active = last_updated in (today, yesterday)
-    try:
-        days_since = (now - datetime.strptime(last_updated, "%Y-%m-%d")).days if last_updated else None
-    except ValueError:
-        days_since = None
 
     result = {
         "databases": databases,
@@ -99,7 +95,6 @@ def main():
             "due_reviews_count": len(due_items),
             "next_session_id": next_session_id(sessions),
             "streak_active": streak_active,
-            "days_since_last_session": days_since,
         },
     }
 
@@ -112,10 +107,9 @@ def main():
         )[:limit]
         sr.setdefault("review_queue", {})["today"] = capped
         sr["items"] = {iid: items[iid] for iid in capped if iid in items}
-        result["computed"]["review_queue_trimmed_to"] = len(capped)
 
         # review_history is write-only from this flow's perspective: the
-        # template only reads last_reviewed/easiness_factor/etc (top-level
+        # template only reads last_reviewed/interval_days/etc (top-level
         # fields), and update-db.py appends to history by rereading the file
         # from disk, not from this payload.
         for item in sr["items"].values():

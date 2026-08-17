@@ -54,14 +54,6 @@ def date_str(d: datetime) -> str:
     return d.strftime("%Y-%m-%d")
 
 
-def tomorrow(today_str: str) -> str:
-    return date_str(parse_date(today_str) + timedelta(days=1))
-
-
-def yesterday(today_str: str) -> str:
-    return date_str(parse_date(today_str) - timedelta(days=1))
-
-
 def date_plus_days(today_str: str, days: int) -> str:
     return date_str(parse_date(today_str) + timedelta(days=days))
 
@@ -158,7 +150,7 @@ def update_learner_profile(profile: dict, session: dict):
 
     if last == today:
         pass
-    elif last == yesterday(today):
+    elif last == date_plus_days(today, -1):
         profile["current_streak_days"] = profile.get("current_streak_days", 0) + 1
     else:
         profile["current_streak_days"] = 1
@@ -267,8 +259,7 @@ def update_mistakes_db(mistakes: dict, session: dict):
             pat = patterns[pid]
             pat["frequency"] = pat.get("frequency", 0) + 1
             pat["last_seen"] = today
-            pat["last_occurred"] = today  # legacy alias kept
-            pat["next_review"] = tomorrow(today)
+            pat["next_review"] = date_plus_days(today, 1)
             pat["consecutive_incorrect"] = pat.get("consecutive_incorrect", 0) + 1
             pat["consecutive_correct"] = 0
             pat.setdefault("examples", []).append({
@@ -290,8 +281,7 @@ def update_mistakes_db(mistakes: dict, session: dict):
                 "mastery_level": 0,
                 "difficulty_score": error.get("difficulty_score", 0.5),
                 "last_seen": today,
-                "last_occurred": today,
-                "next_review": tomorrow(today),
+                "next_review": date_plus_days(today, 1),
                 "consecutive_correct": 0,
                 "consecutive_incorrect": 1,
                 "examples": [{
@@ -405,11 +395,9 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "category": vocab.get("category", ""),
                 "difficulty": vocab.get("difficulty", ""),
                 "created_date": today,
-                "due_date": tomorrow(today),
+                "due_date": date_plus_days(today, 1),
                 "interval_days": 1,
                 "repetitions": 0,
-                # ponytail: vestigial SM-2 field, kept for back-compat with existing data
-                "easiness_factor": 2.5,
                 "stability": None,
                 "fsrs_difficulty": None,
                 "consecutive_correct": 0,
@@ -432,11 +420,9 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "category": error.get("category", ""),
                 "difficulty": "",
                 "created_date": today,
-                "due_date": tomorrow(today),
+                "due_date": date_plus_days(today, 1),
                 "interval_days": 1,
                 "repetitions": 0,
-                # ponytail: vestigial SM-2 field, kept for back-compat with existing data
-                "easiness_factor": 2.5,
                 "stability": None,
                 "fsrs_difficulty": None,
                 "consecutive_correct": 0,
@@ -450,7 +436,7 @@ def update_spaced_repetition(sr: dict, session: dict):
 
     # Rebuild review queue
     sr["review_queue"] = {"today": [], "tomorrow": [], "this_week": [], "later": []}
-    tom = tomorrow(today)
+    tom = date_plus_days(today, 1)
     week_end = date_plus_days(today, 7)
     for item_id, item in items.items():
         due = item.get("due_date", today)

@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import os
 import sys
-from functools import lru_cache
 from pathlib import Path
 
 
@@ -38,7 +37,6 @@ def force_utf8_io() -> None:
             pass
 
 
-@lru_cache(maxsize=1)
 def data_dir() -> Path:
     """Resolve the runtime data directory (pure — does not create it)."""
     env = os.environ.get("FLUENT_DATA_DIR")
@@ -65,7 +63,6 @@ def ensure_data_dir() -> Path:
     return d
 
 
-@lru_cache(maxsize=1)
 def plugin_root() -> Path:
     """Resolve the plugin/repo root directory."""
     env = os.environ.get("CLAUDE_PLUGIN_ROOT")
@@ -77,7 +74,6 @@ def plugin_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
-@lru_cache(maxsize=1)
 def backups_dir() -> Path:
     """Resolve the backups directory. Always nested inside data_dir to avoid collisions
     when the fallback ~/.claude/fluent-data is used (the parent ~/.claude/ is shared
