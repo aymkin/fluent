@@ -177,7 +177,7 @@ These skills don't change what the learner-facing commands do — they let Claud
 | **`/fluent-fsrs-reference`** | FSRS-6 scheduling reference: score→quality→rating→FSRS pipeline, live vs vestigial fields, intervals computed by code. | Auto-loaded whenever scheduling must be reasoned about. |
 | **`/fluent-feedback-formatter`** | Canonical per-answer feedback template — severity tagging (🔴 critical / 🟡 moderate / 🟢 minor), category labels, tone rules. | Auto-loaded every time Claude grades an answer. |
 | **`/fluent-db-updater`** | How to call `update-db.py` with a single JSON payload that atomically updates all 6 databases at session end. | Auto-loaded when a session ends. |
-| **`/fluent-session-analyzer`** | Parses `/results/fluent-{skill}-session-{ID}.md` files to extract error patterns, strengths, and focus areas for the next session. | Auto-loaded when planning the next session. |
+| **`/fluent-session-analyzer`** | Parses `/results/fluent-{skill}-session-{NNN}.md` files to extract error patterns, strengths, and focus areas for the next session. | Auto-loaded when planning the next session. |
 
 ### 📅 Recommended Daily Routine
 

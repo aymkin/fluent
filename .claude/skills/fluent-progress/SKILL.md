@@ -134,7 +134,8 @@ Use this exact structure. Fill in values from the databases; compute percentages
 
 ## 🏆 Achievements Unlocked
 
-{list from learner-profile → achievements, show locked ones with 🔒}
+{list from learner-profile → achievements; if empty, say so — achievements are
+earned from the milestones recorded at session end, there is no fixed catalogue}
 
 ---
 

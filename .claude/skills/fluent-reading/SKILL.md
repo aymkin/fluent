@@ -25,7 +25,7 @@ Skip this skill below A1 mastery 3 — shorter flashcard drills (`/fluent-vocab`
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
-Need: `learner-profile` (level, target language, interests), `mastery-db.skills_mastery.reading`.
+Need: `learner-profile` (level, target language, interests), `mastery-db.skills.reading`.
 
 ### 2. Opening
 

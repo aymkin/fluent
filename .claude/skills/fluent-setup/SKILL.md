@@ -170,7 +170,7 @@ Start from the templates in `data-examples/`. Resolve the target directory via `
 - `learner-profile.json` — fill all fields from the interview.
 - `progress-db.json` — empty stats.
 - `mistakes-db.json` — empty `error_patterns`.
-- `mastery-db.json` — `skills_mastery` entries with `mastery_level: 0` for each skill.
+- `mastery-db.json` — `skills` entries with `mastery_level: 0` for each skill.
 - `spaced-repetition.json` — empty queues, `daily_limits.review_items_per_day: 20`.
 - `session-log.json` — empty `sessions` array, `total_sessions: 0`.
 

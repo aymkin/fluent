@@ -7,7 +7,7 @@ description: Parse Fluent `/results/*.md` session files to extract error pattern
 
 ## Overview
 
-Every practice session writes a markdown report to `/results/{skill}-session-{ID}.md` (e.g. `writing-session-012.md`). This skill describes how to read those files to plan adaptive follow-up practice. Use it when the tutor needs narrative context the JSON databases don't capture — the exact sentence the learner wrote, the scenario, the feedback they received.
+Every practice session writes a markdown report to `/results/fluent-{skill}-session-{NNN}.md` (e.g. `fluent-writing-session-012.md`). This skill describes how to read those files to plan adaptive follow-up practice. Use it when the tutor needs narrative context the JSON databases don't capture — the exact sentence the learner wrote, the scenario, the feedback they received.
 
 ## When to Use
 
@@ -24,10 +24,10 @@ Skip this skill when aggregated JSON numbers are enough — prefer `read-db.py` 
 ### 1. Find recent session files
 
 ```
-/results/{skill}-session-{ID}.md
+/results/fluent-{skill}-session-{NNN}.md
 ```
 
-File naming: `{skill}-session-{NNN}.md` keeps files grouped by skill + chronological by ID. Read the most recent 3-5 files of the relevant skill; don't re-read the entire history.
+`NNN` is the global session counter, so files group by skill and sort chronologically. Files written before v0.2.0 lack the `fluent-` prefix (`{skill}-session-{NNN}.md`) — glob for both, and don't rename the old ones. Read the most recent 3-5 files of the relevant skill; don't re-read the entire history.
 
 ### 2. Extract error patterns
 

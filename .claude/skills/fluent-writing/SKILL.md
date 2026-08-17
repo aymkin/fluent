@@ -29,7 +29,7 @@ Need: `learner-profile` (level, target language, focus areas), `mistakes-db` (we
 
 ### 2. Pick scenario type
 
-From `mastery-db.skills_mastery`:
+From `mastery-db.skills`:
 
 - Formal email (if `writing_formal_email` mastery < 4)
 - Informal email (if `writing_informal_email` < 4)
