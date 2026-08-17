@@ -83,8 +83,8 @@ Templates use placeholders:
 
 **Adding new fields:**
 1. Update the template file here
-2. Update the `/fluent-setup` command to populate it
-3. Update AGENTS.md with the new structure
+2. Update the `/fluent-setup` skill to populate it
+3. Update `.claude/hooks/update-db.py` (and `docs/DB_SCRIPTS.md`) if the field is written at session end
 4. Update LEARNING_SYSTEM.md if it affects teaching
 
 ---

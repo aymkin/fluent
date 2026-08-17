@@ -12,7 +12,7 @@ https://github.com/user-attachments/assets/66d68aad-210a-452d-b405-b58c13f42f53
 
 > **This is a personal fork** of [m98/fluent](https://github.com/m98/fluent), maintained at
 > [aymkin/fluent](https://github.com/aymkin/fluent). It tracks upstream but has diverged:
-> FSRS-6 scheduling (replacing SM-2) with a guarded weekly weight optimizer, and a trimmed
+> FSRS-6 scheduling (replacing SM-2), and a trimmed
 > `/fluent-review` data payload for faster response times. See [CHANGELOG.md](CHANGELOG.md)
 > for the full list. The plugin/marketplace name stays `fluent@m98` regardless of which repo
 > you install from — that key comes from `.claude-plugin/marketplace.json`, not the git remote.
@@ -44,7 +44,6 @@ That's it.
 
 - [Claude Code](https://code.claude.com) installed
 - **Python 3.8+** (most systems already have it — check with `python3 --version`). Install via [python.org](https://www.python.org/downloads/), `brew install python3`, or your distro's package manager. No pip packages needed — Fluent uses only the standard library.
-- **Bash** for the PreCompact backup hook (built-in on macOS/Linux; on Windows use WSL or Git Bash).
 
 ### Verify, update, uninstall
 
@@ -284,14 +283,15 @@ The AI follows these guides:
 
 - **`LEARNING_SYSTEM.md`** - Complete methodology (how to teach)
 - **`CLAUDE.md`** - AI tutor's role and personality
-- **`PRACTICE.md`** - Pattern analysis and tracking
-- **`.claude/references/`** - Shared templates (feedback template, DB payload schema, session-file format) that every skill references
+- **`AGENTS.md`** - Entry point for non-Claude CLIs (Codex, Gemini)
+- **`results/README.md`** - Canonical session-file format that `fluent-session-analyzer` parses
+- **`.claude/references/`** - Shared payload schema (`db-updater-payload.example.json`) used by `update-db.py`
 
 ### Interface Layer
 
 - **Skills** (`.claude/skills/`) — 12 skills total. 8 learner-facing (`/fluent-setup`, `/fluent-learn`, `/fluent-vocab`, `/fluent-writing`, `/fluent-speaking`, `/fluent-reading`, `/fluent-review`, `/fluent-progress`) run when you invoke them. 4 helper skills (`/fluent-fsrs-reference`, `/fluent-feedback-formatter`, `/fluent-db-updater`, `/fluent-session-analyzer`) auto-load whenever Claude needs them during a session — and are also directly `/`-invokable if you want to read the reference.
 - **Plugin manifests** (`.claude-plugin/`) — `plugin.json` + `marketplace.json` make Fluent installable via `/plugin marketplace add m98/fluent`.
-- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, SessionEnd backups, PostToolUse JSON validation + backups, PreCompact safety backup. Both `hooks.json` (plugin mode) and `.claude/settings.json` (clone mode) wire them up.
+- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, SessionEnd session summary, PostToolUse JSON validation + timestamped backups. `hooks.json` (plugin mode) and `.claude/settings.json` (clone mode) wire them up.
 - **Session Results** (`/results/`) — Detailed practice logs per session, parsed by `fluent-session-analyzer` to plan future sessions.
 
 ---
@@ -310,7 +310,8 @@ Day 22: Still remember → Monthly review (mastered!)
 ```
 
 The system tracks for each item:
-- **Easiness Factor** - How easy it is for YOU specifically
+- **Stability** - How long the memory is expected to last
+- **Difficulty** - How hard the item is for YOU specifically
 - **Interval Days** - When to review next
 - **Repetitions** - Practice count
 - **Quality Score** - Your performance (0-5)
@@ -345,7 +346,7 @@ The system automatically adjusts:
 - **AI Model:** Claude (any Claude Code-supported model)
 - **Data Format:** JSON (human-readable)
 - **Skills:** Markdown `SKILL.md` files with YAML frontmatter (12 total — 8 learner-facing + 4 helper)
-- **Hooks:** Python + Bash, triggered on SessionStart / SessionEnd / PostToolUse / PreCompact
+- **Hooks:** Python (stdlib only), triggered on SessionStart / SessionEnd / PostToolUse
 - **Algorithm:** FSRS-6 (Free Spaced Repetition Scheduler)
 - **Version Control:** Git
 
@@ -367,7 +368,6 @@ Fluent uses intelligent Claude Code hooks to ensure your data is always safe and
 - ✅ Alerts you immediately if data is malformed
 
 **📦 SessionEnd Hook** (when you finish practicing)
-- ✅ Creates daily snapshot in `.backups/YYYYMMDD/`
 - ✅ Displays session summary with current streak
 - ✅ Shows total practice sessions completed
 
@@ -376,8 +376,8 @@ Fluent uses intelligent Claude Code hooks to ensure your data is always safe and
 - ✅ Shows current language, level, and streak
 - ✅ Alerts you if reviews are due today
 
-**🔒 PreCompact Hook** (before compaction)
-- ✅ Safety backup to prevent data loss
+**🗄️ `update-db.py`** (once per session end)
+- ✅ Snapshots every database to `.backups/pre-update-{session_id}/` before writing
 
 **You'll never lose your progress.** All backups are automatic and excluded from git.
 
@@ -418,60 +418,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-
----
-
-## 🙏 Acknowledgments
-
-- **Claude** by Anthropic - For the amazing AI capabilities
-- **SuperMemo** - For SM-2, Fluent's original scheduler
-- **Anki** - For inspiring the flashcard approach
-- **Language learning research** - Krashen, Bjork, Ebbinghaus, and many others
-- **Open-source community** - For making this possible
-
----
-
-## 📞 Support & Community
-
-- 📖 **Documentation:** [Full docs in this repo](docs/)
-- 🐛 **Bug Reports & Questions:** [GitHub Issues](https://github.com/aymkin/fluent/issues) (fork) or [upstream](https://github.com/m98/fluent/issues)
-- 📧 **Email:** For sensitive issues
-
----
-
-## 🌟 Star This Project!
-
-If this system helps you learn a language, please **star the repository** ⭐
-
-It helps others discover this project and motivates us to keep improving it!
-
----
-
-## 📈 Project Stats
-
-- **Skills:** 12 (8 learner-facing + 4 helper)
-- **Hooks:** 5 automated (SessionStart, SessionEnd, PostToolUse, PreCompact, DB helpers)
-- **Databases:** 6 JSON tracking files
-- **Install paths:** 2 (Claude Code plugin + git clone — both supported)
-- **Languages Supported:** All (system is fully language-agnostic)
-- **Learning Methods:** 6 evidence-based principles
-- **Contributors:** [See contributors](https://github.com/m98/fluent/graphs/contributors) (upstream) / [fork](https://github.com/aymkin/fluent/graphs/contributors)
-
----
-
-## 🎓 Success Stories
-
-*Want to share your language learning success? Open a PR to add your story here!*
-
 ---
 
 ## 🛠️ Troubleshooting
 
 **`python3: command not found` when hooks run.**
 Install Python 3.8+ and make sure `python3` is on your PATH. On macOS: `brew install python3`. On Debian/Ubuntu: `sudo apt install python3`. On Windows: install via [python.org](https://www.python.org/downloads/) or use WSL.
-
-**Hooks silently do nothing on Windows.**
-The PreCompact hook is a Bash script. Run Claude Code from WSL or Git Bash. The Python hooks (SessionStart, SessionEnd, PostToolUse) work on native Windows Python — only PreCompact is Bash-only.
 
 **Learner data is showing up in the wrong place.**
 Check the data-dir resolution order (see above). Set `FLUENT_DATA_DIR` explicitly in your shell to force a specific location.
