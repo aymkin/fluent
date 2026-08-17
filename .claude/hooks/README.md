@@ -5,12 +5,13 @@ This directory contains automated hooks that manage data integrity, backups, and
 ## 🎯 Purpose
 
 Hooks ensure your learning data is:
-- ✅ **Always backed up** - Multiple backup strategies prevent data loss
+- ✅ **Always backed up** - Every save is versioned, 10 generations deep per file
 - ✅ **Validated** - JSON structure checked on every save
 - ✅ **Tracked** - Session stats displayed automatically
-- ✅ **Safe** - Backups created before risky operations (compaction)
 
 ## 📋 Hook Scripts
+
+Three hooks, all registered in `hooks.json`.
 
 ### 1. `validate-data.py` (PostToolUse)
 
@@ -39,21 +40,18 @@ Hooks ensure your learning data is:
 **Triggered:** When practice session ends (user exits Claude Code)
 
 **What it does:**
-1. Creates daily backup directory: `.backups/YYYYMMDD/`
-2. Copies all `data/*.json` files to the backup folder
-3. Reads `learner-profile.json` to display session summary
-4. Shows current streak and total sessions
+1. Reads `learner-profile.json`
+2. Shows current streak and total sessions
 
 **Example output:**
 ```
-[Fluent] 📦 Session backup created: .backups/20231117/
-[Fluent] 💾 Files backed up: learner-profile.json, progress-db.json, mistakes-db.json
 [Fluent] 🔥 Current streak: 7 days
 [Fluent] 📊 Total sessions: 42
 [Fluent] 👋 Great work today!
 ```
 
-**Backup location:** `.backups/YYYYMMDD/` (excluded from git)
+This hook does **not** back anything up — the per-write backups in
+`validate-data.py` already hold every state this snapshot would have copied.
 
 ---
 
@@ -88,76 +86,33 @@ Hooks ensure your learning data is:
 
 ---
 
-### 4. PreCompact Hook (inline bash)
-
-**Triggered:** Before conversation is compacted (manual `/compact` or auto-compact)
-
-**What it does:**
-1. Creates safety backup directory: `.backups/precompact/`
-2. Copies all `data/*.json` files
-3. Shows confirmation message
-
-**Example output:**
-```
-[Fluent] 🔒 Pre-compact backup saved
-```
-
-**Purpose:** Ensures data safety before potentially destructive operations
-
----
-
 ## 🔧 How It Works
 
 ### Hook Configuration
 
-Fluent supports **two hook registration paths** so the same scripts work whether you cloned the repo or installed it as a plugin:
+`.claude/hooks/hooks.json` is the **single** hook registration, referenced from
+`.claude-plugin/plugin.json` (`"hooks": "./.claude/hooks/hooks.json"`). Commands
+resolve through `${CLAUDE_PLUGIN_ROOT}`; the scripts themselves resolve the
+runtime data directory via `fluent_paths.py` — `$FLUENT_DATA_DIR` →
+`$CLAUDE_PROJECT_DIR/data/` → `./data/` → `~/.claude/fluent-data/`.
 
-| Install path | Where hooks are registered | Env var used in commands |
-|--------------|---------------------------|--------------------------|
-| Git clone | `.claude/settings.json` | `$CLAUDE_PROJECT_DIR` |
-| Plugin install | `.claude/hooks/hooks.json` (referenced from `plugin.json`) | `$CLAUDE_PLUGIN_ROOT` (with `$CLAUDE_PROJECT_DIR` fallback) |
+There used to be a second copy of the same four hooks in `.claude/settings.json`
+for clone-mode installs. It was deleted: with the plugin installed *and* the repo
+open as the project directory, both registrations fired and every hook ran twice
+(the SessionStart banner printed twice in one startup).
 
-Both paths point at the same Python scripts under `.claude/hooks/`. The scripts themselves resolve the runtime data directory via `fluent_paths.py` — `$FLUENT_DATA_DIR` → `./data/` → `~/.claude/fluent-data/`.
+**Working from a clone?** Register the clone as a local marketplace so hooks come
+from `hooks.json` like everywhere else:
 
-Clone-mode `.claude/settings.json` example:
-
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/validate-data.py"
-          }
-        ]
-      }
-    ]
-  }
-}
+```bash
+git clone https://github.com/aymkin/fluent.git && cd fluent
+claude plugin marketplace add ./
+claude plugin install fluent@aymkin
 ```
 
-Plugin-mode `.claude/hooks/hooks.json` example (identical structure, different env var):
-
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR}}/.claude/hooks/validate-data.py"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
+Data still lands in the clone's `./data/` — `fluent_paths.py` prefers it over
+`~/.claude/fluent-data/` whenever `./data/learner-profile.json` exists. Cloning
+*without* installing gives you the skills but no hooks, so no automatic backups.
 
 ### Hook Execution Flow
 
@@ -192,27 +147,37 @@ Plugin-mode `.claude/hooks/hooks.json` example (identical structure, different e
 
 ## 📂 Backup Strategy
 
-Fluent uses a multi-layered backup system:
+Two layers, each covering a write path the other cannot see:
 
-### Layer 1: Individual File Backups (PostToolUse)
-- **Location:** `data/*.json.backup-YYYYMMDD-HHMMSS`
-- **Created:** Every time a data file is modified
-- **Retention:** Manual cleanup (keeps all versions)
-- **Purpose:** Granular version history
+### Layer 1: Per-save versions (`validate-data.py`, PostToolUse)
+- **Location:** `data/<file>.json.backup-YYYYMMDD-HHMMSS`
+- **Created:** After every `Write`/`Edit` to a `*.json` inside the resolved data dir,
+  holding the state that was just saved
+- **Retention:** 10 most recent per file, older ones auto-rotated out
+- **Covers:** single-file edits made through Claude — roll back up to 10 saves
 
-### Layer 2: Daily Snapshots (SessionEnd)
-- **Location:** `.backups/YYYYMMDD/`
-- **Created:** When session ends
-- **Retention:** Manual cleanup (one snapshot per day)
-- **Purpose:** Daily checkpoints
+### Layer 2: Pre-update snapshots (`update-db.py`, not a hook)
+- **Location:** `data/.backups/pre-update-<session_id>/`
+- **Created:** Before `update-db.py` mutates all six databases at session end
+- **Retention:** Manual cleanup (one directory per session)
+- **Covers:** the only multi-file mutation, where a partial write could desync files
 
-### Layer 3: Pre-Compaction Safety (PreCompact)
-- **Location:** `.backups/precompact/`
-- **Created:** Before conversation compaction
-- **Retention:** Overwritten on each compact
-- **Purpose:** Rollback point for risky operations
+Layer 1 hangs off the `Write`/`Edit` tool call, so it never sees `update-db.py`'s
+writes; Layer 2 lives inside that script, so it never sees a tool-call edit.
+Neither is redundant. Edits made outside Claude Code (your own text editor) fire
+nothing — Layer 1's most recent version is your rollback point there.
 
-**All backup directories are excluded from git via `.gitignore`**
+**All backups are excluded from git via `.gitignore`.** They also all live inside
+the data directory, so they are not protection against losing that directory —
+copy it elsewhere if you want off-box durability.
+
+### Restoring
+
+```bash
+ls -t data/learner-profile.json.backup-* | head -1        # newest single-file backup
+ls -t data/.backups/pre-update-*/                         # newest full-set snapshot
+cp data/learner-profile.json.backup-20231117-143022 data/learner-profile.json
+```
 
 ---
 
@@ -236,7 +201,7 @@ Edit `session-end.py` to add custom analytics:
 
 ```python
 # Example: Calculate accuracy trend
-progress_path = Path("data/progress-db.json")
+progress_path = data_dir() / "progress-db.json"
 if progress_path.exists():
     with open(progress_path, 'r') as f:
         progress = json.load(f)
@@ -251,7 +216,7 @@ To add a new hook type:
 
 1. **Create script** in `.claude/hooks/your-hook.py`
 2. **Make it executable**: `chmod +x .claude/hooks/your-hook.py`
-3. **Add to settings.json**:
+3. **Add to `hooks.json`** (the only registration — do not add a second copy elsewhere):
    ```json
    {
      "hooks": {
@@ -260,7 +225,7 @@ To add a new hook type:
            "hooks": [
              {
                "type": "command",
-               "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/your-hook.py"
+               "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/.claude/hooks/your-hook.py\""
              }
            ]
          }
@@ -299,10 +264,13 @@ You can test hooks directly:
 
 ```bash
 # Test validate-data hook
-echo '{"tool_name":"Write","tool_input":{"file_path":"data/test.json"}}' | .claude/hooks/validate-data.py
+echo '{"tool_name":"Write","tool_input":{"file_path":"data/test.json"}}' | python3 .claude/hooks/validate-data.py
 
 # Test session-start hook
-echo '{}' | .claude/hooks/session-start.py
+echo '{}' | python3 .claude/hooks/session-start.py
+
+# Test session-end hook
+echo '{}' | python3 .claude/hooks/session-end.py
 ```
 
 ---
@@ -311,12 +279,12 @@ echo '{}' | .claude/hooks/session-start.py
 
 | Hook Event | When It Fires | Use Case |
 |------------|---------------|----------|
-| `PostToolUse` | After Write/Edit/Read/etc | Data validation, backups |
-| `SessionEnd` | When session ends | Cleanup, summaries, backups |
-| `SessionStart` | When session starts | Welcome messages, stats |
-| `PreCompact` | Before compaction | Safety backups |
-| `UserPromptSubmit` | Before processing user input | Prompt validation |
-| `PreToolUse` | Before tool execution | Permission checks |
+| `PostToolUse` | After Write/Edit/Read/etc | **Used by Fluent** — validation + backups |
+| `SessionEnd` | When session ends | **Used by Fluent** — session summary |
+| `SessionStart` | When session starts | **Used by Fluent** — welcome + due reviews |
+| `PreCompact` | Before compaction | Unused — nothing writes to `data/` during compaction |
+| `UserPromptSubmit` | Before processing user input | Unused |
+| `PreToolUse` | Before tool execution | Unused |
 
 ---
 
@@ -326,9 +294,11 @@ echo '{}' | .claude/hooks/session-start.py
 
 **Problem:** Hook doesn't execute
 **Solution:**
-1. Check hook is registered: `cat .claude/settings.json | grep hooks`
-2. Verify script is executable: `ls -la .claude/hooks/`
-3. Test script manually (see "Test Hooks Manually" above)
+1. Check hook is registered: `grep hooks .claude/hooks/hooks.json`
+2. Confirm the plugin is installed (`claude plugin list`) — hooks.json is only
+   read for plugin installs; a bare clone registers nothing
+3. Verify script is executable: `ls -la .claude/hooks/`
+4. Test script manually (see "Test Hooks Manually" above)
 
 ### Invalid JSON Error
 
@@ -349,7 +319,7 @@ chmod +x .claude/hooks/*.py
 ### Hook Timeout
 
 **Problem:** Hook times out (default 60s)
-**Solution:** Increase timeout in settings.json:
+**Solution:** Increase timeout in `hooks.json`:
 ```json
 {
   "type": "command",
