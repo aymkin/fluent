@@ -33,7 +33,7 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 - **Due reviews:** `computed.due_reviews_count`
 - **Weak patterns:** `mistakes-db.error_patterns` where `mastery_level <= 2` (descending by frequency)
 - **Recent performance:** `progress-db.weekly_summary`
-- **Skills not practiced recently:** check `mastery-db.skills_mastery.{skill}.last_practiced`
+- **Skills not practiced recently:** check `mastery-db.skills.{skill}.last_practiced`
 
 ### 3. Greet
 
@@ -84,18 +84,8 @@ After every 3-4 exercises, check rolling accuracy:
 - **50-70%** → hold — this is the target zone
 - **>70%** → raise difficulty (longer sentences, less scaffolding, rarer vocabulary)
 
-Formula reference:
-
-```
-if mastery_level <= 1:
-    difficulty = "easy"
-elif mastery_level == 2:
-    difficulty = "medium" if recent_accuracy > 0.60 else "easy"
-elif mastery_level == 3:
-    difficulty = "medium" if recent_accuracy > 0.70 else "medium"
-elif mastery_level >= 4:
-    difficulty = "hard" if recent_accuracy > 0.80 else "medium"
-```
+Set the starting point from the skill's `mastery_level`: **0-1 → easy**, **2-3 → medium**,
+**4-5 → hard**. Then let the rolling accuracy above move it up or down.
 
 ### 7. Exercise types by skill
 

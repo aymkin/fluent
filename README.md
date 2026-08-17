@@ -96,46 +96,7 @@ python3 -c "import sys; sys.path.insert(0, '.claude/hooks'); from fluent_paths i
 
 ---
 
-## 💡 Why This Actually Works
-
-Most language learning apps fail because they're built for engagement metrics, not actual learning. This system is different.
-
-### 🎯 Three Reasons This Works Where Others Fail:
-
-**1. Zero Distractions, Pure Focus**
-- ❌ No ads interrupting your flow
-- ❌ No gamification gimmicks designed to waste your time
-- ❌ No unreliable fancy UI that breaks
-- ✅ Just you, the language, and an AI that adapts to your needs
-
-**2. Infinitely Adaptable Intelligence**
-- 🧠 Want to practice job interview phrases? Just ask.
-- 🧠 Need help with a specific grammar rule? It explains it.
-- 🧠 Want to focus on restaurant vocabulary? It creates exercises instantly.
-- 🧠 **You're in control.** The AI does exactly what you need, when you need it.
-
-**3. Your Private, Smart Tutor**
-- 📊 **Tracks everything** - Every answer, every mistake, every improvement
-- 🔄 **Learns about YOU** - Knows your weak patterns and strengths
-- 📈 **Adapts to YOU** - Adjusts difficulty based on your performance
-- 🔒 **Private** - All data stays on your machine, no external tracking
-- 🎯 **Personal** - Like having a tutor who knows your exact level and learning style
-
-**The Result?** A learning system that feels like a conversation with an expert friend who remembers everything, tracks your progress scientifically, and makes learning actually enjoyable.
-
----
-
-## 📖 What Is This?
-
-This is a comprehensive, **open-source language learning system** that transforms [Claude Code](https://code.claude.com) into your personal AI language tutor.
-
-The system uses **evidence-based learning methodologies** including:
-- **Spaced Repetition (FSRS-6 algorithm)** - Review at optimal intervals
-- **Active Recall** - Test yourself before seeing answers
-- **Adaptive Difficulty** - Always challenging, never frustrating
-- **Comprehensive Tracking** - Every answer tracked and analyzed
-
-### ✨ Key Features
+## ✨ Key Features
 
 - 🎯 **Multi-Language Support** - Learn any language (French, Spanish, German, Japanese, Korean, Arabic, Dutch, etc.)
 - 📊 **Comprehensive Tracking** - Automatic progress monitoring with detailed statistics
@@ -161,7 +122,7 @@ Every practice session follows this intelligent cycle:
 | **1. You Practice** | Answer a question in your target language | Active recall forces your brain to retrieve information |
 | **2. AI Analyzes** | System evaluates your response instantly | Identifies exactly what you got right or wrong |
 | **3. Get Feedback** | Clear explanation of mistakes + correct version | Learning happens when you understand WHY |
-| **4. System Tracks** | Updates 4 databases automatically | Remembers your weak spots and strengths |
+| **4. System Tracks** | Updates all 6 databases automatically | Remembers your weak spots and strengths |
 | **5. Adapts** | Next question matches your current level | Always challenging, never frustrating |
 
 **What Gets Tracked:**
@@ -169,29 +130,6 @@ Every practice session follows this intelligent cycle:
 - ✅ **Mastery Levels** - Your skill rating (0-5 stars) for each topic
 - ✅ **Review Schedule** - When to review based on FSRS-6 algorithm
 - ✅ **Progress Stats** - Accuracy trends, streak days, total practice time
-
-### Evidence-Based Methods
-
-This system implements proven learning science:
-
-**1. Active Recall** - You retrieve from memory before seeing answers
-- 🔬 Research shows: **2-3x better retention** than passive review
-
-**2. Spaced Repetition (FSRS-6 Algorithm)** - Reviews appear just before you forget
-- 🔬 Research shows: **Prevents forgetting curve**, optimizes long-term retention
-
-**3. Immediate Feedback** - Mistakes corrected within seconds
-- 🔬 Research shows: **Faster learning** when feedback is immediate
-
-**4. Interleaving** - Mix topics to prevent drilling fatigue
-- 🔬 Research shows: **Better discrimination** and long-term retention
-
-**5. Comprehensible Input (i+1)** - Content slightly above your level
-- 🔬 Research shows: **Optimal learning zone** (Krashen's Input Hypothesis)
-
-**6. Desirable Difficulty** - Targets 60-70% success rate
-- 🔬 Research shows: **Too easy = no learning, too hard = frustration**
-
 ---
 
 ## 🎮 Available Commands & Skills
@@ -394,30 +332,7 @@ See [`.claude/hooks/README.md`](.claude/hooks/README.md) for technical details.
 
 ## 🤝 Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Priority Areas
-
-We're especially interested in:
-
-1. 🌐 **Language-specific optimizations** - Grammar rules, common errors for specific languages
-2. 🎵 **Audio features** - Pronunciation practice, listening exercises
-3. 📊 **Visual enhancements** - Better progress charts, statistics
-4. 📱 **Mobile support** - Companion app or mobile interface
-5. ⚡ **Performance** - Optimize data loading, improve speed
-6. ♿ **Accessibility** - Make system more accessible
-7. 🧪 **Testing** - Add comprehensive test coverage
-
-### How to Contribute
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Test thoroughly
-5. Commit with clear messages
-6. Push and open a Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+Issues and pull requests welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for setup, tests, and commit conventions.
 
 ---
 
@@ -487,14 +402,6 @@ A: We have AGENTS.md for instructing other AI CLIs as well, but this kit is spec
 Claude Code and its unique capabilities. Using other AI platforms may not yield the same results. 
 But feel free to experiment and share your findings!
 
-
 ---
 
-*Start your language learning journey today!* 🚀
-
-```bash
-git clone https://github.com/aymkin/fluent.git
-cd fluent
-claude
-/fluent-setup
-```
+*Start your language learning journey today!* 🚀 See [Quick Start](#-quick-start) above.
