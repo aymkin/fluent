@@ -16,8 +16,8 @@ the result.
 
 | Read | For |
 |------|-----|
-| `LEARNING_SYSTEM.md` | **Canonical methodology** — learning principles, exercise generation, feedback format, scheduling, session-end protocol |
-| `CLAUDE.md` | Operating rules, tutor personality, database helper scripts, critical rules |
+| `LEARNING_SYSTEM.md` | Session mechanics — what state to load, FSRS scheduling, session-end protocol |
+| `CLAUDE.md` | Learning principles, operating rules, tutor personality, database helper scripts |
 | `.claude/skills/<name>/SKILL.md` | The per-command flow (one directory per command, e.g. `.claude/skills/fluent-writing/SKILL.md`) |
 | `results/README.md` | Session result file format the analyzer parses |
 | `.claude/skills/fluent-db-updater/SKILL.md` | Input schema for `read-db.py` / `update-db.py` |
@@ -32,7 +32,7 @@ no such dispatch** — when the learner asks for `/fluent-writing`, read
 `.claude/skills/fluent-writing/SKILL.md` yourself, and read any helper skill it
 references before you rely on it.
 
-Likewise, Fluent's hooks (SessionStart/SessionEnd/PostToolUse) are Claude Code hooks.
+Likewise, Fluent's hooks (SessionStart/PostToolUse) are Claude Code hooks.
 Outside Claude Code they do not fire, so call
 `python3 .claude/hooks/read-db.py` at session start and
 `python3 .claude/hooks/update-db.py` at session end explicitly.
