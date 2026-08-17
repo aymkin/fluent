@@ -37,6 +37,40 @@ potential call site. A hit in `.claude/skills/**/SKILL.md` is a caller. A
 CHANGELOG entry saying a file was added *because something referenced it* is
 direct evidence of a live dependency.
 
+## 2026-08-17 — check the worktree's base commit before trusting any agent report
+
+Round 2 dispatched four agents with `isolation: "worktree"`. Every worktree was
+created from `126cb4b` — `origin/main` — not from local `main` at `21fe65f`.
+Round 1's entire cleanup (nine merges, −1801 lines) was missing from all four.
+The agents did competent work on a tree that no longer exists.
+
+The tell was in the reports, not in git: three agents independently said
+"there are **six** test files, not four". Two more contradicted the audit on
+specifics — `.claude/settings.json` still wiring clone-mode hooks, the
+Star-This-Project block still in README, `marketplace add ./` appearing
+nowhere. Those read as *the audit was wrong*; they were actually *the base is
+wrong*. Symmetrically, the agents' own line numbers were off by 10-35 in every
+file round 1 had touched, which one of them noticed and worked around without
+drawing the conclusion.
+
+The dangerous part is what a merge does with this. Task D refactored two
+duplicated dict literals in `update-db.py` into a helper. Round 1 had deleted
+`easiness_factor: 2.5` and the `tomorrow()` helper from *those same literals*.
+A three-way merge kept `easiness_factor` — git saw it as content the agent
+newly wrote, not a line `main` had removed — and kept a call to `tomorrow()`,
+which no longer exists, so the merged file would have raised `NameError` on the
+first new vocabulary item. Both were invisible in the diffstat and in the
+agent's own byte-identity proof, which was correct against the base it ran on.
+
+How to apply: before dispatching, run `git rev-parse HEAD` and tell the agent
+the SHA it must be on; after it returns, run
+`git merge-base --is-ancestor HEAD <branch>` before reading a single line of
+the report. If the base is stale, do not merge the branch — `git merge-file`
+each owned file against the real base, resolve every conflict by hand, and then
+grep the result for the specific things the intervening commits deleted. A
+clean merge is not evidence of a correct merge. And re-verify any behavioural
+proof the agent supplied; equivalence against the wrong base proves nothing.
+
 ## 2026-08-17 — give parallel agents file ownership, not topics
 
 Four agents worked simultaneously in git worktrees and all four merged with zero
