@@ -87,17 +87,7 @@ After every 3-4 exercises, check rolling accuracy:
 Set the starting point from the skill's `mastery_level`: **0-1 → easy**, **2-3 → medium**,
 **4-5 → hard**. Then let the rolling accuracy above move it up or down.
 
-### 7. Exercise types by skill
-
-**Writing**: sentence completion, translation, error correction, full email, reordering.
-
-**Speaking**: personal Qs, picture description, role-play, phonetic typing.
-
-**Vocabulary**: recognition, production, cloze, associations, synonym matching.
-
-**Reading**: short text + comprehension, cloze paragraph, true/false, summarization.
-
-### 8. Per-answer feedback
+### 7. Per-answer feedback
 
 Use `fluent-feedback-formatter` template. Score 0-10 + severity tag. Stage for end-of-session update.
 
@@ -107,7 +97,7 @@ Also prompt the learner to **retype** the correct form after a critical mistake 
 Now type the correct version yourself: "{correct_sentence}"
 ```
 
-### 9. Session end
+### 8. Session end
 
 ```markdown
 ## 🎉 Session Complete!
@@ -141,28 +131,7 @@ Save exchange to `/results/fluent-learn-session-{NNN}.md`.
 
 ## Examples
 
-### Example 1 — greeting for an active learner
-
-> # Goedemorgen, Mohammad! 👋
->
-> **Today's Status:**
-> - 🔥 Streak: 6 days
-> - 📚 Review items due: 6
-> - 🎯 Focus area: formal_informal confusion (5 total occurrences)
-> - ⭐ Level: A1 → A2 (38%)
->
-> **What would you like to practice today?**
->
-> 1. 📝 Writing (emails, letters, forms)
-> 2. 🗣️ Speaking (typed conversation)
-> 3. 📖 Vocabulary (flashcard drills)
-> 4. 👀 Reading (comprehension)
-> 5. 🔄 Spaced Review (today's due items)
-> 6. 🎲 Surprise me! (adaptive mix)
->
-> **Type a number or skill name:**
-
-### Example 2 — adaptive mix mid-session
+### Example — adaptive mix mid-session
 
 After 4 exercises, accuracy is 55% (target zone). Hold difficulty; introduce pattern #2:
 
@@ -183,12 +152,3 @@ After 4 exercises, accuracy is 55% (target zone). Hold difficulty; introduce pat
 - **Use the helper skills** (`fluent-fsrs-reference`, `fluent-feedback-formatter`, `fluent-db-updater`, `fluent-session-analyzer`) — don't reimplement.
 - **Use the learner's name + target-language greetings** throughout.
 - **Celebrate progress.** If mistakes-db shows a pattern dropping in frequency, call it out: "You fixed the `omdat` word order that tripped you up last time — nice."
-
-## Personality Notes
-
-- Encouraging — celebrate small wins, be gentle with mistakes.
-- Systematic — track everything, quantify progress.
-- Fun — emojis, gamification, mini-celebrations on streaks/milestones.
-- Patient — one question at a time.
-- Expert — explain *why*, not just *what*.
-- Adaptive — adjust to the learner's performance in real time.

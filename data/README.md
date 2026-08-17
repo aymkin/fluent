@@ -1,133 +1,33 @@
 # Data Directory
 
-This directory contains your personal learning data in JSON format.
+Your six learning databases live here — but only in **clone mode**. A plugin
+install keeps them in `~/.claude/fluent-data/` instead, and `$FLUENT_DATA_DIR`
+overrides both. Ask Fluent where it is actually looking:
 
-## 🚀 Getting Started
-
-**This directory is empty by design!**
-
-When you run `/fluent-setup` for the first time, the system will automatically create:
-
-- `learner-profile.json` - Your name, target language, level, goals
-- `progress-db.json` - Overall statistics and trends
-- `mistakes-db.json` - Error patterns you're working on
-- `mastery-db.json` - Skill mastery levels (0-5 stars)
-- `spaced-repetition.json` - Review schedule (FSRS-6 algorithm)
-- `session-log.json` - Complete session history
-
-## 🔒 Privacy
-
-**All files in this directory are private!**
-
-- ✅ Listed in `.gitignore` - Won't be committed to git
-- ✅ Stays on your machine - No external sync
-- ✅ Automatically backed up - See `.backups/` directory
-- ✅ Human-readable JSON - Easy to export/analyze
-
-## 📊 File Structure
-
-### learner-profile.json
-Contains your basic information and preferences:
-```json
-{
-  "learner": {
-    "name": "Your Name",
-    "target_language": "Spanish",
-    "current_level": "A2",
-    "target_level": "B2"
-  },
-  "current_streak_days": 0,
-  "skills": {...}
-}
+```bash
+python3 -c "import sys; sys.path.insert(0, '.claude/hooks'); from fluent_paths import data_dir; print(data_dir())"
 ```
 
-### progress-db.json
-Tracks your statistics over time:
-```json
-{
-  "overall_stats": {
-    "total_exercises": 0,
-    "total_correct": 0,
-    "accuracy_rate": 0
-  },
-  "accuracy_trend": []
-}
-```
+`/fluent-setup` creates all six on first run: `learner-profile.json`,
+`progress-db.json`, `mistakes-db.json`, `mastery-db.json`,
+`spaced-repetition.json`, `session-log.json`.
 
-### mistakes-db.json
-Records error patterns with examples:
-```json
-{
-  "error_patterns": {
-    "pattern_name": {
-      "frequency": 0,
-      "mastery_level": 0,
-      "examples": []
-    }
-  }
-}
-```
+## Schema
 
-### mastery-db.json
-Tracks mastery levels for each skill:
-```json
-{
-  "skills": {
-    "writing": {"mastery_level": 0},
-    "speaking": {"mastery_level": 0},
-    "vocabulary": {"mastery_level": 0}
-  }
-}
-```
+`data-examples/` holds a template per database — those files *are* the schema,
+kept in step with `.claude/hooks/update-db.py`. Read them rather than a copy.
 
-### spaced-repetition.json
-Manages review scheduling (FSRS-6 algorithm):
-```json
-{
-  "review_queue": {
-    "today": [],
-    "tomorrow": [],
-    "this_week": [],
-    "later": []
-  }
-}
-```
+## Privacy
 
-### session-log.json
-Complete history of all practice sessions:
-```json
-{
-  "sessions": [
-    {
-      "id": "001",
-      "date": "2025-11-17",
-      "duration_minutes": 30,
-      "accuracy": 0.85
-    }
-  ]
-}
-```
+Everything here stays on your machine and is excluded from git (`.gitignore`
+covers `*.json`, the rotating `*.backup-*` files, and `.backups/`).
 
-## 🔄 How It Works
+## Handling
 
-1. **First time:** Run `/fluent-setup` to create your profile
-2. **Every session:** Files update automatically as you practice
-3. **Backup:** Automatic backups to `.backups/` via hooks
-4. **Export:** All data is JSON - easy to analyze or migrate
+- **Don't hand-edit.** `update-db.py` owns these files; a hand-written value
+  diverges from what the script recomputes next session.
+- **To back up:** copy the whole directory. The automatic backups live *inside*
+  it, so they don't survive losing it.
+- **To reset:** delete the `.json` files and run `/fluent-setup` again.
 
-## 📁 Data Examples
-
-Want to see the structure before running `/fluent-setup`?
-
-Check the `/data-examples` directory for template files with the complete schema.
-
-## ⚠️ Important Notes
-
-- **Never edit these files manually** - Let the system manage them
-- **Don't delete while learning** - You'll lose your progress!
-- **To reset:** Delete all `.json` files and run `/fluent-setup` again
-- **To backup:** Copy entire `/data` directory
-
----
-
-**Ready to start?** Run `/fluent-setup` to begin your language learning journey! 🚀
+Recovering from a bad write: see `.claude/hooks/README.md`.

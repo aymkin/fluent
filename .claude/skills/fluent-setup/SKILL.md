@@ -11,14 +11,9 @@ disable-model-invocation: true
 
 One-time onboarding that seeds all 6 databases in the Fluent data directory. After setup, every other skill reads from those files — this is the bootstrap. Also handles profile updates and progress resets for returning users.
 
-The data directory is resolved at runtime (not hardcoded to `./data/`):
-
-1. `$FLUENT_DATA_DIR` if set
-2. `$CLAUDE_PROJECT_DIR/data/` if that path contains `learner-profile.json` (clone mode)
-3. `./data/` if `./data/learner-profile.json` exists (clone mode, cwd inside repo)
-4. `~/.claude/fluent-data/` otherwise (plugin-install default)
-
-Always resolve it via the helper rather than writing literal `data/` paths:
+The data directory is resolved at runtime — never write a literal `data/` path.
+`fluent_paths.py`'s module docstring documents the precedence order; always ask
+it rather than reimplementing it:
 
 ```bash
 FLUENT_DATA="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"
@@ -46,11 +41,7 @@ Skip this skill if a profile already exists and the learner did not ask to chang
 Resolve the data directory first, then probe for `learner-profile.json`:
 
 ```bash
-DATA_DIR="$(python3 -c "
-import sys; sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks')
-from fluent_paths import data_dir
-print(data_dir())
-")"
+DATA_DIR="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"
 test -f "$DATA_DIR/learner-profile.json" && echo "exists" || echo "new"
 ```
 
@@ -210,11 +201,7 @@ What would you like to do?
 - **3** — confirm twice. This deletes every file in the resolved data directory. Back up first:
 
   ```bash
-  DATA_DIR="$(python3 -c "
-  import sys; sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks')
-  from fluent_paths import data_dir
-  print(data_dir())
-  ")"
+  DATA_DIR="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"
   TS="$(date +%Y%m%d-%H%M%S)"
   mkdir -p "$DATA_DIR/.backups/pre-reset-$TS"
   cp "$DATA_DIR"/*.json "$DATA_DIR/.backups/pre-reset-$TS/"

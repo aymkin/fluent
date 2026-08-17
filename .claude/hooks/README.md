@@ -1,108 +1,47 @@
 # Fluent Hooks System
 
-This directory contains automated hooks that manage data integrity, backups, and user feedback for the Fluent language learning system.
+Two hooks keep your learning data validated and backed up. Both are registered
+in `hooks.json`; the scripts alongside them are called directly by the skills.
 
-## 🎯 Purpose
+## 📋 What runs
 
-Hooks ensure your learning data is:
-- ✅ **Always backed up** - Every save is versioned, 10 generations deep per file
-- ✅ **Validated** - JSON structure checked on every save
-- ✅ **Tracked** - Session stats displayed automatically
+### `validate-data.py` — PostToolUse (`Write|Edit`)
 
-## 📋 Hook Scripts
+Validates any `*.json` written inside the resolved data directory, then copies
+it to `<file>.json.backup-<timestamp>` and rotates all but the 10 newest.
+Malformed JSON exits `2`, which blocks the write and shows the error to Claude:
 
-Three hooks, all registered in `hooks.json`.
-
-### 1. `validate-data.py` (PostToolUse)
-
-**Triggered:** After every Write/Edit operation on data files
-
-**What it does:**
-1. Checks if the modified file is in `data/*.json`
-2. Validates JSON structure using Python's JSON parser
-3. Creates timestamped backup: `data/file.json.backup-20231117-143022`
-4. Shows success message or warning if JSON is invalid
-
-**Example output:**
 ```
-[Fluent] ✓ Data saved and validated: data/learner-profile.json
-[Fluent] 💾 Backup created: data/learner-profile.json.backup-20231117-143022
+[Fluent] ⚠️  WARNING: Invalid JSON in data/learner-profile.json
 ```
 
-**Error handling:**
-- Invalid JSON triggers exit code 2, blocking the operation and alerting Claude
-- Error message shown: `[Fluent] ⚠️ WARNING: Invalid JSON in data/file.json`
+### `session-start.py` — SessionStart
 
----
+Prints the learner's name, language, level and streak, and counts items due
+today from `spaced-repetition.json`. With no profile yet, it points at
+`/fluent-setup` instead.
 
-### 2. `session-end.py` (SessionEnd)
+### Called by skills, not by hooks
 
-**Triggered:** When practice session ends (user exits Claude Code)
+`read-db.py` (loads all six databases), `update-db.py` (writes all six at
+session end), `fsrs.py` (the FSRS-6 scheduler), `fluent_paths.py` (path
+resolution), `ensure_data_dir.py` (prints the data dir, creating it if needed).
 
-**What it does:**
-1. Reads `learner-profile.json`
-2. Shows current streak and total sessions
-
-**Example output:**
-```
-[Fluent] 🔥 Current streak: 7 days
-[Fluent] 📊 Total sessions: 42
-[Fluent] 👋 Great work today!
-```
-
-This hook does **not** back anything up — the per-write backups in
-`validate-data.py` already hold every state this snapshot would have copied.
-
----
-
-### 3. `session-start.py` (SessionStart)
-
-**Triggered:** When Claude Code starts a new session
-
-**What it does:**
-1. Checks if `data/learner-profile.json` exists
-2. If not found, prompts user to run `/fluent-setup`
-3. If found, displays:
-   - Welcome message with learner's name
-   - Target language and current/target level
-   - Current streak
-4. Checks `spaced-repetition.json` for due reviews
-5. Alerts user if reviews are due today
-
-**Example output (first time):**
-```
-[Fluent] 🌍 Welcome to Fluent - The AI Language Learning Kit!
-[Fluent] 📝 Run /fluent-setup to create your personalized learning profile
-```
-
-**Example output (returning user):**
-```
-[Fluent] 🌍 Welcome back, Mohammad!
-[Fluent] 📚 Learning: Spanish
-[Fluent] 🎯 Level: A2 → B1
-[Fluent] 🔥 Streak: 12 days
-[Fluent] 📅 15 items due for review today - Run /fluent-review!
-```
-
----
-
-## 🔧 How It Works
-
-### Hook Configuration
+## 🔧 Registration
 
 `.claude/hooks/hooks.json` is the **single** hook registration, referenced from
 `.claude-plugin/plugin.json` (`"hooks": "./.claude/hooks/hooks.json"`). Commands
 resolve through `${CLAUDE_PLUGIN_ROOT}`; the scripts themselves resolve the
-runtime data directory via `fluent_paths.py` — `$FLUENT_DATA_DIR` →
-`$CLAUDE_PROJECT_DIR/data/` → `./data/` → `~/.claude/fluent-data/`.
+runtime data directory via `fluent_paths.py` (see its docstring for the
+precedence order).
 
-There used to be a second copy of the same four hooks in `.claude/settings.json`
-for clone-mode installs. It was deleted: with the plugin installed *and* the repo
-open as the project directory, both registrations fired and every hook ran twice
-(the SessionStart banner printed twice in one startup).
+There used to be a second copy of the same hooks in `.claude/settings.json` for
+clone-mode installs. It was deleted: with the plugin installed *and* the repo
+open as the project directory, both registrations fired and every hook ran
+twice — the SessionStart banner printed itself twice in one startup.
 
-**Working from a clone?** Register the clone as a local marketplace so hooks come
-from `hooks.json` like everywhere else:
+**Working from a clone?** Register the clone as a local marketplace so hooks
+come from `hooks.json` like everywhere else:
 
 ```bash
 git clone https://github.com/aymkin/fluent.git && cd fluent
@@ -113,37 +52,6 @@ claude plugin install fluent@aymkin
 Data still lands in the clone's `./data/` — `fluent_paths.py` prefers it over
 `~/.claude/fluent-data/` whenever `./data/learner-profile.json` exists. Cloning
 *without* installing gives you the skills but no hooks, so no automatic backups.
-
-### Hook Execution Flow
-
-1. **Event occurs** (e.g., file is written)
-2. **Claude Code triggers hook** based on matcher pattern
-3. **Script receives JSON input via stdin**:
-   ```json
-   {
-     "session_id": "abc123",
-     "tool_name": "Write",
-     "tool_input": {
-       "file_path": "data/learner-profile.json",
-       "content": "..."
-     }
-   }
-   ```
-4. **Script processes input** and performs actions
-5. **Script exits with status code**:
-   - `0` = Success (stdout shown in verbose mode)
-   - `2` = Blocking error (stderr shown to Claude)
-   - Other = Non-blocking error (logged)
-
-### Exit Code Behavior
-
-| Exit Code | Behavior | When to Use |
-|-----------|----------|-------------|
-| `0` | Success, continue normally | Validation passed, backup created |
-| `2` | Block operation, show stderr to Claude | Invalid JSON, critical error |
-| Other | Log error, continue anyway | Non-critical warning |
-
----
 
 ## 📂 Backup Strategy
 
@@ -184,8 +92,6 @@ ls -t data/.backups/pre-update-*/                         # newest full-set snap
 cp data/<file>.json.backup-YYYYMMDD-HHMMSS data/<file>.json
 ```
 
----
-
 ## 📚 Additional Resources
 
 Writing, customizing, debugging, and configuring hooks in general — the full
@@ -195,6 +101,3 @@ documentation, not something Fluent redefines:
 - [Claude Code Hooks Guide](https://code.claude.com/docs/en/hooks-guide)
 - [Hooks Reference](https://code.claude.com/docs/en/hooks-reference)
 - [Fluent Main README](../../README.md)
-- [Learning System Guide](../../LEARNING_SYSTEM.md)
-
-

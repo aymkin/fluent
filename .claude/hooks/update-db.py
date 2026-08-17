@@ -18,7 +18,7 @@ import os
 import re
 import shutil
 import sys
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -46,64 +46,39 @@ def save_json(path: Path, data: dict):
     os.replace(str(tmp_path), str(path))  # atomic + overwrites (os.rename fails on Windows if dest exists)
 
 
-def parse_date(s: str) -> datetime:
-    return datetime.strptime(s, "%Y-%m-%d")
-
-
-def date_str(d: datetime) -> str:
-    return d.strftime("%Y-%m-%d")
-
-
 def date_plus_days(today_str: str, days: int) -> str:
-    return date_str(parse_date(today_str) + timedelta(days=days))
+    return (date.fromisoformat(today_str) + timedelta(days=days)).isoformat()
 
 
 def get_week_start(today_str: str) -> str:
-    d = parse_date(today_str)
-    monday = d - timedelta(days=d.weekday())
-    return date_str(monday)
+    d = date.fromisoformat(today_str)
+    return (d - timedelta(days=d.weekday())).isoformat()
 
 
-def normalize_milestones(session: dict) -> list:
-    """Validate + canonicalize session['milestones'] in place.
+def session_totals(session: dict) -> tuple:
+    """(exercises, correct) summed across every skill in skill_scores."""
+    scores = session.get("skill_scores", {}).values()
+    return (sum(s.get("exercises", 0) for s in scores),
+            sum(s.get("correct", 0) for s in scores))
 
-    Each entry must be a bare non-empty string; it is dated with the session
-    date and stamped with the authoritative top-level session_id. Malformed
-    entries exit 1 (validation error) before any DB is touched.
 
-    Each canonical dict carries a private '_achievement_id' key used by
-    update_learner_profile; it is harmless because `session` is never persisted
-    (only the 6 DBs are written).
+def validate_milestones(session: dict) -> None:
+    """Normalize session['milestones'] to a list of clean non-empty strings.
+
+    Malformed entries exit 1 (validation error) before any DB is touched. The
+    session date and top-level session_id stamp every milestone downstream.
     """
     raw = session.get("milestones", [])
-    if not raw:
-        session["milestones"] = []
-        return []
     if not isinstance(raw, list):
         print(f"[Fluent] Error: 'milestones' must be a list, got {type(raw).__name__}", file=sys.stderr)
         sys.exit(1)
-
-    outer_date = session["date"]
-    outer_sid = session["session_id"]
-    normalized = []
-
     for i, ms in enumerate(raw):
         if not isinstance(ms, str) or not ms.strip():
             print(f"[Fluent] Error: milestone at index {i} must be a non-empty string "
                   f"(got {type(ms).__name__}) — pass a plain string; the "
                   f"'milestone'/'date' object form is no longer accepted", file=sys.stderr)
             sys.exit(1)
-        text = ms.strip()
-        slug = re.sub(r'[^a-z0-9]+', '_', text[:30].lower()).strip('_') or "milestone"
-        normalized.append({
-            "date": outer_date,
-            "milestone": text,
-            "session_id": outer_sid,
-            "_achievement_id": f"session_{outer_sid}_{i}_{slug}",
-        })
-
-    session["milestones"] = normalized
-    return normalized
+    session["milestones"] = [ms.strip() for ms in raw]
 
 
 def backup_all(tag: str):
@@ -154,20 +129,22 @@ def update_learner_profile(profile: dict, session: dict):
     if session.get("focus_areas"):
         profile["focus_areas"] = session["focus_areas"]
 
-    for m in session.get("milestones", []):
+    for i, text in enumerate(session.get("milestones", [])):
+        # Index prefix keeps ids distinct when two milestones share their first
+        # 30 chars or slugify to nothing (all-non-Latin text).
+        slug = re.sub(r'[^a-z0-9]+', '_', text[:30].lower()).strip('_') or "milestone"
         profile.setdefault("achievements", []).append({
-            "id": m["_achievement_id"],
-            "name": m["milestone"],
-            "earned_date": m["date"],
-            "description": m["milestone"],
+            "id": f"session_{session['session_id']}_{i}_{slug}",
+            "name": text,
+            "earned_date": today,
+            "description": text,
         })
 
 
 def update_progress_db(progress: dict, session: dict):
     today = session["date"]
     skill_scores = session.get("skill_scores", {})
-    total_ex = sum(s.get("exercises", 0) for s in skill_scores.values())
-    total_cor = sum(s.get("correct", 0) for s in skill_scores.values())
+    total_ex, total_cor = session_totals(session)
     accuracy = round(total_cor / total_ex, 3) if total_ex > 0 else 0.0
 
     stats = progress.setdefault("overall_stats", {
@@ -431,8 +408,7 @@ def update_session_log(log: dict, session: dict, streak: int):
     topics_covered, breakthroughs, focus_next_session, achievements_earned."""
     today = session["date"]
     skill_scores = session.get("skill_scores", {})
-    total_ex = sum(s.get("exercises", 0) for s in skill_scores.values())
-    total_cor = sum(s.get("correct", 0) for s in skill_scores.values())
+    total_ex, total_cor = session_totals(session)
 
     score_breakdown = {
         skill: round(s["correct"] / s["exercises"], 3) if s.get("exercises", 0) > 0 else 0.0
@@ -462,11 +438,11 @@ def update_session_log(log: dict, session: dict, streak: int):
 
     log.setdefault("sessions", []).append(entry)
 
-    for m in session.get("milestones", []):
+    for text in session.get("milestones", []):
         log.setdefault("milestones", []).append({
-            "date": m["date"],
-            "milestone": m["milestone"],
-            "session_id": m["session_id"],
+            "date": today,
+            "milestone": text,
+            "session_id": session["session_id"],
         })
 
     log.setdefault("metadata", {})["total_sessions"] = len(log["sessions"])
@@ -486,9 +462,9 @@ def main():
             print(f"[Fluent] Error: Missing required field '{field}'", file=sys.stderr)
             sys.exit(1)
 
-    # Validate + canonicalize milestones before touching any DB (exits 1 on
-    # malformed input, so disk stays untouched on a validation failure).
-    normalize_milestones(session)
+    # Validate milestones before touching any DB (exits 1 on malformed input,
+    # so disk stays untouched on a validation failure).
+    validate_milestones(session)
 
     session.setdefault("duration_minutes", 0)
 
@@ -536,20 +512,15 @@ def main():
 
     # Summary
     stats = data["progress"]["overall_stats"]
-    sr_tomorrow = len(data["sr"]["review_queue"].get("tomorrow", []))
-    skill_scores = session.get("skill_scores", {})
-    total_ex = sum(s.get("exercises", 0) for s in skill_scores.values())
-    total_cor = sum(s.get("correct", 0) for s in skill_scores.values())
+    total_ex, total_cor = session_totals(session)
+    hit = f"{total_cor}/{total_ex} correct ({round(total_cor / total_ex * 100)}%)" if total_ex else "no exercises"
 
     print(f"[Fluent] ✅ Updated 6 databases for session {session['session_id']}")
     print(f"[Fluent] 🔥 Streak: {streak} days | Sessions: {stats['total_sessions']} | Minutes: {stats['total_study_minutes']}")
-    if total_ex > 0:
-        print(f"[Fluent] 📊 This session: {total_cor}/{total_ex} correct ({round(total_cor/total_ex*100)}%)")
-    else:
-        print("[Fluent] 📊 No exercises recorded")
-    print(f"[Fluent] 📈 Overall accuracy: {stats['accuracy_rate']*100:.0f}% ({stats['total_exercises']} exercises)")
-    print(f"[Fluent] 🧠 SR: {data['sr']['metadata']['total_items_tracked']} items tracked, {sr_tomorrow} due tomorrow")
-    print(f"[Fluent] 📝 Errors tracked: {data['mistakes']['metadata']['total_patterns_tracked']} patterns")
+    print(f"[Fluent] 📊 This session: {hit} | Overall: {stats['accuracy_rate']*100:.0f}% of {stats['total_exercises']}")
+    print(f"[Fluent] 🧠 SR: {data['sr']['metadata']['total_items_tracked']} items, "
+          f"{len(data['sr']['review_queue'].get('tomorrow', []))} due tomorrow | "
+          f"📝 {data['mistakes']['metadata']['total_patterns_tracked']} error patterns")
 
     sys.exit(0)
 

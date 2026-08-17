@@ -96,21 +96,6 @@ python3 -c "import sys; sys.path.insert(0, '.claude/hooks'); from fluent_paths i
 
 ---
 
-## ✨ Key Features
-
-- 🎯 **Multi-Language Support** - Learn any language (French, Spanish, German, Japanese, Korean, Arabic, Dutch, etc.)
-- 📊 **Comprehensive Tracking** - Automatic progress monitoring with detailed statistics
-- 🧠 **Spaced Repetition** - FSRS-6 algorithm schedules reviews just before you forget
-- 🎮 **Gamification** - Streaks, achievements, mastery levels (0-5 stars)
-- 🔄 **Adaptive Difficulty** - Automatically adjusts to your performance (targets 60-70% success rate)
-- 📝 **Multi-Modal Practice** - Writing, speaking, vocabulary, reading, listening
-- ⚡ **Immediate Feedback** - Clear explanations with every correction
-- 🎨 **Interactive Sessions** - One question at a time, conversational feel
-- 📈 **Progress Visualization** - Detailed statistics and trend analysis
-- 💾 **Automatic Backups** - Hooks ensure your data is always safe
-
----
-
 ## 📚 How It Works
 
 ### The Learning Loop
@@ -236,97 +221,8 @@ The AI follows these guides:
 
 - **Skills** (`.claude/skills/`) — 12 skills total. 8 learner-facing (`/fluent-setup`, `/fluent-learn`, `/fluent-vocab`, `/fluent-writing`, `/fluent-speaking`, `/fluent-reading`, `/fluent-review`, `/fluent-progress`) run when you invoke them. 4 helper skills (`/fluent-fsrs-reference`, `/fluent-feedback-formatter`, `/fluent-db-updater`, `/fluent-session-analyzer`) auto-load whenever Claude needs them during a session — and are also directly `/`-invokable if you want to read the reference.
 - **Plugin manifests** (`.claude-plugin/`) — `plugin.json` + `marketplace.json` make Fluent installable via `/plugin marketplace add aymkin/fluent`.
-- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, SessionEnd session summary, PostToolUse JSON validation + timestamped backups. `hooks.json` is the single registration for both install paths, wired in through `plugin.json`.
+- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, PostToolUse JSON validation + timestamped backups. `hooks.json` is the single registration for both install paths, wired in through `plugin.json`. Backup layers and recovery: [`.claude/hooks/README.md`](.claude/hooks/README.md).
 - **Session Results** (`/results/`) — Detailed practice logs per session, parsed by `fluent-session-analyzer` to plan future sessions.
-
----
-
-## 🎯 Learning Principles
-
-### Spaced Repetition (FSRS-6 Algorithm)
-
-**Example progression for a difficult word:**
-
-```
-Day 1:  Make a mistake → Review tomorrow (interval = 1 day)
-Day 2:  Answer correctly → Review in 6 days
-Day 8:  Correct again → Review in 2 weeks
-Day 22: Still remember → Monthly review (mastered!)
-```
-
-The system tracks for each item:
-- **Stability** - How long the memory is expected to last
-- **Difficulty** - How hard the item is for YOU specifically
-- **Interval Days** - When to review next
-- **Repetitions** - Practice count
-- **Quality Score** - Your performance (0-5)
-
-### Mastery Levels
-
-Every skill and pattern gets a star rating:
-
-- ⭐☆☆☆☆ (1) - Just started
-- ⭐⭐☆☆☆ (2) - Learning
-- ⭐⭐⭐☆☆ (3) - Good understanding
-- ⭐⭐⭐⭐☆ (4) - Strong skill
-- ⭐⭐⭐⭐⭐ (5) - Mastered!
-
-### Adaptive Difficulty
-
-The system automatically adjusts:
-
-- **Success rate 40-50%** → Too hard, makes easier
-- **Success rate 60-70%** → Perfect challenge! ✨
-- **Success rate 80-90%** → Too easy, makes harder
-
-**Goal:** Keep you in the "sweet spot" where learning happens.
-
----
-
-## 🔬 Technical Details
-
-### Technology Stack
-
-- **Platform:** Claude Code (Anthropic), installable as a plugin or by clone
-- **AI Model:** Claude (any Claude Code-supported model)
-- **Data Format:** JSON (human-readable)
-- **Skills:** Markdown `SKILL.md` files with YAML frontmatter (12 total — 8 learner-facing + 4 helper)
-- **Hooks:** Python (stdlib only), triggered on SessionStart / SessionEnd / PostToolUse
-- **Algorithm:** FSRS-6 (Free Spaced Repetition Scheduler)
-- **Version Control:** Git
-
-### Data Privacy & Security
-
-- ✅ **All data stays local** on your machine
-- ✅ **No external API calls** (except Claude Code itself)
-- ✅ **Automatic .gitignore** prevents committing personal data
-- ✅ **Automatic backups** to `.backups/` directory
-- ✅ **No tracking, no analytics, no telemetry**
-
-### Hooks System (Automated Data Management)
-
-Fluent uses intelligent Claude Code hooks to ensure your data is always safe and validated:
-
-**🔄 PostToolUse Hook** (after every Write/Edit)
-- ✅ Creates timestamped backup: `data/file.json.backup-20231117-143022`
-- ✅ Validates JSON structure automatically
-- ✅ Alerts you immediately if data is malformed
-
-**📦 SessionEnd Hook** (when you finish practicing)
-- ✅ Displays session summary with current streak
-- ✅ Shows total practice sessions completed
-
-**🌅 SessionStart Hook** (when you begin)
-- ✅ Welcome message with your name and stats
-- ✅ Shows current language, level, and streak
-- ✅ Alerts you if reviews are due today
-
-**🗄️ `update-db.py`** (once per session end)
-- ✅ Snapshots every database to `.backups/pre-update-{session_id}/` before writing
-
-**You'll never lose your progress.** All backups are automatic and excluded from git.
-
-See [`.claude/hooks/README.md`](.claude/hooks/README.md) for technical details.
 
 ---
 
@@ -362,45 +258,6 @@ claude plugin validate fluent@aymkin
 ```
 
 Or from inside a session: `/plugin list`. If the plugin is disabled, enable it: `claude plugin enable fluent@aymkin`.
-
----
-
-## 🔗 Useful Links
-
-- [Claude Code Documentation](https://code.claude.com/docs)
-- [Claude Code Plugins](https://code.claude.com/docs/en/plugins)
-- [FSRS Algorithm](https://github.com/open-spaced-repetition/fsrs4anki/wiki) — current scheduler
-- [SM-2 Algorithm](https://www.supermemo.com/en/archives1990-2015/english/ol/sm2) — Fluent's original scheduler
-- [CEFR Levels](https://www.coe.int/en/web/common-european-framework-reference-languages/level-descriptions)
-- [Spaced Repetition Research](https://www.gwern.net/Spaced-repetition)
-- [Active Recall Benefits](https://en.wikipedia.org/wiki/Testing_effect)
-
----
-
-## ❓ FAQ
-
-**Q: How is this different from Duolingo/Babbel/etc?**
-A: It’s ultra-minimalistic, just a terminal and pure learning. No extra distributions, no ads, no gimmicks. Infinitely adaptable. You ask it to teach you something, and it does. And best of all, everything stays private on your machine.
-
-**Q: Do I need to know how to code?**
-A: No! Just install Claude Code and run `/fluent-setup`. That's it.
-
-**Q: How long until I see progress?**
-A: Most learners see measurable improvement within the first week. The system tracks everything so you can see exactly how you're improving.
-
-**Q: Can I use this for exam preparation?**
-A: Yes! The system adapts to your goals. Tell it you're preparing for DELE/DELF/TestDaF/etc. and it'll focus on exam-relevant content.
-
-**Q: Is my data safe?**
-A: Absolutely. Everything stays on your machine. No cloud storage, no external servers (except Claude Code itself).
-
-**Q: Can I export my progress?**
-A: Yes! All data is in human-readable JSON. You can export, analyze, or migrate it anytime.
-
-**Q: Can I use Open AI's Codex CLI  or Gemini CLI instead of Claude Code?**
-A: We have AGENTS.md for instructing other AI CLIs as well, but this kit is specifically optimized for 
-Claude Code and its unique capabilities. Using other AI platforms may not yield the same results. 
-But feel free to experiment and share your findings!
 
 ---
 

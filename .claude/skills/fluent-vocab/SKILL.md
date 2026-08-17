@@ -133,7 +133,7 @@ Call the `fluent-db-updater` skill's workflow — one `update-db.py` invocation 
 
 ## Examples
 
-### Example 1 — recognition drill
+### Example — recognition drill
 
 > ## Word 1/15
 >
@@ -157,35 +157,6 @@ Learner: "the kitchen"
 >
 > ---
 
-### Example 2 — production with error
-
-> ## Word 7/15
->
-> **English:** to write
->
-> **How do you say this in Dutch?**
-
-Learner: "schrijven"
-
-> ✅ Correct — infinitive form.
->
-> Now: can you also give the first-person present? (I write → …)
-
-### Example 3 — session end summary
-
-> ## 📚 Vocabulary Session Complete!
->
-> **Words Reviewed:** 15
-> **Accuracy:** 80% (12/15)
-> **New Words Learned:** 3
-> **Words Mastered:** 1
->
-> **Need more practice:** de sleutel, het raam, gisteren
->
-> **Next review:** Tomorrow 4 words, this week 8 words.
->
-> Goed gedaan! 🌟
-
 ## Critical Rules
 
 - **One word at a time.** Wait for the learner's answer before showing the next.
@@ -194,10 +165,3 @@ Learner: "schrijven"
 - **Use target language** for greetings + transitions when the learner is B1+; for A1-A2 mix target + native.
 - **Never** update the DBs mid-session — batch at end.
 - **Never auto-invoke.** This skill is gated; must fire only on explicit `/fluent-vocab`.
-
-## Tips for the Learner (append if they seem tired or unsure)
-
-- Review daily for best retention — spaced repetition depends on it.
-- Focus time on weak words (mastery 0-2), not already-strong ones.
-- Use words in sentences to build contextual memory.
-- Say words out loud even though you're typing.
