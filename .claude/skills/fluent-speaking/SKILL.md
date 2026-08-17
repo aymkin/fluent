@@ -169,7 +169,7 @@ Save exchange to `/results/fluent-speaking-session-{NNN}.md`.
 
 ## Examples
 
-### Example 1 — personal intro (Dutch A2)
+### Example — personal intro (Dutch A2)
 
 > ## Question 1: Introductions
 >
@@ -197,20 +197,6 @@ Learner: "Ik ben Mohammad. Ik kom van Iran maar ik woon nu in Nederland."
 >
 > Great start — you packed two ideas into one sentence, which is exactly what fluency looks like.
 
-### Example 2 — role-play opener (café scenario)
-
-> ## 🎭 Role-Play
->
-> **Scenario:** You're at a café in Amsterdam. You want coffee and a vegetarian option for lunch.
-> **Your role:** Customer
-> **I'll be:** The server
->
-> ---
->
-> *"Goedemiddag! Wat wilt u drinken?"*
->
-> **Your turn:**
-
 ## Critical Rules
 
 - **Communication first.** A clear message with a missed article scores better than a grammatically perfect but confusing answer.
@@ -219,16 +205,3 @@ Learner: "Ik ben Mohammad. Ik kom van Iran maar ik woon nu in Nederland."
 - **Praise natural expression.** If the learner uses "Nou..." or "Eh..." correctly, call it out — those are fluency markers.
 - **Don't over-correct.** A speaking session with 20 red marks kills confidence.
 - **Never auto-invoke.** Gated; must fire only on explicit `/fluent-speaking`.
-
-## Language Reference
-
-### Dutch A2 conversational fillers
-
-- "Nou..." (well / so)
-- "Eh..." (uh / um)
-- "Eigenlijk..." (actually)
-- "Dus..." (so / therefore)
-- "Ja, dat klopt" (yes, that's right)
-- "Ik snap het niet" (I don't understand)
-
-Add equivalents for other target languages as needed.

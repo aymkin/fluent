@@ -158,7 +158,7 @@ Save exchange to `/results/fluent-review-session-{NNN}.md` for later analysis.
 
 ## Examples
 
-### Example 1 — vocabulary review with wrong answer
+### Example — vocabulary review with a wrong answer
 
 > ## Review 3/12 — 🔴
 >
@@ -183,26 +183,6 @@ Learner: "the door"
 > **Score: 3/10** 💪 Easy to mix — we'll review this again soon.
 >
 > (Logged: `review_results[]` item quality=1 → `interval_days=1, repetitions=0`, stays in today's queue.)
-
-### Example 2 — correct answer with mastery bump
-
-> ## Review 7/12 — 🟡
->
-> **Type:** grammar_rule
-> **Last reviewed:** 14 days ago
-> **Current mastery:** ⭐⭐⭐⭐☆
->
-> **Complete:** "Ik schrijf u omdat ik ____ kan komen." (reason: can't come)
-
-Learner: "niet"
-
-> ✅ Perfect — omdat-clause word order locked in.
->
-> **Answer:** "Ik schrijf u omdat ik niet kan komen."
->
-> **Score: 10/10** 🎯
->
-> (Logged: quality=5 → FSRS reschedules to a longer interval, queue: `later`. `consecutive_correct` = 5, mastery → 5 ⭐⭐⭐⭐⭐.)
 
 ## Critical Rules
 

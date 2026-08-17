@@ -157,21 +157,10 @@ Also save the exchange as `/results/fluent-writing-session-{NNN}.md` with the fu
 
 ## Examples
 
-### Example 1 — formal email task (Dutch A2)
+### Example — formal email task (Dutch A2)
 
-> ## ✍️ Writing Exercise
->
-> **Scenario:** You need to cancel a doctor's appointment you have on Thursday.
->
-> **Task:** Write a formal email to the doctor's office in Dutch.
->
-> **Requirements:**
-> - Length: 40-60 words
-> - Include: greeting, reason, request for new appointment, closing
-> - Register: formal
-> - Level: A2
->
-> **Write your email below:**
+Task set from the template above: cancel a doctor's appointment, formal
+register, A2, 40-60 words, must include greeting / reason / request / closing.
 
 Learner: "Hallo, Ik schrijf je omdat ik kan niet komen op donderdag. Ik ben ziek. Kunnen we een andere dag afspreken? Bedankt, Mohammad"
 
@@ -218,15 +207,3 @@ Learner: "Hallo, Ik schrijf je omdat ik kan niet komen op donderdag. Ik ben ziek
 - **Severity tagging is mandatory.** Fed into `mistakes-db` and drives spaced repetition priority.
 - **Always save the session file** in `/results/` for later analysis by `fluent-session-analyzer`.
 - **Never auto-invoke.** This skill is gated; must fire only on explicit `/fluent-writing`.
-
-## Language Reference
-
-### Dutch A2 patterns
-
-**Formal emails:** always "u" (not "je"); open `Beste meneer/mevrouw {NAME},`; closing `Met vriendelijke groet,` + name.
-
-**Informal emails:** "je" not "u"; open `Hallo {NAME},`; closing `Groetjes,` or `Tot snel,`.
-
-**Common mistakes:** mixing formal/informal in one text; word order in `omdat` clauses (verb last); time expressions (`om 10:00 uur`, `op dinsdag`).
-
-Add similar sections for other target languages as the learner needs them.

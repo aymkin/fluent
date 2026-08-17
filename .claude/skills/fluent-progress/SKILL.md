@@ -53,91 +53,40 @@ Use this exact structure. Fill in values from the databases; compute percentages
 
 **Last Updated:** {today}
 
----
-
 ## 🎯 Overview
 
-**Current Level:** {current_level}
-**Target Level:** {target_level}
-**Progress to {next_level}:** {progress_bar} {percentage}%
-
-**Days Studying:** {total_days}
-**Current Streak:** 🔥 {streak_days} {day_or_days} {streak_message}
-**Total Sessions:** {total_sessions}
-**Total Study Time:** {total_minutes} minutes ({hours} hours)
-
----
+**Level:** {current_level} → {target_level} · {progress_bar} {percentage}%
+**Streak:** 🔥 {streak_days} {day_or_days} {streak_message}
+**Total:** {total_sessions} sessions · {total_minutes} min ({hours} h) over {total_days} days
 
 ## 💪 Skills Mastery
 
-### Writing ✍️
-**Level:** {n}/5 {stars}
-**Accuracy:** {percent}%
-**Progress:** {progress_bar}
-**Last Practiced:** {date_or_never}
+One block per skill practised (writing ✍️ / speaking 🗣️ / vocabulary 📚 / reading 👀):
 
-### Speaking 🗣️
-**Level:** {n}/5 {stars}
-**Accuracy:** {percent}%
-**Progress:** {progress_bar}
-**Last Practiced:** {date_or_never}
+### {Skill} {emoji}
+**Level:** {n}/5 {stars} · **{Accuracy|Comprehension}:** {percent}% · **Last practiced:** {date}
+{progress_bar}
 
-### Vocabulary 📚
-**Level:** {n}/5 {stars}
-**Words Known:** {count}
-**Words Mastered:** {count}
-**Progress:** {progress_bar}
-**Last Practiced:** {date_or_never}
-
-### Reading 👀
-**Level:** {n}/5 {stars}
-**Comprehension:** {percent}%
-**Progress:** {progress_bar}
-**Last Practiced:** {date_or_never}
-
----
+Vocabulary also gets **Words known** / **Words mastered**.
 
 ## 📈 Progress Trends
 
-### Accuracy Over Time
-{generate ASCII chart from progress-db weekly_summary}
-
-### This Week's Summary
-- **Sessions:** {count}
-- **Minutes:** {total}
-- **Exercises:** {count}
-- **Accuracy:** {percent}%
-- **Skills Practiced:** {list}
-
----
+ASCII accuracy chart from `progress-db.weekly_summary`, then this week:
+{sessions} sessions · {minutes} min · {exercises} exercises · {percent}% · skills: {list}
 
 ## 🎯 Focus Areas
 
-### 🔴 Critical (Needs Urgent Attention)
-{patterns from mistakes-db with mastery 0-1 and high frequency}
+Group `mistakes-db.error_patterns` by mastery: 🔴 Critical (0-1, high frequency),
+🟡 Working on (2-3), 🟢 Strong (4-5).
 
-### 🟡 Working On (Making Progress)
-{patterns from mistakes-db with mastery 2-3}
+## 🔄 Spaced Repetition
 
-### 🟢 Strong (Almost Mastered)
-{patterns from mistakes-db with mastery 4-5}
+**Due today:** {count} · **Due this week:** {count} · **Mastered:** {count}
 
----
-
-## 🔄 Spaced Repetition Status
-
-**Items Due Today:** {count}
-**Items Due This Week:** {count}
-**Items Mastered:** {count}
-
----
-
-## 🏆 Achievements Unlocked
+## 🏆 Achievements
 
 {list from learner-profile → achievements; if empty, say so — achievements are
 earned from the milestones recorded at session end, there is no fixed catalogue}
-
----
 
 ## 📅 Session History
 
@@ -145,28 +94,14 @@ earned from the milestones recorded at session end, there is no fixed catalogue}
 |------|----------|-------|----------|
 {most recent 5-10 sessions from session-log}
 
----
+## 🎯 Next Goals & Recommendations
 
-## 🎯 Next Goals
-
-**Short-term (This Week):**
-{derive from weak patterns + due reviews}
-
-**Medium-term (This Month):**
-{derive from skill mastery gaps}
-
-**Long-term:**
-{derive from target level gap}
-
----
-
-## 💡 Recommendations
+**This week:** {weak patterns + due reviews} · **This month:** {skill mastery gaps}
+· **Long-term:** {target level gap}
 
 1. {top weak area from mistakes-db}
 2. {skill not practiced recently}
 3. {due review count if > 0}
-
----
 
 "{personalized motivational message}"
 ```
@@ -219,7 +154,3 @@ Learner: "how am I doing on Dutch?" → auto-invoke this skill, render the full 
 - **Skip sections with no data.** If speaking hasn't been practiced, show "Not yet practiced" — don't fabricate numbers.
 - **Cite the learner by name** from `learner-profile.json`.
 - **Use target-language greetings** where natural (e.g. "Goed gedaan!" for Dutch).
-
-## Why This Skill Auto-Invokes
-
-Unlike session commands, this is a pure read. A false-positive (Claude opens the dashboard when the learner asked something else) costs only a few tokens — no DB corruption, no interrupted practice. Worth the lower trigger bar.

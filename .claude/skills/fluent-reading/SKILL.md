@@ -206,30 +206,10 @@ Save to `/results/fluent-reading-session-{NNN}.md` — include the full text + Q
 
 ## Examples
 
-### Example 1 — personal email text (Dutch A2)
+### Example — main-idea question
 
-> ## 📄 Reading Text 1
->
-> **Topic:** Making weekend plans
-> **Type:** Personal email
-> **Length:** ~75 words
->
-> ---
->
-> Beste Mohammad,
->
-> Bedankt voor je email! Leuk dat je naar Amsterdam komt volgende maand. Ik heb tijd op zaterdag 15 maart. Zullen we om 14:00 uur afspreken bij het Centraal Station? We kunnen naar een café gaan en daarna door de stad wandelen.
->
-> Het weer is meestal koud in maart, dus neem een warme jas mee! Ik verheug me erop om je te zien.
->
-> Groetjes,
-> Lisa
->
-> ---
->
-> Take your time. When you're done, type **"ready"**.
-
-### Example 2 — main-idea question on the above
+The text was a short Dutch email in which Lisa proposes meeting Mohammad in
+Amsterdam on Saturday 15 March, and mentions that March is usually cold.
 
 > ## Vraag 1: Hoofdidee
 >
@@ -256,26 +236,5 @@ Learner: "b"
 - **Ask questions in the target language** (at least from A2 up). Reading-comprehension checks should happen in the same language as the text.
 - **Quote the text** in explanations so the learner can trace the answer back to the source.
 - **Vocabulary opt-in.** Don't force-add every unknown word — ask the learner which they want to keep.
+- **Don't reuse a text** in consecutive sessions; vary topic and text type.
 - **Never auto-invoke.** Gated; must fire only on explicit `/fluent-reading`.
-
-## Sample Text Bank (Dutch A2)
-
-### Advertisement
-```
-CURSUS NEDERLANDS VOOR BEGINNERS
-
-Wil je Nederlands leren? Start deze maand nog!
-
-- Kleine groepen (max 8 personen)
-- Ervaren docenten
-- 2x per week, 's avonds
-- Locatie: Centrum Amsterdam
-- Prijs: €150 per maand
-
-Aanmelden kan via email: info@nederlandscursus.nl
-Bel voor meer informatie: 020-123-4567
-
-Eerste les gratis!
-```
-
-Keep a small bank per target language — don't reuse the same text in consecutive sessions.
