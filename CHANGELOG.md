@@ -68,6 +68,19 @@ All notable changes to Fluent will be documented in this file.
   `.claude/references/` files that duplicated the session-file format and the
   feedback template verbatim. `AGENTS.md` is now a 44-line pointer for
   non-Claude CLIs instead of a 470-line restatement of `LEARNING_SYSTEM.md`.
+- **The end-of-session banner is gone.** The SessionEnd hook printed your streak
+  and total session count when you closed Claude Code — both are a subset of
+  what the SessionStart banner shows on the way in, and `update-db.py` already
+  prints them when it saves your session. Nothing about your data changes.
+- A third pass of duplicated documentation, ~1160 lines. The six-database table
+  had copies in five files, the eight-command list in three, and the six
+  learning principles in three; each now has one home. `LEARNING_SYSTEM.md`
+  576 → 310 → 150 (the sections that had become one-line pointers are gone;
+  `CLAUDE.md` keeps the principles, each `SKILL.md` keeps its own flow),
+  `README.md` 501 → 408 → 264 (Key Features, Learning Principles, Technical
+  Details, FAQ), `data/README.md` 133 → 30, `.claude/hooks/README.md` 200 → 105,
+  and the Dutch-specific appendices in `fluent-reading` / `fluent-speaking` /
+  `fluent-writing` — the same thing `PRACTICE.md` was deleted for.
 
 ### Changed
 
@@ -78,6 +91,9 @@ All notable changes to Fluent will be documented in this file.
 - `read-db.py` no longer emits `computed.days_since_last_session`, which no
   skill consumed. `due_reviews_count`, `next_session_id`, `streak_active`, and
   `today` are unchanged.
+- The plugin's marketplace keywords no longer list seven individual languages
+  (Dutch, Spanish, French, …) in a kit that works with any of them. Search by
+  `language-learning`, `spaced-repetition`, `fsrs`, `tutor` or `flashcards`.
 
 ### Performance
 
@@ -124,6 +140,12 @@ All notable changes to Fluent will be documented in this file.
 - The SM-2 → FSRS-6 migration set `metadata.scheduler = "fsrs-6"` but never
   updated the neighboring `metadata.algorithm`, which stayed `"SM-2"` even after
   the scheduler had fully switched. Both are stamped in existing data.
+- `data/README.md` documented a `session-log.json` entry keyed by `id`; the key
+  `update-db.py` actually writes is `session_id`. It also called the directory
+  "empty by design", which is only true for a git clone — a plugin install keeps
+  your six databases in `~/.claude/fluent-data/`. Both corrected, and the
+  hand-copied schema now points at `data-examples/`, the one place the templates
+  are maintained.
 
 ## [0.3.0] — 2026-06-15
 
