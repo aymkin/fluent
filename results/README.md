@@ -1,138 +1,154 @@
 # Session Results Directory
 
-This directory contains detailed logs from your practice sessions.
+This directory holds a markdown transcript of every practice session. It is empty by
+design until you finish your first session.
 
-## 🚀 Getting Started
+It is also the **canonical definition of the session-file format** — the
+`fluent-session-analyzer` skill parses these files to plan your next session, so the
+structure below has to stay consistent.
 
-**This directory is empty by design!**
+## 📛 File naming
 
-After each practice session, the system automatically creates a detailed result file here:
+```
+/results/fluent-{skill}-session-{NNN}.md
+```
 
-- `session-001.md` - Your first session
-- `session-002.md` - Your second session
-- `session-003.md` - And so on...
+Examples:
 
-## 📝 What's in a Session Result File?
+- `fluent-writing-session-012.md`
+- `fluent-vocab-session-005.md`
+- `fluent-speaking-session-003.md`
+- `fluent-review-session-042.md`
+- `fluent-learn-session-018.md`
+- `fluent-reading-session-007.md`
 
-Each file contains comprehensive tracking of your practice session:
+`NNN` is the **global** session counter (not per-skill) — it matches `session_id` in
+`session-log.json`.
 
-### Example Structure:
+> Files created before v0.2.0 may use the older `{skill}-session-{NNN}.md` naming (no
+> `fluent-` prefix). The analyzer reads both — do not rename existing files.
+
+## 📝 Required structure
 
 ```markdown
-# Language Learning Session - 001
+# {Skill} Practice Session {NNN}
 
-**Date:** 2025-11-17
-**Duration:** 30 minutes
-**Skill:** Writing Practice
-**Language:** Spanish
+**Date:** YYYY-MM-DD
+**Duration:** {X} minutes
+**Skill:** {writing/speaking/vocab/reading/review/learn}
+**Command:** {/fluent-writing, /fluent-speaking, etc.}
+
+---
 
 ## Session Summary
-- Questions: 10
-- Correct: 8
-- Accuracy: 80%
-- Improvement: +15% from last session
+- Questions: {Y}
+- Correct: {Z}
+- Accuracy: {percent}%
+
+---
 
 ## Questions & Answers
 
-### Question 1: Past Tense Translation
-**Your answer:** "Yo fue al mercado ayer"
-**Correct answer:** "Yo fui al mercado ayer"
-**Score:** 8/10
-**Feedback:** Good attempt! Just need the correct conjugation of "ir"...
+### Question 1: {Type}
 
-[... all 10 questions ...]
+**Prompt:** {what the learner was asked}
+**Your answer:** "{what they wrote}"
+**Correct answer:** "{correct version}"
 
-## Error Analysis
+**Analysis:**
+- ❌ {error with severity emoji} — {correction} ({category})
+- ✅ {what was correct}
 
-| Pattern | Category | Frequency | Mastery Level |
-|---------|----------|-----------|---------------|
-| Irregular verbs (past) | Grammar | 2 times | ⭐⭐⭐☆☆ (3) |
-| Article agreement | Grammar | 1 time | ⭐⭐⭐⭐☆ (4) |
+**Score:** {X}/10
+
+---
+
+### Question 2: {Type}
+
+[repeat]
+
+---
+
+## Error Pattern Summary
+
+| Pattern | Category | Severity | Count This Session |
+|---------|----------|----------|--------------------|
+| {pattern} | {category} | 🔴/🟡/🟢 | {N} |
+
+## Strengths
+
+| Skill | Evidence |
+|-------|----------|
+| {skill} | {what the learner did well} |
 
 ## Progress Tracking
 
 **Improvements:**
-- Past tense accuracy: 60% → 80%
-- Vocabulary recall getting faster
+- {what improved compared to last session}
 
 **Focus Areas:**
-- Practice irregular verb conjugations
-- Review ser vs estar
+- {what needs work}
 
 **Next Session:**
-- More past tense practice
-- Introduce present perfect
+- {recommended focus}
 ```
+
+## 🔍 Key parsing markers
+
+The `fluent-session-analyzer` skill relies on these exact markers being present:
+
+- `❌` — error line (parsed for category + severity)
+- `✅` — strength line
+- `**Score:** {X}/10` — per-question score
+- `**Accuracy:** {percent}%` — session accuracy
+- `| 🔴` / `| 🟡` / `| 🟢` — severity in tables
+- `**Focus Areas:**` — cue for next-session planning
+
+Do not rename these headings or reorder sections. Changes break the analyzer.
+
+## 🔗 Interaction with the databases
+
+Session files are **markdown narrative**. The JSON databases (`mistakes-db.json`,
+`mastery-db.json`, …) hold aggregated counts and FSRS scheduling state. Both must be
+updated — the markdown records the story, the JSON records the numbers.
+
+Call `.claude/hooks/update-db.py` once at session end with a full payload (see
+`.claude/references/db-updater-payload.example.json`). The script handles the JSON side;
+the practice skill handles the markdown side. The `fluent-db-updater` skill documents
+the payload schema.
 
 ## 🔒 Privacy
 
-**All files in this directory are private!**
+- ✅ Listed in `.gitignore` — won't be committed to git
+- ✅ Stays on your machine — no external sync
+- ✅ Human-readable Markdown — easy to read and review
 
-- ✅ Listed in `.gitignore` - Won't be committed to git
-- ✅ Stays on your machine - No external sync
-- ✅ Human-readable Markdown - Easy to read and review
-- ✅ Automatically backed up - See `.backups/` directory
+## 🔎 How to use your results
 
-## 📊 Why Keep Session Results?
-
-These files help you:
-
-1. **Review your progress** - See exactly what you practiced
-2. **Track patterns** - Identify recurring mistakes
-3. **Measure improvement** - Compare sessions over time
-4. **Study specific areas** - Review explanations for mistakes
-5. **Motivate yourself** - See how far you've come!
-
-## 🔍 How to Use
-
-**Reading your results:**
 ```bash
 # View your latest session
-cat results/session-001.md
+cat results/fluent-writing-session-012.md
 
-# Search for specific topics
+# Search for a specific topic
 grep "past tense" results/*.md
 
 # Count total sessions
 ls results/*.md | wc -l
 ```
 
-**Analyzing patterns:**
-- Look for recurring errors across multiple sessions
-- Notice improvements in accuracy over time
-- Identify which skills need more practice
-
-## 📁 File Format
-
-Files are in **Markdown format** (`.md`):
-- Easy to read in any text editor
-- Can be opened in VS Code, Obsidian, etc.
-- Contains tables, formatted text, emojis
-- Supports code blocks and formatting
-
-## ⚠️ Important Notes
-
-- **Don't delete these files** - They're your learning history!
-- **Don't edit manually** - Let the system create them
-- **Review regularly** - Check your progress weekly
-- **Backup if needed** - Copy entire `/results` directory
-
-## 🎯 Tips
-
 **Weekly review routine:**
+
 1. Read your last 5 session files
 2. Note common error patterns
 3. Celebrate improvements
 4. Adjust your practice focus
 
-**Monthly milestone:**
-1. Compare first session vs latest
-2. Calculate improvement percentage
-3. Unlock achievements based on progress
-4. Set new goals for next month
+## ⚠️ Important notes
+
+- **Don't delete these files** — they're your learning history.
+- **Don't edit manually** — they're immutable records; the tutor writes them.
+- **Back up by copying** the whole `/results` directory if you want an off-machine copy.
 
 ---
 
 **Ready to practice?** Run `/fluent-learn` to create your first session result! 🚀
-
-*Session results are created automatically at the end of each practice session.*
