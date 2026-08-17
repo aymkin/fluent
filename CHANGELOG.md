@@ -48,6 +48,20 @@ All notable changes to Fluent will be documented in this file.
   scheduler already ran on the pinned py-fsrs defaults and continues to.
 - The one-time SM-2 → FSRS-6 migration script. It ran, it was idempotent, and it
   had no callers left.
+- **`milestones[]` no longer accepts the object form.** Each entry must be a
+  plain string, and every milestone is dated with the session date. The
+  `{ "milestone": ..., "date": ... }` form added in 0.3.0 is rejected with exit
+  `1`, naming the offending index, before any database is written. This is an
+  input-format change only — nothing in your stored data moves or is rewritten.
+- A second pass of duplicated documentation, ~1150 lines: `docs/DB_SCRIPTS.md`
+  (the payload schema also lives in the `fluent-db-updater` skill and the
+  example JSON that skill points at), the per-command flow summaries and the
+  hand-edit instructions in `LEARNING_SYSTEM.md` (576 → 310 lines), the generic
+  hook-authoring tutorial in `.claude/hooks/README.md` (340 → 200 — the backup
+  strategy and the restore recipe stay), the contributor boilerplate in
+  `CONTRIBUTING.md` (404 → 52), the marketing sections and the third copy of the
+  install commands in `README.md` (501 → 408), and an `evals.json` written in a
+  schema `claude plugin eval` does not read.
 - `PRACTICE.md` (Dutch-writing methodology in a language-agnostic kit; its
   content lives in the `fluent-writing` and `fluent-session-analyzer` skills),
   the finished FSRS migration plan/spec under `docs/superpowers/`, and two
@@ -86,6 +100,23 @@ All notable changes to Fluent will be documented in this file.
 
 ### Fixed
 
+- `/fluent-setup` built `mastery-db.json` around a top-level `skills_mastery`
+  key, and `/fluent-writing`, `/fluent-speaking` and `/fluent-reading` read
+  their mastery level from it. `update-db.py` reads and writes `skills`, so the
+  database created at onboarding and the one the updater maintains disagreed
+  from the first session onward. All four now say `skills`.
+- `fluent-session-analyzer` searched `/results/{skill}-session-{ID}.md`. Every
+  practice skill has written `/results/fluent-{skill}-session-{NNN}.md` since
+  v0.2.0, so the pattern matched nothing and next-session planning had no input
+  to work from. It now matches the current name and the pre-0.2.0 one.
+- `fluent-progress` was told to render "locked" achievements with 🔒. There is no
+  catalogue of achievements to lock — they exist only as the milestones you
+  record at session end, so the dashboard now says as much when the list is empty.
+- `LEARNING_SYSTEM.md` told the tutor to hand-edit `progress-db`, `mistakes-db`
+  and `mastery-db`, using a mastery formula, a top-level key and field names
+  that none of them matched `update-db.py` — while `CLAUDE.md` requires the
+  scripts be used instead. Those instructions are gone.
+- The README's learning-loop table said a session updates 4 databases. It is six.
 - The README's install commands used the ref `fluent@m98`, which does not exist.
   The `@` suffix is the marketplace name from `.claude-plugin/marketplace.json`
   (`"name": "aymkin"`), so the working ref is `fluent@aymkin` — corrected in the
