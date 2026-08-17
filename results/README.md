@@ -116,39 +116,3 @@ Call `.claude/hooks/update-db.py` once at session end with a full payload (see
 `.claude/references/db-updater-payload.example.json`). The script handles the JSON side;
 the practice skill handles the markdown side. The `fluent-db-updater` skill documents
 the payload schema.
-
-## 🔒 Privacy
-
-- ✅ Listed in `.gitignore` — won't be committed to git
-- ✅ Stays on your machine — no external sync
-- ✅ Human-readable Markdown — easy to read and review
-
-## 🔎 How to use your results
-
-```bash
-# View your latest session
-cat results/fluent-writing-session-012.md
-
-# Search for a specific topic
-grep "past tense" results/*.md
-
-# Count total sessions
-ls results/*.md | wc -l
-```
-
-**Weekly review routine:**
-
-1. Read your last 5 session files
-2. Note common error patterns
-3. Celebrate improvements
-4. Adjust your practice focus
-
-## ⚠️ Important notes
-
-- **Don't delete these files** — they're your learning history.
-- **Don't edit manually** — they're immutable records; the tutor writes them.
-- **Back up by copying** the whole `/results` directory if you want an off-machine copy.
-
----
-
-**Ready to practice?** Run `/fluent-learn` to create your first session result! 🚀

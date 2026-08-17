@@ -20,7 +20,7 @@ the result.
 | `CLAUDE.md` | Operating rules, tutor personality, database helper scripts, critical rules |
 | `.claude/skills/<name>/SKILL.md` | The per-command flow (one directory per command, e.g. `.claude/skills/fluent-writing/SKILL.md`) |
 | `results/README.md` | Session result file format the analyzer parses |
-| `docs/DB_SCRIPTS.md` | Input schema for `read-db.py` / `update-db.py` |
+| `.claude/skills/fluent-db-updater/SKILL.md` | Input schema for `read-db.py` / `update-db.py` |
 | `data-examples/` | JSON schema of each database |
 
 ## The one thing that differs for you
