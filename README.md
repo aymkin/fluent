@@ -96,95 +96,29 @@ python3 -c "import sys; sys.path.insert(0, '.claude/hooks'); from fluent_paths i
 
 ---
 
-## 📚 How It Works
-
-### The Learning Loop
-
-Every practice session follows this intelligent cycle:
-
-| Step | What Happens | Why It Matters |
-|------|--------------|----------------|
-| **1. You Practice** | Answer a question in your target language | Active recall forces your brain to retrieve information |
-| **2. AI Analyzes** | System evaluates your response instantly | Identifies exactly what you got right or wrong |
-| **3. Get Feedback** | Clear explanation of mistakes + correct version | Learning happens when you understand WHY |
-| **4. System Tracks** | Updates all 6 databases automatically | Remembers your weak spots and strengths |
-| **5. Adapts** | Next question matches your current level | Always challenging, never frustrating |
-
-**What Gets Tracked:**
-- ✅ **Error Patterns** - Which grammar/vocab you struggle with
-- ✅ **Mastery Levels** - Your skill rating (0-5 stars) for each topic
-- ✅ **Review Schedule** - When to review based on FSRS-6 algorithm
-- ✅ **Progress Stats** - Accuracy trends, streak days, total practice time
----
-
 ## 🎮 Available Commands & Skills
 
-Fluent is built as **Claude Code skills** — 12 of them. Skills work two ways:
+Fluent is 12 Claude Code skills. The learner-facing ones are gated: they run
+only when you type the slash command, so a chat message can never trigger a
+20-minute session or a database write. `/fluent-progress` is read-only and also
+auto-triggers on questions like "how am I doing?". The four helper skills
+auto-load whenever Claude needs them mid-session. All 12 appear in your `/`
+menu.
 
-1. **Type the slash command** (`/fluent-learn`, `/fluent-vocab`, etc.) — you explicitly start a session. Learner-facing skills are gated so they only run this way. No accidental 20-minute session triggered by a chat message.
-2. **Ask naturally** — read-only skills like `/fluent-progress` auto-trigger when you ask "how am I doing?" or "what's my streak?". Helper skills (FSRS reference, feedback formatter, DB updater, session analyzer) auto-load whenever Claude needs them during a session.
-
-All 12 skills appear in your `/` menu so you can always invoke any of them manually.
-
-### Learner-facing commands
-
-These are the commands you'll use daily. Each is backed by a dedicated skill under `.claude/skills/`.
-
-#### Core Commands
-
-| Command | What It Does | When & Why to Use It |
-|---------|--------------|----------------------|
-| **`/fluent-setup`** | **One-time onboarding** - Asks you questions about your name, target language, current level, goals, and timeline. Creates your personalized learning profile. | **First time only** - Run this once to set up your account. The system generates a custom learning plan based on your answers. |
-| **`/fluent-learn`** | **Adaptive mixed practice** - Combines different exercise types (vocabulary, grammar, sentences) based on your weak areas. Adjusts difficulty in real-time based on your performance. | **Daily core practice** - Your main command for general improvement. The AI decides what you need to practice most. Best after `/fluent-review`. |
-| **`/fluent-review`** | **Spaced repetition session** - Shows you items that are due for review today based on the FSRS-6 algorithm. Focuses on things you learned before that need reinforcement. | **Start every day here!** - Review before learning new content. This is scientifically proven to be the most effective way to retain what you've learned. |
-
-#### Skill-Specific Commands
-
-| Command | What It Does | When & Why to Use It |
-|---------|--------------|----------------------|
-| **`/fluent-vocab`** | **Flashcard-style vocabulary drills** - Rapid-fire translation practice (target language ↔ native language). Tracks which words you struggle with. | **2-3x per week** - When you need to build vocabulary quickly. Great for preparing for specific topics (travel, business, etc.). |
-| **`/fluent-writing`** | **Writing practice** - Practice emails, letters, essays, or forms in your target language. Get detailed corrections with grammar explanations. | **Daily for exam prep** - Essential if you're preparing for language exams. Also great for building confidence in real-world communication. |
-| **`/fluent-speaking`** | **Conversation practice** - Role-play scenarios through typed dialogue. Practice natural conversations, asking for directions, ordering food, etc. | **2-3x per week** - Builds confidence for real conversations. Typed practice helps you think through responses without pressure. |
-| **`/fluent-reading`** | **Reading comprehension** - Read short texts (stories, articles, dialogues) then answer comprehension questions. Expands vocabulary in context. | **2-3x per week** - Improves overall understanding. Best for intermediate+ learners. Reading is one of the fastest ways to absorb grammar patterns. |
-
-#### Progress Command
-
-| Command | What It Does | When & Why to Use It |
-|---------|--------------|----------------------|
-| **`/fluent-progress`** | **Statistics dashboard** - Shows your accuracy trends, streak days, mastery levels, achievements unlocked, and weak areas. Visual progress charts. | **Weekly check-in** - Read-only and safe to auto-invoke. Ask "how am I doing?" and Claude will open the dashboard automatically. |
-
-### Helper skills (behind the scenes)
-
-These skills don't change what the learner-facing commands do — they let Claude apply the same algorithms, feedback format, and database logic consistently across every session. You can still invoke them via `/` if curious.
-
-| Skill | What It Does | When It Runs |
-|-------|--------------|--------------|
-| **`/fluent-fsrs-reference`** | FSRS-6 scheduling reference: score→quality→rating→FSRS pipeline, live vs vestigial fields, intervals computed by code. | Auto-loaded whenever scheduling must be reasoned about. |
-| **`/fluent-feedback-formatter`** | Canonical per-answer feedback template — severity tagging (🔴 critical / 🟡 moderate / 🟢 minor), category labels, tone rules. | Auto-loaded every time Claude grades an answer. |
-| **`/fluent-db-updater`** | How to call `update-db.py` with a single JSON payload that atomically updates all 6 databases at session end. | Auto-loaded when a session ends. |
-| **`/fluent-session-analyzer`** | Parses `/results/fluent-{skill}-session-{NNN}.md` files to extract error patterns, strengths, and focus areas for the next session. | Auto-loaded when planning the next session. |
-
-### 📅 Recommended Daily Routine
-
-**🌅 Morning Session (15 min)**
-```bash
-/fluent-review    # Must do first - Review what you learned before
-/fluent-vocab     # Learn 5-10 new words
-```
-**Why?** Your brain is fresh. Reviewing first reinforces old knowledge, then new vocabulary sticks better.
-
-**🌙 Evening Session (15 min)**
-```bash
-/fluent-writing   # Practice real-world writing
-/fluent-learn     # Let AI choose what you need most
-```
-**Why?** Writing solidifies what you learned today. `/fluent-learn` fills in any gaps.
-
-**📊 Weekly Check-In (5 min)**
-```bash
-/fluent-progress  # See your stats and celebrate progress!
-```
-**Why?** Seeing improvement = motivation. You need to see you're getting better!
+| Command | What it does |
+|---------|--------------|
+| `/fluent-setup` | One-time onboarding — name, language, level, goals. Creates your profile. |
+| `/fluent-review` | Today's spaced-repetition queue. **Start every day here.** |
+| `/fluent-learn` | Adaptive mixed practice; the AI picks what you need most. |
+| `/fluent-vocab` | Flashcard drills, both directions plus cloze. |
+| `/fluent-writing` | Emails, letters, forms — corrected line by line. |
+| `/fluent-speaking` | Role-play conversation, typed. |
+| `/fluent-reading` | Short texts plus comprehension questions. |
+| `/fluent-progress` | Statistics dashboard: accuracy, streak, mastery, achievements. |
+| `/fluent-fsrs-reference` | Helper — how a score becomes a review interval. |
+| `/fluent-feedback-formatter` | Helper — the per-answer feedback template. |
+| `/fluent-db-updater` | Helper — the session payload that writes all 6 databases. |
+| `/fluent-session-analyzer` | Helper — reads `/results/*.md` to plan the next session. |
 
 ---
 
@@ -192,20 +126,12 @@ These skills don't change what the learner-facing commands do — they let Claud
 
 ### Data Layer (`/data` directory)
 
-**Your learning data is tracked in 6 JSON databases** (created automatically by `/fluent-setup`):
+Six JSON databases, created by `/fluent-setup` and written only by
+`.claude/hooks/update-db.py`: `learner-profile`, `progress-db`, `mistakes-db`,
+`mastery-db`, `spaced-repetition`, `session-log`. The templates in
+[`data-examples/`](data-examples/) are their schema.
 
-| File | Purpose | Created When |
-|------|---------|--------------|
-| `learner-profile.json` | Your info, level, preferences, streak | `/fluent-setup` - One time |
-| `progress-db.json` | Overall statistics and trends | `/fluent-setup` - Updated every session |
-| `mistakes-db.json` | Error patterns with frequency and examples | `/fluent-setup` - Updated when you make mistakes |
-| `mastery-db.json` | Skill mastery levels (0-5 stars) | `/fluent-setup` - Updated after practice |
-| `spaced-repetition.json` | Review queue (FSRS-6 algorithm) | `/fluent-setup` - Updated after each answer |
-| `session-log.json` | Complete session history | `/fluent-setup` - New entry each session |
-
-**📋 Want to see the structure?** Check `/data-examples/` for template files showing the complete schema.
-
-**🔒 Privacy:** All data stays on your machine. Automatically excluded from git via `.gitignore`.
+**🔒 Privacy:** all data stays on your machine, excluded from git via `.gitignore`.
 
 ### Intelligence Layer
 
@@ -215,11 +141,11 @@ The AI follows these guides:
 - **`CLAUDE.md`** - AI tutor's role and personality
 - **`AGENTS.md`** - Entry point for non-Claude CLIs (Codex, Gemini)
 - **`results/README.md`** - Canonical session-file format that `fluent-session-analyzer` parses
-- **`.claude/references/`** - Shared payload schema (`db-updater-payload.example.json`) used by `update-db.py`
+- **`.claude/references/`** - The canonical `update-db.py` payload (`db-updater-payload.example.json`), which the `fluent-db-updater` skill points at
 
 ### Interface Layer
 
-- **Skills** (`.claude/skills/`) — 12 skills total. 8 learner-facing (`/fluent-setup`, `/fluent-learn`, `/fluent-vocab`, `/fluent-writing`, `/fluent-speaking`, `/fluent-reading`, `/fluent-review`, `/fluent-progress`) run when you invoke them. 4 helper skills (`/fluent-fsrs-reference`, `/fluent-feedback-formatter`, `/fluent-db-updater`, `/fluent-session-analyzer`) auto-load whenever Claude needs them during a session — and are also directly `/`-invokable if you want to read the reference.
+- **Skills** (`.claude/skills/`) — one directory per command; see the table above.
 - **Plugin manifests** (`.claude-plugin/`) — `plugin.json` + `marketplace.json` make Fluent installable via `/plugin marketplace add aymkin/fluent`.
 - **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, PostToolUse JSON validation + timestamped backups. `hooks.json` is the single registration for both install paths, wired in through `plugin.json`. Backup layers and recovery: [`.claude/hooks/README.md`](.claude/hooks/README.md).
 - **Session Results** (`/results/`) — Detailed practice logs per session, parsed by `fluent-session-analyzer` to plan future sessions.

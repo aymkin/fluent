@@ -13,14 +13,7 @@ structure below has to stay consistent.
 /results/fluent-{skill}-session-{NNN}.md
 ```
 
-Examples:
-
-- `fluent-writing-session-012.md`
-- `fluent-vocab-session-005.md`
-- `fluent-speaking-session-003.md`
-- `fluent-review-session-042.md`
-- `fluent-learn-session-018.md`
-- `fluent-reading-session-007.md`
+For example: `fluent-writing-session-012.md`.
 
 `NNN` is the **global** session counter (not per-skill) — it matches `session_id` in
 `session-log.json`.

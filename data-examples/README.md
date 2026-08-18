@@ -1,16 +1,7 @@
 # Data Examples Directory
 
-Template files showing the structure of the learning data that `/fluent-setup` creates
-in `/data`.
-
-| Template File | What It Becomes | Purpose |
-|--------------|-----------------|---------|
-| `learner-profile-template.json` | `/data/learner-profile.json` | Your personal info, goals, preferences |
-| `progress-db-template.json` | `/data/progress-db.json` | Statistics and accuracy trends |
-| `mistakes-db-template.json` | `/data/mistakes-db.json` | Error patterns you're working on |
-| `mastery-db-template.json` | `/data/mastery-db.json` | Skill mastery levels (0-5 stars) |
-| `spaced-repetition-template.json` | `/data/spaced-repetition.json` | Review schedule (FSRS-6 algorithm) |
-| `session-log-template.json` | `/data/session-log.json` | Complete session history |
+Each `<name>-template.json` here is the schema for the `<name>.json` that
+`/fluent-setup` writes into the resolved data directory.
 
 ## 🚫 Don't copy these into `/data`
 
