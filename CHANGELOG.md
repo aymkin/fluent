@@ -81,6 +81,23 @@ All notable changes to Fluent will be documented in this file.
   Details, FAQ), `data/README.md` 133 → 30, `.claude/hooks/README.md` 200 → 105,
   and the Dutch-specific appendices in `fluent-reading` / `fluent-speaking` /
   `fluent-writing` — the same thing `PRACTICE.md` was deleted for.
+- A fourth pass, ~700 lines, mostly the last Dutch content in a
+  language-agnostic kit. Every skill carried an `## Examples` section that
+  re-rendered, in Dutch A2, the output template printed a few lines above it in
+  the same file — 317 lines across 11 skills. `fluent-reading`'s five hardcoded
+  `Vraag N` question blocks and `fluent-vocab`'s three `## Word {N}` blocks are
+  now one parameterized block each. In the docs: the README's Learning Loop and
+  Recommended Daily Routine sections, its three command tables collapsed to one
+  (501 → 408 → 264 → 190 lines), the six-database table's third and fourth
+  copies (`README.md`, `data-examples/README.md`), and the clone-install
+  instructions' second copy in `.claude/hooks/README.md`.
+- **The FSRS weights override is gone.** `fsrs.schedule()` no longer takes a
+  `weights=` vector and `update-db.py` no longer reads
+  `spaced_repetition.metadata.weights`. The optimizer that produced that vector
+  was removed earlier in this release, so nothing had written the key since and
+  the scheduler always ran on the pinned py-fsrs defaults — it still does.
+  Re-adding the optimizer means re-adding the parameter. If you hand-wrote a
+  `weights` key it is now ignored; nothing in your data moves or is rewritten.
 
 ### Changed
 
@@ -94,6 +111,16 @@ All notable changes to Fluent will be documented in this file.
 - The plugin's marketplace keywords no longer list seven individual languages
   (Dutch, Spanish, French, …) in a kit that works with any of them. Search by
   `language-learning`, `spaced-repetition`, `fsrs`, `tutor` or `flashcards`.
+- Internal cleanup with no user-visible effect: `fluent_paths.plugin_root()`
+  (no callers) is deleted, `backups_dir()` folded into `ensure_backups_dir()`,
+  and the SessionStart hook no longer tolerates a list-form `items` map or a
+  `next_review_date` alias — neither has ever been written.
+- `update-db.py`'s test suite traded eight milestone slug edge-case tests for
+  three, and spent the difference on the counters that actually drive
+  scheduling: streak reset after a missed day, cumulative `accuracy_rate`, and
+  `mastery_level` climbing with session count. The FSRS cross-check now pins
+  `DEFAULT_W` to the pinned py-fsrs package explicitly instead of injecting the
+  package's own vector, so a drift in its defaults fails the gate.
 
 ### Performance
 
@@ -146,6 +173,9 @@ All notable changes to Fluent will be documented in this file.
   your six databases in `~/.claude/fluent-data/`. Both corrected, and the
   hand-copied schema now points at `data-examples/`, the one place the templates
   are maintained.
+- The README described `.claude/references/db-updater-payload.example.json` as a
+  "shared payload schema used by `update-db.py`". The script never opens that
+  file — it is a copy-paste template the `fluent-db-updater` skill points at.
 
 ## [0.3.0] — 2026-06-15
 
