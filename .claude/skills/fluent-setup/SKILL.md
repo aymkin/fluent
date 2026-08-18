@@ -19,18 +19,7 @@ it rather than reimplementing it:
 FLUENT_DATA="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"
 ```
 
-or from Python:
-
-```python
-import sys
-sys.path.insert(0, f"{PLUGIN_ROOT}/.claude/hooks")
-from fluent_paths import ensure_data_dir
-DATA = ensure_data_dir()
-```
-
 ## When to Use
-
-Trigger this skill only when the learner types `/fluent-setup`. The skill is gated with `disable-model-invocation: true` — re-running can reset a learner's progress, so it must never auto-fire from an ambiguous prompt.
 
 Skip this skill if a profile already exists and the learner did not ask to change anything; route them to `/fluent-learn` or `/fluent-progress` instead.
 
@@ -209,24 +198,6 @@ What would you like to do?
 
   Then restart setup from Step 2.
 - **4** — exit cleanly.
-
-## Examples
-
-### Example 1 — first-time setup flow
-
-Learner runs `/fluent-setup`. After collecting all 11 answers, compute months, generate plan, write 6 JSON files, offer first lesson.
-
-### Example 2 — returning-user profile reset
-
-Learner: "reset my progress, I want to start over"
-
-> You're about to delete:
-> - 42 sessions
-> - 6-day streak
-> - 287 vocabulary items
-> - 12 mastered patterns
->
-> This is irreversible. Type `RESET` (all caps) to confirm, or anything else to cancel.
 
 ## Critical Rules
 

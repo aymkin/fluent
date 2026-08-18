@@ -35,23 +35,9 @@ resolve through `${CLAUDE_PLUGIN_ROOT}`; the scripts themselves resolve the
 runtime data directory via `fluent_paths.py` (see its docstring for the
 precedence order).
 
-There used to be a second copy of the same hooks in `.claude/settings.json` for
-clone-mode installs. It was deleted: with the plugin installed *and* the repo
-open as the project directory, both registrations fired and every hook ran
-twice — the SessionStart banner printed itself twice in one startup.
-
-**Working from a clone?** Register the clone as a local marketplace so hooks
-come from `hooks.json` like everywhere else:
-
-```bash
-git clone https://github.com/aymkin/fluent.git && cd fluent
-claude plugin marketplace add ./
-claude plugin install fluent@aymkin
-```
-
-Data still lands in the clone's `./data/` — `fluent_paths.py` prefers it over
-`~/.claude/fluent-data/` whenever `./data/learner-profile.json` exists. Cloning
-*without* installing gives you the skills but no hooks, so no automatic backups.
+**Working from a clone?** Register the clone as a local marketplace, or you get
+the skills with no hooks and no automatic backups — see
+[Alternative: git clone](../../README.md#alternative-git-clone).
 
 ## 📂 Backup Strategy
 

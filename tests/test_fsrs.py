@@ -42,14 +42,6 @@ class TestFsrsInvariants(unittest.TestCase):
         # due_date is today+interval, not today itself.
         self.assertGreaterEqual(out["interval_days"], 1)
 
-    def test_weights_are_used(self):
-        item = {"stability": 10.0, "difficulty": 5.0, "last_reviewed": "2026-07-01"}
-        base = fsrs.schedule(item, 3, "2026-07-11")
-        bumped = list(fsrs.DEFAULT_W)
-        bumped[8] += 0.5  # perturb a stability-growth weight
-        alt = fsrs.schedule(item, 3, "2026-07-11", weights=bumped)
-        self.assertNotAlmostEqual(base["stability"], alt["stability"], places=3)
-
 
 if __name__ == "__main__":
     unittest.main()

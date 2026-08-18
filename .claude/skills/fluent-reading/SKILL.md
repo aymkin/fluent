@@ -13,8 +13,6 @@ Present one text (100-500 words depending on level), ask 4-6 comprehension quest
 
 ## When to Use
 
-Trigger this skill only when the learner types `/fluent-reading`. The skill is gated with `disable-model-invocation: true` — 15-20 min interactive session with DB writes should never start from an ambiguous prompt.
-
 Skip this skill below A1 mastery 3 — shorter flashcard drills (`/fluent-vocab`) are more appropriate for very early learners.
 
 ## Instructions
@@ -79,58 +77,25 @@ Take your time. When you're done, type **"ready"**.
 
 ### 5. Question sequence (one at a time)
 
-Rotate across these types:
+One block per question, headings in the target language:
 
-**Main idea:**
 ```markdown
-## Vraag 1: Hoofdidee (main idea)
+## {"Question" in target_language} {N}: {type label in target_language}
 
-{question in target language}
+{the question}
 
-a) {option 1}
-b) {option 2}
-c) {option 3}
-
-**Type a, b, or c:**
-```
-
-**Details:**
-```markdown
-## Vraag 2: Details
-
-{specific question about the text}
+{a) b) c) options — multiple-choice types only}
 
 **Type your answer:**
 ```
 
-**Vocabulary in context:**
-```markdown
-## Vraag 3: Vocabulaire
+Rotate across these types, in this order:
 
-In the text it says "{word/phrase}". What does this mean?
-
-a) {meaning 1}
-b) {meaning 2}
-c) {meaning 3}
-```
-
-**Inference:**
-```markdown
-## Vraag 4: Begrijpen
-
-{question requiring inference — not directly stated}
-
-**Answer in {target language}:**
-```
-
-**True / false:**
-```markdown
-## Vraag 5: Waar of niet waar?
-
-{statement}
-
-**Type your answer:**
-```
+1. **Main idea** — multiple choice.
+2. **Details** — a specific fact from the text, open answer.
+3. **Vocabulary in context** — `In the text it says "{word}". What does this mean?`, multiple choice.
+4. **Inference** — something the text implies but never states; answer in the target language.
+5. **True / false** — one statement to judge.
 
 ### 6. Feedback per question
 
@@ -203,31 +168,6 @@ Use the `fluent-db-updater` skill:
 - `focus_next_session[]`
 
 Save to `/results/fluent-reading-session-{NNN}.md` — include the full text + Q&A for later analysis.
-
-## Examples
-
-### Example — main-idea question
-
-The text was a short Dutch email in which Lisa proposes meeting Mohammad in
-Amsterdam on Saturday 15 March, and mentions that March is usually cold.
-
-> ## Vraag 1: Hoofdidee
->
-> Waar gaat deze email over?
->
-> a) Lisa is op vakantie in Iran.
-> b) Lisa en Mohammad maken plannen voor een ontmoeting.
-> c) Lisa vraagt naar het weer.
-
-Learner: "b"
-
-> ✅ Correct!
->
-> **Answer:** b) Lisa en Mohammad maken plannen voor een ontmoeting.
->
-> **Explanation:** The email's core is the meetup plan — date, time, place, and activity. The weather is a secondary detail.
->
-> **Score: 10/10**
 
 ## Critical Rules
 

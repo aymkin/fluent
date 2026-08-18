@@ -13,8 +13,6 @@ Full-text writing practice with systematic correction. One scenario per session,
 
 ## When to Use
 
-Trigger this skill only when the learner types `/fluent-writing`. The skill is gated with `disable-model-invocation: true` — a 15-20 min interactive session with DB writes should never start from an ambiguous prompt.
-
 Skip this skill in favor of `/fluent-vocab` if the learner has not yet hit mastery 2 in basic vocabulary — writing needs a minimum word bank.
 
 ## Instructions
@@ -154,51 +152,6 @@ Use the `fluent-db-updater` skill:
 - `focus_next_session[]` — top 2 patterns to drill
 
 Also save the exchange as `/results/fluent-writing-session-{NNN}.md` with the full task, the learner's original text, the corrected version, and the error table. The `fluent-session-analyzer` skill depends on this format.
-
-## Examples
-
-### Example — formal email task (Dutch A2)
-
-Task set from the template above: cancel a doctor's appointment, formal
-register, A2, 40-60 words, must include greeting / reason / request / closing.
-
-Learner: "Hallo, Ik schrijf je omdat ik kan niet komen op donderdag. Ik ben ziek. Kunnen we een andere dag afspreken? Bedankt, Mohammad"
-
-> ## Feedback
->
-> ### ✅ What You Did Well
-> - Clear reason for cancellation.
-> - Correct request structure.
->
-> ### ❌ Areas to Improve
->
-> **Critical:** 🔴
-> - `formal_informal`: "Hallo" + "je" — formal email needs "Beste meneer/mevrouw" + "u". Mixed registers cost exam points.
-> - `grammar`: "ik kan niet komen" is OK standalone, but after "omdat" Dutch word order flips: **"omdat ik niet kan komen"**.
->
-> **Moderate:** 🟡
-> - `missing`: no formal closing. Use "Met vriendelijke groet,".
->
-> **Minor:** 🟢
-> - Capitalize "Donderdag"? Actually no — Dutch doesn't capitalize weekdays. You were right.
->
-> ### 📝 Corrected Version
->
-> ```
-> Beste meneer/mevrouw,
->
-> Ik schrijf u omdat ik niet kan komen op donderdag. Ik ben ziek.
-> Kunnen we een andere dag afspreken?
->
-> Met vriendelijke groet,
-> Mohammad
-> ```
->
-> **Score: 6/10**
-> - Grammar: 6/10 — omdat word order tripped you up.
-> - Vocabulary: 8/10 — solid word choice.
-> - Structure: 5/10 — missing proper opening + closing.
-> - Communication: 7/10 — message was clear despite issues.
 
 ## Critical Rules
 

@@ -74,23 +74,9 @@ These feed `mistakes-db.json`:
 
 After scoring, feed the score into the scheduler via the `fluent-db-updater` skill; see `fluent-fsrs-reference` for the pipeline: `quality = floor(score / 2)`.
 
-## Examples
-
-This skill is the authoritative version of the template. Quick pattern:
-
-- Fully correct: open with ✅, skip ❌ block, list 1-2 ✅ strengths, show "Correct version" for echo, score 9-10/10.
-- Mistakes: open with warm ❌, list each correction with severity emoji + category + brief why, show full correct version, score with breakdown if the answer is long.
-
 ## Critical Rules
 
 - **Always use the template exactly.** Deviations break session-file parsing downstream.
 - **Severity tag is mandatory** on every ❌ line. Drives spaced-repetition priority.
 - **One score per answer.** Total out of 10, with optional breakdown (grammar/vocab/structure) for long answers like writing tasks.
 - **Never skip the "Correct version".** Even if perfect, echoing the target form reinforces motor memory.
-
-## Why This Matters
-
-Structured, consistent feedback:
-1. Lets the learner scan for what to fix at a glance.
-2. Makes session files parseable so `fluent-session-analyzer` can mine `/results` for patterns.
-3. Populates `mistakes-db.json` categories cleanly — which feeds spaced repetition, which drives the whole system.

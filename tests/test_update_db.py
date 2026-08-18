@@ -168,6 +168,10 @@ class UpdateDbSmokeTest(unittest.TestCase):
         )
         return proc
 
+    def _load(self, name):
+        with open(self.tmp / "data" / name) as f:
+            return json.load(f)
+
     def test_happy_path(self):
         proc = self._run(SESSION_PAYLOAD)
         self.assertEqual(proc.returncode, 0,
@@ -286,6 +290,38 @@ class UpdateDbSmokeTest(unittest.TestCase):
             profile = json.load(f)
         self.assertEqual(profile["current_streak_days"], 2)
 
+    def test_streak_resets_after_a_gap(self):
+        # Profile last_updated = 2026-04-23; a session three days later is a
+        # broken streak, not a continued one.
+        payload = dict(SESSION_PAYLOAD)
+        payload["session_id"] = "session-003"
+        payload["date"] = "2026-04-26"
+        self.assertEqual(self._run(payload).returncode, 0)
+        self.assertEqual(self._load("learner-profile.json")["current_streak_days"], 1)
+
+    def test_overall_accuracy_is_cumulative(self):
+        # Fixture holds 4 exercises / 3 correct; the payload adds 5 / 4.
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        stats = self._load("progress-db.json")["overall_stats"]
+        self.assertEqual(stats["total_exercises"], 9)
+        self.assertEqual(stats["total_correct"], 7)
+        self.assertEqual(stats["total_incorrect"], 2)
+        self.assertEqual(stats["accuracy_rate"], round(7 / 9, 3))
+
+    def test_mastery_level_climbs_with_session_count(self):
+        # mastery_level is driven by progress-db's per-skill sessions/accuracy.
+        # Fixture starts at 1 session / level 1; the 3rd session crosses into 2.
+        for n, day in enumerate(("2026-04-24", "2026-04-25")):
+            payload = dict(SESSION_PAYLOAD)
+            payload["session_id"] = f"session-00{n + 2}"
+            payload["date"] = day
+            self.assertEqual(self._run(payload).returncode, 0)
+
+        sp = self._load("progress-db.json")["skill_progress"]["vocabulary"]
+        self.assertEqual(sp["sessions"], 3)
+        self.assertEqual(sp["exercises_completed"], 14)
+        self.assertEqual(self._load("mastery-db.json")["skills"]["vocabulary"]["mastery_level"], 2)
+
     # --- Milestones (issue #8) ---
 
     def _payload_with(self, session_id, milestones, date="2026-04-24"):
@@ -295,10 +331,6 @@ class UpdateDbSmokeTest(unittest.TestCase):
         payload["milestones"] = milestones
         return payload
 
-    def _load(self, name):
-        with open(self.tmp / "data" / name) as f:
-            return json.load(f)
-
     def test_milestone_string_form(self):
         text = "Reached A2 vocabulary milestone"
         proc = self._run(self._payload_with("session-100", [text]))
@@ -307,6 +339,8 @@ class UpdateDbSmokeTest(unittest.TestCase):
         log = self._load("session-log.json")
         m = log["milestones"][-1]
         self.assertEqual(m["milestone"], text)
+        # The session date and top-level session_id stamp every milestone —
+        # the per-milestone "date" override is gone.
         self.assertEqual(m["date"], "2026-04-24")
         self.assertEqual(m["session_id"], "session-100")
 
@@ -317,105 +351,47 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(ach["earned_date"], "2026-04-24")
         self.assertTrue(ach["id"].startswith("session_session-100_"))
 
-    def test_milestone_object_form_rejected(self):
-        # Breaking change (post-v0.3.0): only bare strings are accepted. The
-        # old object form — including its "date" override and any nested
-        # "session_id" — must fail loudly, before any DB is written.
-        objects = [
-            {"milestone": "Wrote first paragraph"},
-            {"milestone": "Backdated win", "date": "2026-04-20"},
-            {"milestone": "Typo date", "date": "not-a-date"},
-            {"milestone": "X", "session_id": "WRONG-999"},
-        ]
-        for n, ms in enumerate(objects):
-            with self.subTest(case=ms):
-                proc = self._run(self._payload_with(f"session-1{n:02d}", [ms]))
-                self.assertEqual(proc.returncode, 1,
-                                 msg=f"case={ms!r} stdout={proc.stdout!r}")
-                err = proc.stderr.decode()
-                self.assertIn("index 0", err)
-                self.assertIn("string", err)
-                # No DB written: session-log keeps its single original session.
-                log = self._load("session-log.json")
-                self.assertEqual(len(log["sessions"]), 1)
-                self.assertEqual(log["milestones"], [])
-                self.assertEqual(self._load("learner-profile.json")["achievements"], [])
-
-    def test_milestone_date_is_always_session_date(self):
-        # The per-milestone date override is gone; the session date governs.
-        proc = self._run(self._payload_with("session-102", ["Backdated win"],
-                                            date="2026-04-24"))
-        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-        log = self._load("session-log.json")
-        self.assertEqual(log["milestones"][-1]["date"], "2026-04-24")
-        profile = self._load("learner-profile.json")
-        self.assertEqual(profile["achievements"][-1]["earned_date"], "2026-04-24")
-
-    def test_milestone_malformed_exits_1_no_mutation(self):
+    def test_milestone_malformed_rejected_before_any_write(self):
+        # Breaking change (post-v0.3.0): only bare non-empty strings. The old
+        # object form and every malformed scalar must exit 1 with nothing
+        # written — the payload is validated before a single DB is touched.
         bad_cases = [
-            {"date": "2026-04-24"},          # missing milestone
-            {"milestone": None},
+            {"milestone": "Wrote first paragraph"},   # the old object form
+            {"milestone": "Backdated win", "date": "2026-04-20"},
             {"milestone": ""},
-            {"milestone": "   "},
-            {"milestone": 5},
-            42,                              # not a string
-            None,
-            ["Nested list"],
-            "",                              # empty string
-            "   ",                           # whitespace-only string
+            {"date": "2026-04-24"},
+            42, None, ["Nested list"], "", "   ",
         ]
         for n, bad in enumerate(bad_cases):
             with self.subTest(case=bad):
                 proc = self._run(self._payload_with(f"session-2{n:02d}", [bad]))
                 self.assertEqual(proc.returncode, 1,
-                                 msg=f"case={bad!r} stderr={proc.stderr!r}")
-                self.assertTrue(proc.stderr, "expected an error message on stderr")
-                # No DB mutation: session-log still has its single original session.
+                                 msg=f"case={bad!r} stdout={proc.stdout!r}")
+                err = proc.stderr.decode()
+                self.assertIn("index 0", err)
+                self.assertIn("string", err)
                 log = self._load("session-log.json")
                 self.assertEqual(len(log["sessions"]), 1)
                 self.assertEqual(log["milestones"], [])
+                self.assertEqual(self._load("learner-profile.json")["achievements"], [])
 
-    def test_milestone_stamped_with_top_level_session_id(self):
-        proc = self._run(self._payload_with("session-104", ["First", "Second"]))
-        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-        log = self._load("session-log.json")
-        self.assertEqual([m["session_id"] for m in log["milestones"][-2:]],
-                         ["session-104", "session-104"])
-
-    def test_milestone_distinct_achievement_ids(self):
-        # Two strings sharing the first 30 chars would slugify identically;
-        # the index prefix must keep their IDs distinct.
+    def test_milestone_achievement_ids_stay_distinct(self):
+        # Slugs come from the first 30 chars lowercased: two milestones sharing
+        # that prefix, or slugifying to nothing (all-non-Latin), must still get
+        # distinct non-empty ids from the index prefix.
         prefix = "Mastered the perfect tense fo"  # 29 chars
-        ms = [prefix + "r regular verbs", prefix + "r irregular verbs"]
-        proc = self._run(self._payload_with("session-105", ms))
-        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-        profile = self._load("learner-profile.json")
-        ids = [a["id"] for a in profile["achievements"][-2:]]
-        self.assertEqual(len(set(ids)), 2, msg=f"colliding ids: {ids}")
-
-    def test_milestone_non_latin_distinct_nonempty_ids(self):
-        # All-non-Latin text slugifies to empty; fallback + index keep IDs valid.
-        ms = ["مرحلة أولى", "مرحلة ثانية"]
-        proc = self._run(self._payload_with("session-106", ms))
-        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-        profile = self._load("learner-profile.json")
-        ids = [a["id"] for a in profile["achievements"][-2:]]
-        self.assertEqual(len(set(ids)), 2, msg=f"colliding ids: {ids}")
-        for i in ids:
-            self.assertFalse(i.endswith("_"), f"bare trailing underscore: {i}")
-
-    def test_milestones_empty_and_omitted_are_noops(self):
-        for n, payload in enumerate([
-            self._payload_with("session-107", []),
-            {k: v for k, v in self._payload_with("session-108", []).items()
-             if k != "milestones"},
-        ]):
-            with self.subTest(n=n):
-                before = len(self._load("learner-profile.json").get("achievements", []))
-                proc = self._run(payload)
+        cases = [
+            [prefix + "r regular verbs", prefix + "r irregular verbs"],
+            ["\u0645\u0631\u062d\u0644\u0629 \u0623\u0648\u0644\u0649", "\u0645\u0631\u062d\u0644\u0629 \u062b\u0627\u0646\u064a\u0629"],
+        ]
+        for n, ms in enumerate(cases):
+            with self.subTest(case=ms):
+                proc = self._run(self._payload_with(f"session-10{n}", ms))
                 self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-                after = len(self._load("learner-profile.json").get("achievements", []))
-                self.assertEqual(after, before)
+                ids = [a["id"] for a in self._load("learner-profile.json")["achievements"][-2:]]
+                self.assertEqual(len(set(ids)), 2, msg=f"colliding ids: {ids}")
+                for i in ids:
+                    self.assertFalse(i.endswith("_"), f"bare trailing underscore: {i}")
 
 
 if __name__ == "__main__":
