@@ -7,13 +7,8 @@ Data directory resolution precedence:
   3. ./data if ./data/learner-profile.json exists (clone mode, in-repo cwd)
   4. ~/.claude/fluent-data (plugin-mode fallback)
 
-Plugin-root resolution precedence:
-  1. $CLAUDE_PLUGIN_ROOT if set
-  2. $CLAUDE_PROJECT_DIR if set
-  3. parent of this file's .claude/ dir (dev-run fallback)
-
-Pure resolvers (data_dir / plugin_root / backups_dir) do not create directories.
-Call ensure_data_dir() before writing.
+data_dir() is a pure resolver and does not create anything; call
+ensure_data_dir() before writing.
 """
 from __future__ import annotations
 
@@ -63,26 +58,10 @@ def ensure_data_dir() -> Path:
     return d
 
 
-def plugin_root() -> Path:
-    """Resolve the plugin/repo root directory."""
-    env = os.environ.get("CLAUDE_PLUGIN_ROOT")
-    if env:
-        return Path(env).resolve()
-    env = os.environ.get("CLAUDE_PROJECT_DIR")
-    if env:
-        return Path(env).resolve()
-    return Path(__file__).resolve().parents[2]
-
-
-def backups_dir() -> Path:
-    """Resolve the backups directory. Always nested inside data_dir to avoid collisions
-    when the fallback ~/.claude/fluent-data is used (the parent ~/.claude/ is shared
-    across plugins)."""
-    return data_dir() / ".backups"
-
-
 def ensure_backups_dir() -> Path:
-    """Resolve the backups directory and create it if missing."""
-    b = backups_dir()
+    """Resolve the backups directory and create it if missing. Nested inside
+    data_dir so the plugin-mode fallback doesn't collide with other plugins in
+    the shared ~/.claude/."""
+    b = data_dir() / ".backups"
     b.mkdir(parents=True, exist_ok=True)
     return b

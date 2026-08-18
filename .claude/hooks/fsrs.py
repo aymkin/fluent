@@ -126,14 +126,14 @@ def _parse(d):
     return date.fromisoformat(d)
 
 
-def schedule(item, rating, today, weights=None):
+def schedule(item, rating, today):
     """Advance one FSRS-6 review step for a day-granularity `item`.
 
     item reads: stability (float|None), difficulty (float|None),
     last_reviewed ("YYYY-MM-DD"|None). rating is 1..4 (Again/Hard/Good/Easy).
     Returns {"stability", "difficulty", "interval_days", "due_date"}.
     """
-    w = weights if weights else DEFAULT_W
+    w = DEFAULT_W
     s = item.get("stability")
     d = item.get("difficulty")
     if s is None or d is None:

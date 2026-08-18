@@ -52,14 +52,10 @@ def main():
                     sr_data = json.load(f)
 
                 today = datetime.now().strftime("%Y-%m-%d")
-                due_count = 0
-
-                items = sr_data.get("items", {})
-                iterable = items.values() if isinstance(items, dict) else items
-                for item in iterable:
-                    due = item.get("due_date") or item.get("next_review_date", "")
-                    if due and due <= today:
-                        due_count += 1
+                due_count = sum(
+                    1 for item in sr_data.get("items", {}).values()
+                    if item.get("due_date", "") <= today
+                )
 
                 if due_count > 0:
                     print(f"[Fluent] 📅 {due_count} items due for review today - Run /fluent-review!")

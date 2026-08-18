@@ -322,7 +322,6 @@ def update_spaced_repetition(sr: dict, session: dict):
         quality = review["quality"]
         if item_id in items:
             item = items[item_id]
-            weights = sr.get("metadata", {}).get("weights")
             score = review.get("score", quality * 2)
             rating = 1 if score <= 4 else 2 if score <= 6 else 3 if score <= 8 else 4
             fsrs_state = {
@@ -330,7 +329,7 @@ def update_spaced_repetition(sr: dict, session: dict):
                 "difficulty": item.get("fsrs_difficulty"),
                 "last_reviewed": item.get("last_reviewed"),
             }
-            r = fsrs.schedule(fsrs_state, rating, today, weights)
+            r = fsrs.schedule(fsrs_state, rating, today)
             item["stability"] = r["stability"]
             item["fsrs_difficulty"] = r["difficulty"]
             item["interval_days"] = r["interval_days"]
