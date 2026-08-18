@@ -37,6 +37,16 @@ except Exception:
 
 @unittest.skipUnless(HAVE_FSRS, "py-fsrs not installed (dev-only gate)")
 class TestCrossCheck(unittest.TestCase):
+    def test_default_w_matches_pinned_package(self):
+        # fsrs.py has no weights parameter — DEFAULT_W *is* the vector it runs
+        # on. This is the drift gate: if the pinned py-fsrs ships different
+        # defaults, catch it here rather than silently comparing each side
+        # against its own numbers.
+        pinned = list(Scheduler().parameters)
+        self.assertEqual(len(pinned), len(fsrs.DEFAULT_W))
+        for i, (a, b) in enumerate(zip(pinned, fsrs.DEFAULT_W)):
+            self.assertAlmostEqual(a, b, places=6, msg=f"w[{i}] drifted")
+
     def test_sequences_match_pyfsrs(self):
         sched = Scheduler(
             desired_retention=fsrs.TARGET_RETENTION,
@@ -55,7 +65,7 @@ class TestCrossCheck(unittest.TestCase):
             t = "2026-01-01"
             for g in seq:
                 card, _ = sched.review_card(card, Rating(g), now)
-                out = fsrs.schedule(item, g, t, weights=list(sched.parameters))
+                out = fsrs.schedule(item, g, t)
                 self.assertAlmostEqual(
                     out["stability"],
                     card.stability,
