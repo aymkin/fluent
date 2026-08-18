@@ -13,8 +13,6 @@ Replay items the learner learned before, timed so they hit just before the forge
 
 ## When to Use
 
-Trigger this skill only when the learner types `/fluent-review`. The skill is gated with `disable-model-invocation: true` — mutating spaced-repetition state from a misread prompt would cascade through every future session.
-
 Skip this skill when the queue is empty — suggest `/fluent-vocab` or `/fluent-learn` instead.
 
 ## Instructions
@@ -103,7 +101,7 @@ Then stage the item for the end-of-session update. Do NOT hand-edit `spaced-repe
 { "item_id": "vocab_huis", "quality": 4 }
 ```
 
-The `update-db.py` script maps the score to an FSRS rating, reschedules via FSRS-6, and rebuilds the queue (see `fluent-fsrs-reference` skill). Mapping: `quality = floor(score / 2)`.
+The `update-db.py` script maps the score to an FSRS rating, reschedules via FSRS-6, and rebuilds the queue (see `fluent-fsrs-reference` skill). Mapping: `quality = floor(score / 2)`. A low score is not a failure to hide: `quality <= 2` resets `repetitions` and keeps the item in today's queue, which is exactly the signal the scheduler needs.
 
 ### 5. Progress pulse every 5 items
 
@@ -155,34 +153,6 @@ Use the `fluent-db-updater` skill:
 - `focus_next_session[]` — the 2-3 items with lowest quality this session
 
 Save exchange to `/results/fluent-review-session-{NNN}.md` for later analysis.
-
-## Examples
-
-### Example — vocabulary review with a wrong answer
-
-> ## Review 3/12 — 🔴
->
-> **Type:** vocabulary
-> **Last reviewed:** 6 days ago
-> **Current mastery:** ⭐⭐⭐☆☆
->
-> **Dutch:** het raam
->
-> **What does it mean in English?**
-
-Learner: "the door"
-
-> ❌ Close — those are both openings in a wall, but not the same.
->
-> **Corrections:**
-> - 🟡 "the door" → **"the window"** (vocabulary — `het raam` is window; `de deur` is door)
->
-> **Correct version:**
-> "het raam" = the window.
->
-> **Score: 3/10** 💪 Easy to mix — we'll review this again soon.
->
-> (Logged: `review_results[]` item quality=1 → `interval_days=1, repetitions=0`, stays in today's queue.)
 
 ## Critical Rules
 

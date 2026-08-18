@@ -13,8 +13,6 @@ The flagship command. Interleaves skills, adapts difficulty per answer, and cove
 
 ## When to Use
 
-Trigger this skill only when the learner types `/fluent-learn`. The skill is gated with `disable-model-invocation: true` — an ambiguous auto-trigger would launch a 20-min interactive session and mutate 6 JSON databases.
-
 Skip this skill the very first time a learner runs the system — route to `/fluent-setup` instead.
 
 ## Instructions
@@ -128,20 +126,6 @@ Then use the `fluent-db-updater` skill:
 - `breakthroughs[]`, `focus_next_session[]`, `session_notes`
 
 Save exchange to `/results/fluent-learn-session-{NNN}.md`.
-
-## Examples
-
-### Example — adaptive mix mid-session
-
-After 4 exercises, accuracy is 55% (target zone). Hold difficulty; introduce pattern #2:
-
-> Nice — you're right in the sweet spot. Let's switch patterns now.
->
-> ## Exercise 5: `omdat` word order
->
-> Rewrite this correctly: "omdat ik ben te laat"
->
-> **Type your answer:**
 
 ## Critical Rules
 

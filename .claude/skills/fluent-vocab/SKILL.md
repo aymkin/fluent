@@ -13,8 +13,6 @@ Flashcard-style vocabulary practice using spaced repetition. One word at a time,
 
 ## When to Use
 
-Trigger this skill only when the learner types `/fluent-vocab`. The skill is gated with `disable-model-invocation: true` — a false-positive auto-trigger would launch a 15-min interactive session and mutate 6 JSON databases. Not worth the risk.
-
 Skip this skill if no vocabulary items are due and no new words are queued — offer `/fluent-review` or `/fluent-learn` instead.
 
 ## Instructions
@@ -46,47 +44,19 @@ Limit: `spaced-repetition.daily_limits.review_items_per_day` (default 20).
 
 ### 3. Present one word at a time
 
-Rotate the three modes so the session is not monotonous.
-
-**Recognition** (target_language → native):
-
 ```markdown
 ## Word {N}/{total}
 
-**{target_language}:** {word}
-
-**Context:** {example_sentence}
-
-**What does it mean in {native_language}?**
+{the prompt — see the three modes below}
 
 **Type your answer:**
 ```
 
-**Production** (native → target_language):
+Rotate the three modes so the session is not monotonous:
 
-```markdown
-## Word {N}/{total}
-
-**{native_language}:** {word}
-
-**Use it in a sentence (optional).**
-
-**How do you say this in {target_language}?**
-
-**Type your answer:**
-```
-
-**Cloze** (fill in the blank):
-
-```markdown
-## Word {N}/{total}
-
-**Complete the sentence:**
-
-{target_language sentence with _____ where the word goes}
-
-**Type the missing word:**
-```
+- **Recognition** (target → native) — show the word plus a `**Context:**` example sentence, ask what it means.
+- **Production** (native → target) — show the native word, ask how to say it, invite an optional sentence.
+- **Cloze** — show a target-language sentence with `_____` where the word goes, ask for the missing word.
 
 ### 4. Feedback after each answer
 
@@ -130,32 +100,6 @@ Call the `fluent-db-updater` skill's workflow — one `update-db.py` invocation 
 - `skill_scores.vocabulary`: `{exercises, correct, time_minutes}`
 - `errors[]`, `new_vocabulary[]`, `review_results[]` collected during the session
 - `focus_next_session[]` — top 2-3 weak words
-
-## Examples
-
-### Example — recognition drill
-
-> ## Word 1/15
->
-> **Dutch:** de keuken
->
-> **Context:** "De keuken is klein maar mooi."
->
-> **What does it mean in English?**
->
-> Type your answer:
-
-Learner: "the kitchen"
-
-> ✅ Exactly.
->
-> **Answer:** the kitchen
-> **Meaning:** A room used for cooking and food preparation.
-> **Example:** "De keuken is klein maar mooi." (The kitchen is small but pretty.)
->
-> **Score: 10/10** 🎯
->
-> ---
 
 ## Critical Rules
 

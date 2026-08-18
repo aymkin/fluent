@@ -13,8 +13,6 @@ Conversational practice through typed dialogue. Unlike `/fluent-writing`, priori
 
 ## When to Use
 
-Trigger this skill only when the learner types `/fluent-speaking`. The skill is gated with `disable-model-invocation: true` — 15-20 min interactive session with DB writes should never start from an ambiguous prompt.
-
 Skip this skill below A1 mastery 2 — the learner needs a basic word bank and verb conjugations first (run `/fluent-vocab` a few times).
 
 ## Instructions
@@ -166,36 +164,6 @@ Use the `fluent-db-updater` skill:
 - `focus_next_session[]` — one topic + one pattern
 
 Save exchange to `/results/fluent-speaking-session-{NNN}.md`.
-
-## Examples
-
-### Example — personal intro (Dutch A2)
-
-> ## Question 1: Introductions
->
-> Vertel me over jezelf. Waar kom je vandaan?
-> (Tell me about yourself. Where are you from?)
-
-Learner: "Ik ben Mohammad. Ik kom van Iran maar ik woon nu in Nederland."
-
-> ✅ Clear and natural!
->
-> **What you said:** "Ik ben Mohammad. Ik kom van Iran maar ik woon nu in Nederland."
->
-> **Communication:** Clear ✅
->
-> **Grammar notes:**
-> - 🟢 "van Iran" → **"uit Iran"** (prepositions — origin uses `uit`, not `van`). Small slip; message still crystal clear.
->
-> **Natural alternative:**
-> "Ik kom uit Iran, maar ik woon al een paar jaar in Nederland."
->
-> **Score: 9/10**
-> - Communication: 5/5
-> - Grammar: 2/3
-> - Vocabulary: 2/2
->
-> Great start — you packed two ideas into one sentence, which is exactly what fluency looks like.
 
 ## Critical Rules
 

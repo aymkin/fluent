@@ -123,29 +123,6 @@ Append this only if the learner seems new or asks what the numbers mean:
 **Accuracy bands:** 0-40% intensive, 40-60% learning, 60-75% good, 75-85% strong, 85%+ excellent.
 ```
 
-## Examples
-
-### Example 1 — minimal (A1 learner, week 1)
-
-> # 📊 Mohammad's Dutch Learning Dashboard
->
-> **Current Level:** A1 → A2 (4% to A2)
-> **Current Streak:** 🔥 3 days
-> **Total Sessions:** 3 · 45 min
->
-> ### Vocabulary 📚
-> **Level:** 1/5 ⭐☆☆☆☆ · 12 words known · 0 mastered
->
-> Speaking / Writing / Reading: Not yet practiced.
->
-> **Items Due Today:** 6 — run `/fluent-review` first.
->
-> "Three days in a row — momentum matters. Keep going!"
-
-### Example 2 — trigger on natural-language question
-
-Learner: "how am I doing on Dutch?" → auto-invoke this skill, render the full dashboard.
-
 ## Critical Rules
 
 - **Read-only.** Never call `update-db.py` or edit any JSON in `data/`.
