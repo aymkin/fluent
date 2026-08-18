@@ -85,3 +85,23 @@ pointer to it sat in Task D's file; Task C's decision to delete
 `README.md` after A had already finished. Both were reported instead of silently
 crossed — the right behavior, but it means the orchestrator must budget for a
 post-merge pass and must ask each agent to flag out-of-boundary consequences.
+
+## 2026-08-18 — a green local test run says nothing about skipped tests
+
+The round-4 audit reported `fsrs.schedule()`'s `weights=` parameter as dead
+flexibility: the optimizer that produced the vector had been deleted and grep
+showed `spaced_repetition.metadata.weights` was read but never written. Both
+facts were true. The parameter still had a live caller —
+`tests/test_fsrs_crosscheck.py`, which passes py-fsrs's own parameters into it.
+The local suite reported OK because that file is `@unittest.skipUnless(HAVE_FSRS)`
+and py-fsrs only exists in `.devvenv`. A skipped test is a test that did not
+run; "all tests pass" is not evidence about it.
+
+How to apply: when a symbol is a candidate for deletion, grep `tests/` for it
+explicitly rather than trusting a green run, and run the gated suites with the
+interpreter that can actually execute them (`.devvenv/bin/python
+tests/test_fsrs_crosscheck.py`) before and after the change. When the only
+caller turns out to be a test, ask what the test was buying: here it was
+silently absorbing any drift between the hardcoded `DEFAULT_W` and the pinned
+package, so removing the parameter was still right, but only alongside an
+explicit `DEFAULT_W == Scheduler().parameters` assertion to keep the gate.
