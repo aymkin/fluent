@@ -123,7 +123,7 @@ Then use the `fluent-db-updater` skill:
 - `errors[]`, `new_vocabulary[]`, `review_results[]`
 - `breakthroughs[]`, `focus_next_session[]`, `session_notes`
 
-Save the session file to `/results/fluent-learn-session-{NNN}.md` — structure per `results/README.md`. Every `❌` line carries its category and its severity emoji; without them `fluent-session-analyzer` cannot parse the session.
+Save the session file to `/results/fluent-learn-session-{NNN}.md` — structure per `results/README.md`. For a routed reading session, include the full text + Q&A for later analysis. Every `❌` line carries its category and its severity emoji; without them `fluent-session-analyzer` cannot parse the session.
 
 ## Critical Rules
 
