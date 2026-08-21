@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-08-21
+
 ### Changed
 
 - Scheduler switched from SM-2 to a stdlib FSRS-6 port
