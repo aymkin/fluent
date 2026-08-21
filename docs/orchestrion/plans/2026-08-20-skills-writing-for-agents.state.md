@@ -1,105 +1,83 @@
 # Session state — `writing-for-agents` sweep
 
-Written 2026-08-21, before context compaction and before `execute` starts. This file
-plus the spec and the plan are enough to resume; nothing needed is only in the
-conversation.
+Updated 2026-08-21 after execution finished. Supersedes the pre-execution version of
+this file. The spec, the plan and this file are enough to resume.
 
-## Where the work is
+## Status: executed, reviewed, not integrated
 
-- **Branch:** `chore/writing-for-agents-sweep`, cut from `main`. Not pushed.
-- **Commits so far:** `66269f6 docs(skills): spec and plan for the writing-for-agents sweep`
-  plus this state file and a `tasks/lessons.md` entry. **No task has been executed.**
-- **Spec:** `docs/orchestrion/specs/2026-08-20-skills-writing-for-agents.md` — owns the
-  14 findings, the three human decisions, and the canon (§3).
-- **Plan:** `docs/orchestrion/plans/2026-08-20-skills-writing-for-agents.md` — 18 tasks,
-  five dependency batches.
-- **Next action:** invoke `orchestrion:execute` on the plan. Nothing else is pending.
+- **Branch:** `chore/writing-for-agents-sweep`, cut from `main`. **Not pushed.**
+- **All 18 tasks implemented and individually reviewed.** Every task `Approved`; no
+  Critical and no Important finding in any of the eighteen task reviews.
+- **Whole-branch review:** `Verdict: With fixes`. Its one Important finding (I1) is
+  fixed and re-reviewed `Approved`; the regression that fix introduced is fixed too.
+- **Next action:** `orchestrion:finish` — integration. Held for the human, because
+  finishing pushes and the standing rule forbids a push without asking in the turn.
 
-## Decisions already taken — do not reopen
+Diff against the base: 23 files, +324/-190, on top of `99aae2d`.
 
-The human chose all three (spec §2 carries them with the provenance marks):
+## What the sweep delivered, measured on the final tree
 
-1. Error-category canon expands to ten labels and is **enforced in code**
-   (`update-db.py` exits 1 on anything outside the set).
-2. The desirable-difficulty band is **50-70%**. `CLAUDE.md` is the outlier.
-3. `fluent-learn` / `fluent-setup` hand off by **reading the target skill's
-   `SKILL.md`** and following it in the same session. The gate on the practice
-   skills stays.
+| Spec §6 criterion | Measured |
+|---|---|
+| Test suite passes | 4 files, 24 tests, OK — and still OK with `FLUENT_DATA_DIR` and `CLAUDE_PROJECT_DIR` both exported to junk paths |
+| One difficulty band | `60-70` extinct repo-wide; `50-70%` in all three live homes |
+| One home for the quality formula | `floor(score` only in `fluent-fsrs-reference` |
+| One home for the category canon | one definer (`fluent-feedback-formatter` §"Use these category labels"), three pointers, zero re-lists |
+| No stale `file.md:NN` citation | none outside `docs/orchestrion`, which is a historical record |
+| F1-F14 | all fourteen closed; F12 delivered exactly per the §2 assumption |
 
-One assumption was taken without asking (spec §2, F12): the unimplemented mastery
-preconditions in the gated skills' *When to Use* sections are deleted rather than
-wired in. Flagged to the human; not contested.
+Enforcement is live, not documented-only: an off-canon `errors[].category` exits `1`,
+names the offending index and the eleven accepted labels, and writes **no** database.
 
-## Review record
+## The two defects that mattered, and where they came from
 
-Three rounds, one fresh read-only reviewer each, review-debug tier. 18 defects found
-and addressed. The round-3 reviewer's closing judgement: with its four fixes applied,
-the plan is executable as written.
+1. **I1 — the routed `/fluent-learn` path double-executed the session end.** Menu items
+   1-5 read the target skill's `SKILL.md` and follow it, then return to `fluent-learn`
+   step 8 — but each target's own "Update all databases" step also calls `update-db.py`,
+   with its own `command_used`. Nothing said to skip it. The literal reading writes two
+   payloads and two session files for one session, and because
+   `update-db.py` calls `backup_all(f"pre-update-{session['session_id']}")`, the second
+   invocation overwrites the pre-session snapshot with post-first-update state —
+   destroying the rollback point `fluent-db-updater` promises. Fixed router-side in
+   `fluent-learn/SKILL.md` §4, naming the superseded step by name (the five targets
+   number it §6-§9). **Provenance:** the plan's t13 never asked for the suppression
+   clause, and the controller's batch-1b ⚠️ resolution asserted the targets' final steps
+   did *not* carry their own update call — which was false and checkable in one command.
+   The whole-branch reviewer caught both.
+2. **The fix's own regression.** «Include the full text + Q&A for later analysis» existed
+   at exactly one place in the tree, inside the step the fix now skips, so a routed
+   reading session silently lost the source passage. Closed by one conditional clause in
+   `fluent-learn` step 8.
 
-Round-by-round, what actually mattered:
+## Follow-ups deliberately not done — all triaged, none blocking
 
-- **R1 (9 findings).** Three gates were unachievable by construction — a whole-file
-  `---` count as a frontmatter check (templates also use `---`), an empty-temp-dir
-  assertion against a script that creates `.backups/` at import, and a repo-wide
-  `auto-invoke` grep that would indict `CLAUDE.md`'s legitimate use. `fluent-progress`
-  was wrongly placed in F10 scope: none of its six Critical Rules restates a step, so
-  the instruction to prune them would have destroyed meaning. F13 (`stage`) was
-  instructed in seven tasks and verified in none.
-- **R2 (5 findings).** The timing rule was tasked into only one of its homes. Fixed by
-  **rewriting spec §3.4 into three tiers**, deliberately *not* by the reviewer's
-  suggested fix (repeat one sentence in eight files), which would have re-created the
-  duplication the sweep exists to remove. Also: t7's gate missed half the
-  contradictions its own body named; t14 could be satisfied by deleting the section it
-  was supposed to fix; t17's dependencies omitted two tasks whose behaviour its
-  CHANGELOG entry describes; t2's pruning had no spec provenance.
-- **R3 (4 findings).** t7's body contradicted the tier design it implements, and the
-  natural repair passed every gate while violating it. t4's gate was a no-op because
-  the phrase it matched is line-wrapped. t7's gate was still case-sensitive against a
-  capitalised occurrence. t11's positive `stage` gate was already satisfied on the
-  untouched file.
-
-## Open item — one, and it is a process gap, not a known defect
-
-**The final state of the plan has not been seen by a fresh reviewer.** The loop's
-three-iteration cap was reached, so round 3's four fixes were verified by hand
-(commands below) rather than by a fourth reviewer. Round 3 said the plan is executable
-with exactly those fixes, and they are applied as specified. If you want the belt-and-braces
-pass, dispatch one more read-only reviewer before `execute`; otherwise proceed.
-
-## Gate baselines — measured 2026-08-21 on the untouched tree
-
-Every gate below is currently **red** and turns green only on a real change. This is
-the "before" column; a resumed session can re-run these to prove progress, and their
-existence is why the lesson in `tasks/lessons.md` was written.
-
-| Gate | Now | After a correct sweep |
-|---|---|---|
-| `rg -ci '60-70\|/data\|after (every )?(exercise\|answer\|mistake)' CLAUDE.md` | 11 | no match |
-| `rg -c 'working notes' LEARNING_SYSTEM.md` | 1 | no match |
-| `rg -l 'once, at session end'` (repo, minus `.git` and `docs/orchestrion`) | 1 file | 3 files |
-| `rg -l 'auto-invoke' .claude/skills/` | 8 files | none |
-| `rg -l 'floor\(score'` (same scope) | 6 files | only `fluent-fsrs-reference` |
-| `rg -n 'prepositions.*articles' .claude/skills/` | `fluent-session-analyzer` | no match |
-| `rg -n 'batch at session end\|collected during the session\|Track the answer' .claude/skills/` | 3 hits, all `fluent-vocab` | no match |
-| `rg -c 'results/README.md'` × the six session skills | 0 each | 1 each |
-| citation sweep `[a-z.-]+\.(md\|json\|py\|sh\|js\|mjs):[0-9]+` | 2 hits in `tasks/lessons.md` | no match |
-| `for t in tests/test_*.py; do python3 "$t" -q; done` | all OK | all OK |
-
-`sed -n '1,12p' SKILL.md \| grep -c '^---$'` is 2 for all twelve skills today and must
-stay 2 — it is the one invariant that is already green, and the reason it is scoped to
-the head of the file is R1's finding.
+- `.claude/skills/fluent-setup/PROFILE-UPDATES.md` says «restart setup from Step 2», a
+  numeric cross-file reference that contradicts this sweep's own cite-by-name rule. It
+  resolves today. Name the section instead.
+- `LEARNING_SYSTEM.md` §"Spaced Repetition" now sends non-Claude CLIs one hop to a skill
+  file for the score→quality scale, and nothing tells them skill files are plain readable
+  markdown. `AGENTS.md` already establishes the practice; half a sentence would close it.
+- `fluent-session-analyzer` §2 still restates the feedback shape and the severity gloss,
+  duplicating `fluent-feedback-formatter`. Collapsing it needs a task owning both files,
+  because the pointer would have to carry the parse contract for the whole `❌` line.
+- The `_subprocess_env()` helper is duplicated across the two test files. Deliberate:
+  `CONTRIBUTING.md` makes each test a standalone script, so a shared module would break
+  the house convention for five lines.
 
 ## Things a fresh context would otherwise get wrong
 
-- `rg` skips dot-directories by default, so `.claude/` needs `--hidden` when searching
-  from the repo root without naming the path. Two counts in the original review were
-  briefly wrong for this reason.
-- The data directory is resolved, never literal: `FLUENT_DATA_DIR` wins, then
-  `$CLAUDE_PROJECT_DIR/data`, then `./data`, then `~/.claude/fluent-data`. Point
-  `FLUENT_DATA_DIR` at a temp dir for any verify that runs `update-db.py` — the real
-  databases hold live learner progress.
-- Tests run the hooks as subprocesses (`SCRIPT = REPO_ROOT / ".claude" / "hooks" / …`),
-  not by import, so there is no module to import an enum from; doc-vs-code agreement
-  is checked by grepping both sides.
-- `results/README.md` is the canonical session-file format and is already correct.
-  `AGENTS.md` is already correct. Neither is in scope.
+- **Never export `FLUENT_DATA_DIR` before running the suite.** The harness scrubs it now,
+  but three implementers lost time to it before that landed. `fluent_paths.data_dir()`
+  resolves `FLUENT_DATA_DIR` → `$CLAUDE_PROJECT_DIR/data` (when it holds
+  `learner-profile.json`) → `./data` → `~/.claude/fluent-data`, so either env var
+  outranks the leg the fixtures use.
+- `rg` skips dot-directories, so `.claude/` needs `--hidden` when searching from the root.
+- **Two gates in this plan were wrong, both mine, both written after the review rounds
+  closed.** A directory-scoped grep for `fluent-{skill}-session` indicts
+  `fluent-session-analyzer`, where the placeholder is correct; and a line-oriented grep
+  for the 24-word §3.3 criterion returns 2 of 6 because four files hard-wrap it at three
+  different points. The form that holds is `rg -Ul` with `\s+` at every word boundary.
+  Both are recorded in `tasks/lessons.md` with the working commands.
+- `results/README.md` and `AGENTS.md` were already correct and stayed untouched (spec §5).
+  `fluent-session-analyzer` and `results/README.md` keep the literal `{skill}` pattern on
+  purpose — they document the filename shape across all skills.
