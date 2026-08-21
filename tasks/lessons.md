@@ -19,11 +19,13 @@ Use `;`. And `read-db.py --review` already returns a trimmed payload for
 
 The ponytail audit reported `.claude/hooks/ensure_data_dir.py` as having zero
 callers and queued it for deletion. It has one:
-`.claude/skills/fluent-setup/SKILL.md:24` invokes it as the prescribed bootstrap
-recipe, and `CHANGELOG.md:118` records that its *absence* was already shipped
-once as a bug ("Added missing `ensure_data_dir.py` referenced by
-`fluent-setup`"). Deleting it would have regressed that fix and broken
-onboarding. The subagent executing the deletion caught it and refused.
+`.claude/skills/fluent-setup/SKILL.md` invokes it as the prescribed bootstrap
+recipe in §"Overview" and again in §"1. Check for existing profile", and
+`CHANGELOG.md`'s 0.2.0 §"Fixed" entry "Added missing
+`.claude/hooks/ensure_data_dir.py` referenced by `fluent-setup`" records that its
+*absence* was already shipped once as a bug. Deleting it would have regressed
+that fix and broken onboarding. The subagent executing the deletion caught it
+and refused.
 
 Why it happened: in this repo the `.md` files under `.claude/skills/` *are* the
 program — they hold the bash Claude actually runs. I grepped for invocations the
@@ -105,3 +107,60 @@ caller turns out to be a test, ask what the test was buying: here it was
 silently absorbing any drift between the hardcoded `DEFAULT_W` and the pinned
 package, so removing the parameter was still right, but only alongside an
 explicit `DEFAULT_W == Scheduler().parameters` assertion to keep the gate.
+
+## 2026-08-21 — a verify command has to be run against the pre-change tree
+
+Three review rounds on the `writing-for-agents` sweep plan found 18 defects. The
+largest single class — 6 of the 18 — was verify commands that gated nothing,
+and every one of them was invisible on self-review and obvious the moment the
+command was actually run against the untouched repo:
+
+- `awk '/^---$/{n++} END{print n}' SKILL.md` = 2 as a frontmatter check. `---`
+  also delimits the output templates, so the real counts are 3-5 and the gate
+  could never go green. Worse, the sweep task was told "fix whatever the sweep
+  catches", so the gate actively pushed an implementer to strip template rules.
+- `ls -A "$tmpdir"` expecting empty, when `update-db.py` creates `.backups/` at
+  import time, before `main` runs.
+- `rg -c 'Track each answer' LEARNING_SYSTEM.md # no match` — the phrase is
+  broken across two lines in the source, so a line-oriented grep answers "no
+  match" before the edit too.
+- `rg -c 'stage|Stage'` >= 2, already satisfied by the untouched file.
+- A case-sensitive `after every answer` that missed the file's `After every
+  answer`.
+
+How to apply: run every `**Verify:**` command while writing the plan, and record
+what it prints *now* next to what it must print after. A gate whose two states
+are identical is not a gate. Corollary for greps as gates: check whether the
+phrase you are matching is line-wrapped, whether case varies, and whether some
+legitimate line also matches — for the last one, name the lines that must NOT
+match in a comment beside the command, so the next reader can tell a false
+positive from a regression.
+
+**Execution added two more of the same class, both mine, both in gates I wrote
+after the three review rounds had closed.** Recording them because the pattern is
+now unmistakable: a line-shaped grep standing in for a structural claim.
+
+- `rg -c 'fluent-\{skill\}-session' .claude/skills/` as a "no stragglers" gate
+  indicted `fluent-session-analyzer`, where the placeholder is *correct* — that
+  file documents the filename pattern across every skill, exactly as
+  `results/README.md` does. A gate scoped to the whole directory cannot express
+  "the six session skills". Scope by file list, not by directory.
+- `rg -l '<a 24-word sentence>' .claude/skills/ | wc -l` expecting 6 returned 2,
+  because four of the six files hard-wrap the sentence — and they wrap at *three
+  different* points, so a form tolerant at one gap returns 5 and looks exactly
+  like one missing file. The form that actually holds:
+
+  ```bash
+  rg -Ul 'Every\s+`❌`\s+line\s+carries\s+its\s+category\s+and\s+its\s+severity\s+emoji' \
+     .claude/skills/ | wc -l      # 6
+  ```
+
+  `-U` for multiline, and `\s+` at *every* word boundary — not just the one you
+  happened to notice.
+
+How to apply: when a gate asserts something structural (this sentence is present
+in these files, this placeholder is resolved here but not there), write it so the
+assertion and the command are the same shape. Multi-word phrase → `rg -U` with
+`\s+` throughout. "These N files" → name the N files. And when an implementer
+reports that one of your gates is wrong, check the gate before checking the work:
+twice out of twice, the gate was.

@@ -1,6 +1,6 @@
 ---
 name: fluent-db-updater
-description: Atomically update all 6 Fluent learner databases (learner-profile, progress, mistakes, mastery, spaced-repetition, session-log) at session end by calling .claude/hooks/update-db.py with a single JSON payload. Use at the end of every practice session — fluent-writing, fluent-vocab, fluent-speaking, fluent-reading, fluent-review, fluent-learn — to persist the session's errors, review results, new vocabulary, and session metadata.
+description: Persist a practice session's results — errors, review results, new vocabulary, session metadata — by piping one JSON payload to update-db.py. Use at the end of every practice session.
 ---
 
 # DB Updater
@@ -32,7 +32,7 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db
 EOF
 ```
 
-Exit codes: `0` success, `1` validation error, `2` I/O error.
+Exit codes: `0` success, `1` validation error, `2` I/O error. On `1` or `2` no files are touched — fix the payload, or clear the disk-space/permission problem, and retry.
 
 ### 2. Fill the payload
 
@@ -51,9 +51,9 @@ Key blocks the example covers: `skill_scores`, `errors[]`, `new_vocabulary[]`, `
 
 ### 3. Field notes
 
-- `errors[]` — one entry per distinct mistake this session. Collapse duplicates (same `pattern_id`) before sending; `frequency` is bumped by the script.
+- `errors[]` — one entry per distinct mistake staged this session. Collapse duplicates (same `pattern_id`) before sending; `frequency` is bumped by the script. `category` comes from the canon in `fluent-feedback-formatter` §"Use these category labels" — `update-db.py` rejects any other value.
 - `new_vocabulary[]` — items the learner met for the first time. Fill every field; incomplete entries yield incomplete spaced-repetition records.
-- `review_results[]` — items already in the queue that were reviewed. The script reschedules each via FSRS-6. See the `fluent-fsrs-reference` skill. Mapping: `quality = floor(score / 2)`.
+- `review_results[]` — items already in the queue that were reviewed; stage each result as the session runs. The script reschedules each via FSRS-6 — see the `fluent-fsrs-reference` skill for how a score becomes a due date.
 - `skill_scores[].correct` counts correct exercises, not a percentage. Accuracy is derived.
 - `confidence` in `learner-profile.skills` is 0–100 integer; `accuracy` in `progress-db` is 0.0–1.0 float. The script handles the conversion.
 - `milestones[]` — each entry is a bare non-empty **string**. The object form (`{ "milestone": ..., "date": ... }`) was removed after v0.3.0 and now exits `1`, naming the offending index, with no files written. Every milestone is dated with the top-level `date` and stamped with the top-level `session_id`. Each becomes both a `session-log.milestones[]` record and a `learner-profile.achievements[]` entry.
@@ -70,9 +70,7 @@ Returns all 6 databases plus computed fields (`due_reviews_count`, `next_session
 
 ## Critical Rules
 
-- **Call once per session, at the end.** The script rebuilds the review queue each run — partial updates risk inconsistency.
+- **Call once, at session end.** The script rebuilds the review queue each run — partial updates risk inconsistency.
 - **Never hand-edit `spaced-repetition.review_queue`.** It's regenerated from scratch on every run.
 - **Same `session_id` replaces.** Sending the same ID twice overwrites the first call. Useful for corrections, dangerous if unintentional.
 - **Backups are automatic.** Written to `.backups/pre-update-<session_id>/` before any change. Check there to roll back.
-- **Exit code 1 means validation failed, no files touched.** Fix the payload and retry.
-- **Exit code 2 means I/O failure, no files touched.** Check disk space, permissions, then retry.

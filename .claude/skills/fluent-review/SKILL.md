@@ -1,6 +1,6 @@
 ---
 name: fluent-review
-description: Run today's spaced-repetition review queue — items scheduled by FSRS-6 that need reinforcement before the learner forgets them. Triggered only when the learner types /fluent-review. Pulls due items from spaced-repetition.review_queue.today, generates a targeted exercise for each, evaluates the response, submits the score so update-db.py reschedules via FSRS, and reshelves items into the correct future queue.
+description: Today's FSRS review queue.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -10,10 +10,6 @@ disable-model-invocation: true
 ## Overview
 
 Replay items the learner learned before, timed so they hit just before the forgetting curve drops them. This is the single most effective session type — the system depends on it running daily. Items the learner gets right get pushed further into the future; items they miss come back tomorrow.
-
-## When to Use
-
-Skip this skill when the queue is empty — suggest `/fluent-vocab` or `/fluent-learn` instead.
 
 ## Instructions
 
@@ -76,7 +72,7 @@ Generate an exercise matched to `item_type`:
 - **vocabulary**: recognition (target → native), production (native → target), or cloze — rotate modes.
 - **grammar_rule**: a fill-in or error-correction exercise that tests the rule.
 
-Present one at a time:
+Present one at a time — rushing = false positives:
 
 ```markdown
 ## Review {N}/{total} — {priority emoji}
@@ -95,13 +91,13 @@ Present one at a time:
 
 Use the `fluent-feedback-formatter` skill for per-answer feedback.
 
-Then stage the item for the end-of-session update. Do NOT hand-edit `spaced-repetition.json` — use `review_results[]` in the `fluent-db-updater` payload:
+Then stage the item for the end-of-session update. Do NOT hand-edit `spaced-repetition.json` — the queue is rebuilt on every `update-db.py` call; use `review_results[]` in the `fluent-db-updater` payload:
 
 ```json
 { "item_id": "vocab_huis", "quality": 4 }
 ```
 
-The `update-db.py` script maps the score to an FSRS rating, reschedules via FSRS-6, and rebuilds the queue (see `fluent-fsrs-reference` skill). Mapping: `quality = floor(score / 2)`. A low score is not a failure to hide: `quality <= 2` resets `repetitions` and keeps the item in today's queue, which is exactly the signal the scheduler needs.
+The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions` and keeps the item in today's queue, which is exactly the signal the scheduler needs.
 
 ### 5. Progress pulse every 5 items
 
@@ -152,22 +148,13 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — only patterns where the learner got it wrong (bumps frequency)
 - `focus_next_session[]` — the 2-3 items with lowest quality this session
 
-Save exchange to `/results/fluent-review-session-{NNN}.md` for later analysis.
+Save the session file to `/results/fluent-review-session-{NNN}.md` — structure per `results/README.md`. Every `❌` line carries its category and its severity emoji; without them `fluent-session-analyzer` cannot parse the session.
 
 ## Critical Rules
 
 - **Daily.** The whole system assumes the learner runs `/fluent-review` every day. Missing a day breaks the intended spacing.
-- **Never auto-invoke.** Gated; must fire only on explicit `/fluent-review`. Long interactive + spaced-repetition mutation.
-- **One item at a time.** Rushing = false positives.
 - **Let the learner struggle.** If they don't remember, that's useful data (quality 0-2). The algorithm needs honest signals.
-- **Never hand-edit `spaced-repetition.json`.** Queue is rebuilt on every `update-db.py` call.
 
 ## What the Schedule Means
 
-Tell the learner if they ask:
-
-- 1 day — new or struggling items
-- 2-3 days — learning, building strength
-- 1 week — getting comfortable
-- 2+ weeks — strong, maintenance only
-- 1+ month — mastered, long-term memory
+If the learner asks what their next-review intervals mean — read `.claude/skills/fluent-review/SCHEDULE-MEANING.md` and answer from there.

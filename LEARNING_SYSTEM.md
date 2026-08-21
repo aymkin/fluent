@@ -24,9 +24,9 @@ This document does not restate either.
 Read all six in one call with `.claude/hooks/read-db.py`. **All six are written by
 `.claude/hooks/update-db.py`, once, at session end** — never by hand. That script
 owns the counters, the accuracy averages, the error-pattern examples and every
-`mastery_level`; a hand-written value will diverge from what it recomputes. Track
-each answer in your own working notes during the session, then submit one payload
-via the `fluent-db-updater` skill.
+`mastery_level`; a hand-written value will diverge from what it recomputes. Stage
+each answer during the session, then submit one payload via the
+`fluent-db-updater` skill.
 
 ### Session Result Files (`/results` directory)
 
@@ -86,18 +86,8 @@ old SM-2 formula, FSRS-6 uses 21 fitted weights plus per-item `stability` and
 a score; `update-db.py` maps it to an FSRS rating (1-4), calls `fsrs.schedule(...)`,
 updates `stability` / `fsrs_difficulty` / `interval_days` / `due_date`, advances
 `consecutive_correct` / `mastery_level`, and rebuilds the review queue. See the
-`fluent-fsrs-reference` skill for the full pipeline and field list.
-
-**Quality scale** (`quality = floor(score / 2)`):
-
-| Score | Quality | Meaning |
-|-------|---------|---------|
-| 10 | 5 | Perfect — instant recall, no hesitation |
-| 8-9 | 4 | Correct after hesitation |
-| 6-7 | 3 | Correct with difficulty |
-| 4-5 | 2 | Incorrect but remembered when shown |
-| 2-3 | 1 | Incorrect, familiar |
-| 0-1 | 0 | Complete blackout |
+`fluent-fsrs-reference` skill for the full pipeline, the score→quality scale and the
+field list.
 
 ---
 

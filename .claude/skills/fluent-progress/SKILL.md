@@ -1,6 +1,6 @@
 ---
 name: fluent-progress
-description: Show the learner's language learning progress, statistics, mastery levels, streak, and achievements. Use when the learner asks "how am I doing", "show my progress", "stats", "dashboard", "what's my streak", "how many words have I learned", or invokes /fluent-progress. Read-only — safe to auto-invoke.
+description: Progress dashboard — stats, mastery levels, streak, achievements. Use when the learner asks how they are doing.
 allowed-tools: Read, Bash
 ---
 
@@ -11,13 +11,6 @@ allowed-tools: Read, Bash
 Show the learner a comprehensive, personalized progress report with visual statistics, skill mastery levels, trends, and next goals. This is read-only: do not modify any database files.
 
 ## When to Use
-
-Trigger this skill when:
-
-- Learner types `/fluent-progress`.
-- Learner asks about their progress, statistics, streak, mastery, achievements, or how they're improving.
-- Learner asks "how am I doing", "show me my stats", "am I getting better".
-- After a session ends, if the learner wants a broader view than the session summary.
 
 Skip this skill when the learner is mid-practice — the ongoing session skill already shows per-turn feedback, and opening the full dashboard interrupts the flow.
 
@@ -108,20 +101,7 @@ earned from the milestones recorded at session end, there is no fixed catalogue}
 
 ### 3. Optional interpretation footer
 
-Append this only if the learner seems new or asks what the numbers mean:
-
-```markdown
-## 📖 How to Read Your Stats
-
-**Mastery Levels:**
-- ⭐☆☆☆☆ (1/5): Just started
-- ⭐⭐☆☆☆ (2/5): Learning
-- ⭐⭐⭐☆☆ (3/5): Good
-- ⭐⭐⭐⭐☆ (4/5): Strong
-- ⭐⭐⭐⭐⭐ (5/5): Mastered
-
-**Accuracy bands:** 0-40% intensive, 40-60% learning, 60-75% good, 75-85% strong, 85%+ excellent.
-```
+Only when the learner seems new or asks what the numbers mean — append the footer in `.claude/skills/fluent-progress/STATS-GLOSSARY.md`.
 
 ## Critical Rules
 

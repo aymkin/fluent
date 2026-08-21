@@ -1,6 +1,6 @@
 ---
 name: fluent-feedback-formatter
-description: Canonical feedback template for every learner answer in the Fluent system — celebrate correct parts, correct mistakes with category and brief explanation, show the full correct version, score out of 10, and classify severity (🔴 critical / 🟡 moderate / 🟢 minor). Use in every practice session (fluent-writing, fluent-vocab, fluent-speaking, fluent-reading, fluent-review) immediately after the learner submits an answer.
+description: 'Canonical feedback shape for every graded learner answer: corrections with category and severity, the full correct version, a score out of 10. Use after the learner submits an answer in any practice session.'
 ---
 
 # Feedback Formatter
@@ -38,7 +38,7 @@ Skip this skill for non-feedback output (greetings, summaries, progress reports)
 ---
 ```
 
-Skip the ❌ block if the answer is fully correct. Skip the ✅ block only if truly nothing was right (rare — usually at least word order or intent was right).
+Skip the ❌ block if the answer is fully correct. Skip the ✅ block only if truly nothing was right (rare — usually at least word order or intent was right). Otherwise use the shape exactly. Deviations break session-file parsing downstream.
 
 ### 2. Tag severity on every error
 
@@ -48,11 +48,13 @@ Skip the ❌ block if the answer is fully correct. Skip the ✅ block only if tr
 | 🟡 | Moderate | Noticeable but understandable | Preposition error, missing article |
 | 🟢 | Minor | Low priority | Spelling, punctuation, accent marks |
 
-A single answer may contain multiple errors of different severity — tag each.
+A severity tag is mandatory on every ❌ line; a single answer may contain multiple errors of different severity, so tag each. Drives spaced-repetition priority.
 
 ### 3. Use these category labels
 
-These feed `mistakes-db.json`:
+These are the ten labels `errors[].category` accepts on the way into
+`mistakes-db.json`. `update-db.py` enforces the set — an off-canon label exits `1`
+before any database is written.
 
 - `grammar` — word order, conjugation, clause structure
 - `formal_informal` — u/je, uw/jouw, register mismatch
@@ -61,6 +63,13 @@ These feed `mistakes-db.json`:
 - `prepositions` — om/op/in/bij/naar/etc.
 - `articles` — de/het, definite/indefinite
 - `missing` — omitted greeting, closing, required word
+- `structure` — organisation, flow, paragraphing
+- `comprehension` — misread what the text says
+- `inference` — failed to draw what the text implies
+
+`other` is the eleventh accepted value, not one of the ten: it stays accepted
+because `update-db.py` already writes it as the default when a payload omits the
+key.
 
 ### 4. Tone rules
 
@@ -72,11 +81,9 @@ These feed `mistakes-db.json`:
 
 ### 5. Hand score to the scheduler
 
-After scoring, feed the score into the scheduler via the `fluent-db-updater` skill; see `fluent-fsrs-reference` for the pipeline: `quality = floor(score / 2)`.
+After scoring, feed the score into the scheduler via the `fluent-db-updater` skill; see `fluent-fsrs-reference` for the pipeline.
 
 ## Critical Rules
 
-- **Always use the template exactly.** Deviations break session-file parsing downstream.
-- **Severity tag is mandatory** on every ❌ line. Drives spaced-repetition priority.
 - **One score per answer.** Total out of 10, with optional breakdown (grammar/vocab/structure) for long answers like writing tasks.
 - **Never skip the "Correct version".** Even if perfect, echoing the target form reinforces motor memory.

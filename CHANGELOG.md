@@ -176,6 +176,27 @@ All notable changes to Fluent will be documented in this file.
 - The README described `.claude/references/db-updater-payload.example.json` as a
   "shared payload schema used by `update-db.py`". The script never opens that
   file — it is a copy-paste template the `fluent-db-updater` skill points at.
+- Six defects a learner could see, found by reviewing `CLAUDE.md` and the whole
+  skill set against the `writing-for-agents` reference.
+  - Menu items 1-5 in `/fluent-learn` now start the practice you picked — they
+    handed off to skills gated behind their own slash command, which nothing but
+    you can type, so the hand-off could not fire; the router now reads the target
+    skill and follows it in the same session, recorded as a single session.
+  - Session files are written in the shape `fluent-session-analyzer` can parse:
+    every session skill now names `results/README.md` as the structure and
+    requires the category and the severity emoji on every corrected-error line,
+    so "what should I practice next" has something to read.
+  - Text-structure, reading-comprehension and reading-inference mistakes are
+    tracked and drilled — `/fluent-writing` and `/fluent-reading` already tagged
+    them, but the category canon and the analyzer knew only seven labels, so
+    those weaknesses were recorded once and never came back.
+  - An off-canon error category now fails the save with exit `1`, naming the
+    offending index and the accepted labels, instead of settling into
+    `mistakes-db.json` as a pattern nothing will ever schedule.
+  - The six databases are written in one shot at the end of a session instead of
+    after every exercise.
+  - The desirable-difficulty target is one band everywhere, 50-70% success —
+    only `CLAUDE.md` stated a different band, and it was the outlier.
 
 ## [0.3.0] — 2026-06-15
 

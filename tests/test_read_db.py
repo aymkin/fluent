@@ -6,6 +6,7 @@ Usage:
     python3 tests/test_read_db.py
 """
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -65,10 +66,25 @@ class ReadDbReviewTrimTest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
+    def _subprocess_env(self):
+        """Env for the script under test, with the data-dir overrides scrubbed.
+
+        The fixtures live in ``<tmp>/data`` and the script finds them through the
+        ``./data`` leg of ``fluent_paths.data_dir()``. An inherited
+        ``FLUENT_DATA_DIR`` — or a ``CLAUDE_PROJECT_DIR`` whose ``data/`` holds a
+        real ``learner-profile.json`` — outranks that leg, so the script would
+        read (and write) a directory other than the one under test.
+        """
+        env = os.environ.copy()
+        env.pop("FLUENT_DATA_DIR", None)
+        env.pop("CLAUDE_PROJECT_DIR", None)
+        return env
+
     def _run(self, *args):
         proc = subprocess.run(
             ["python3", str(SCRIPT), *args],
             cwd=str(self.tmp),
+            env=self._subprocess_env(),
             capture_output=True,
         )
         self.assertEqual(proc.returncode, 0, msg=f"stderr={proc.stderr!r}")

@@ -144,6 +144,13 @@ SESSION_PAYLOAD = {
     "milestones": []
 }
 
+# The eleven labels errors[].category accepts, spelled out here rather than
+# imported from the script so the test pins the canon instead of echoing it.
+CANON_ERROR_CATEGORIES = (
+    "grammar", "formal_informal", "vocabulary", "spelling", "prepositions",
+    "articles", "missing", "structure", "comprehension", "inference", "other",
+)
+
 # The single review_results entry above targets this item on this session
 # date — reused by the FSRS assertions in test_happy_path.
 REVIEWED_ID = "vocab_dag"
@@ -159,11 +166,26 @@ class UpdateDbSmokeTest(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp, ignore_errors=True)
 
+    def _subprocess_env(self):
+        """Env for the script under test, with the data-dir overrides scrubbed.
+
+        The fixtures live in ``<tmp>/data`` and the script finds them through the
+        ``./data`` leg of ``fluent_paths.data_dir()``. An inherited
+        ``FLUENT_DATA_DIR`` — or a ``CLAUDE_PROJECT_DIR`` whose ``data/`` holds a
+        real ``learner-profile.json`` — outranks that leg, so the script would
+        read (and write) a directory other than the one under test.
+        """
+        env = os.environ.copy()
+        env.pop("FLUENT_DATA_DIR", None)
+        env.pop("CLAUDE_PROJECT_DIR", None)
+        return env
+
     def _run(self, payload: dict):
         proc = subprocess.run(
             ["python3", str(SCRIPT)],
             input=json.dumps(payload).encode(),
             cwd=str(self.tmp),
+            env=self._subprocess_env(),
             capture_output=True,
         )
         return proc
@@ -171,6 +193,12 @@ class UpdateDbSmokeTest(unittest.TestCase):
     def _load(self, name):
         with open(self.tmp / "data" / name) as f:
             return json.load(f)
+
+    def _snapshot(self):
+        """Path -> bytes for every file under the data dir, backups included."""
+        root = self.tmp / "data"
+        return {p.relative_to(root).as_posix(): p.read_bytes()
+                for p in sorted(root.rglob("*")) if p.is_file()}
 
     def test_happy_path(self):
         proc = self._run(SESSION_PAYLOAD)
@@ -321,6 +349,52 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(sp["sessions"], 3)
         self.assertEqual(sp["exercises_completed"], 14)
         self.assertEqual(self._load("mastery-db.json")["skills"]["vocabulary"]["mastery_level"], 2)
+
+    # --- Error categories (spec §3.1) ---
+
+    def _payload_with_error(self, session_id, error, date="2026-04-24"):
+        payload = dict(SESSION_PAYLOAD)
+        payload["session_id"] = session_id
+        payload["date"] = date
+        payload["errors"] = [error]
+        return payload
+
+    def test_error_category_from_canon_accepted(self):
+        # Every label in the canon is accepted, the three added by D1 included.
+        # One pattern_id per label: the "already tracked" branch never rewrites
+        # category, so reusing an id would hide what was actually stored.
+        for label in CANON_ERROR_CATEGORIES:
+            with self.subTest(category=label):
+                proc = self._run(self._payload_with_error(
+                    f"session-3-{label}",
+                    {"pattern_id": f"pat_{label}", "category": label}))
+                self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+                pat = self._load("mistakes-db.json")["error_patterns"][f"pat_{label}"]
+                self.assertEqual(pat["category"], label)
+
+    def test_error_category_omitted_defaults_to_other(self):
+        proc = self._run(self._payload_with_error(
+            "session-400", {"pattern_id": "pat_no_category"}))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        pat = self._load("mistakes-db.json")["error_patterns"]["pat_no_category"]
+        self.assertEqual(pat["category"], "other")
+
+    def test_error_category_off_canon_rejected_before_any_write(self):
+        # Off-canon labels exit 1 naming the offending index and value, with
+        # the data dir byte-identical afterwards — validation runs before any
+        # DB file is read or written.
+        before = self._snapshot()
+        for n, bad in enumerate(("structuur", "Grammar", "", None, 42, ["grammar"])):
+            with self.subTest(category=bad):
+                proc = self._run(self._payload_with_error(
+                    f"session-5{n:02d}",
+                    {"pattern_id": "pat_bad", "category": bad}))
+                self.assertEqual(proc.returncode, 1,
+                                 msg=f"case={bad!r} stdout={proc.stdout!r}")
+                err = proc.stderr.decode()
+                self.assertIn("index 0", err)
+                self.assertIn(repr(bad), err)
+                self.assertEqual(self._snapshot(), before)
 
     # --- Milestones (issue #8) ---
 
