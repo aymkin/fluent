@@ -157,10 +157,4 @@ Save the session file to `/results/fluent-review-session-{NNN}.md` — structure
 
 ## What the Schedule Means
 
-Tell the learner if they ask:
-
-- 1 day — new or struggling items
-- 2-3 days — learning, building strength
-- 1 week — getting comfortable
-- 2+ weeks — strong, maintenance only
-- 1+ month — mastered, long-term memory
+If the learner asks what their next-review intervals mean — read `.claude/skills/fluent-review/SCHEDULE-MEANING.md` and answer from there.
