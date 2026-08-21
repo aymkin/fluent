@@ -105,3 +105,31 @@ caller turns out to be a test, ask what the test was buying: here it was
 silently absorbing any drift between the hardcoded `DEFAULT_W` and the pinned
 package, so removing the parameter was still right, but only alongside an
 explicit `DEFAULT_W == Scheduler().parameters` assertion to keep the gate.
+
+## 2026-08-21 — a verify command has to be run against the pre-change tree
+
+Three review rounds on the `writing-for-agents` sweep plan found 18 defects. The
+largest single class — 6 of the 18 — was verify commands that gated nothing,
+and every one of them was invisible on self-review and obvious the moment the
+command was actually run against the untouched repo:
+
+- `awk '/^---$/{n++} END{print n}' SKILL.md` = 2 as a frontmatter check. `---`
+  also delimits the output templates, so the real counts are 3-5 and the gate
+  could never go green. Worse, the sweep task was told "fix whatever the sweep
+  catches", so the gate actively pushed an implementer to strip template rules.
+- `ls -A "$tmpdir"` expecting empty, when `update-db.py` creates `.backups/` at
+  import time, before `main` runs.
+- `rg -c 'Track each answer' LEARNING_SYSTEM.md # no match` — the phrase is
+  broken across two lines in the source, so a line-oriented grep answers "no
+  match" before the edit too.
+- `rg -c 'stage|Stage'` >= 2, already satisfied by the untouched file.
+- A case-sensitive `after every answer` that missed the file's `After every
+  answer`.
+
+How to apply: run every `**Verify:**` command while writing the plan, and record
+what it prints *now* next to what it must print after. A gate whose two states
+are identical is not a gate. Corollary for greps as gates: check whether the
+phrase you are matching is line-wrapped, whether case varies, and whether some
+legitimate line also matches — for the last one, name the lines that must NOT
+match in a comment beside the command, so the next reader can tell a false
+positive from a regression.
