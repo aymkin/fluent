@@ -143,8 +143,11 @@ Always-loaded, so one trigger per branch and no identity the body already carrie
   `update-db.py` after every word — batch at session end»),
   `fluent-db-updater` §"Critical Rules" («Call once per session, at the end»)
   and `LEARNING_SYSTEM.md` §"Session End Protocol" («Write all six databases in
-  one shot»). **Batch-at-end wins**; `CLAUDE.md` states the rule that way and
-  explains why (the script rebuilds the review queue on every run).
+  one shot»). **Batch-at-end wins**; `CLAUDE.md` states the rule in §3.4's tier-2
+  shape — the literal `once, at session end` plus the pointer to
+  `fluent-db-updater`, which is the one home of the *why*. (Before §3.4 was
+  rewritten this bullet asked `CLAUDE.md` to carry the reason itself; §3.4
+  governs.)
 - «YOU MUST READ `/data/learner-profile.json`» plus the seven `/data/*.json` rows
   of the *Key Files You Work With* table contradict `fluent-progress` §1 («do NOT
   hardcode `data/`»). Replace the literal paths with the resolved data directory.
