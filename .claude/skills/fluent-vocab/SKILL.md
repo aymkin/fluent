@@ -1,6 +1,6 @@
 ---
 name: fluent-vocab
-description: Run an interactive vocabulary drill session with flashcard-style prompts, spaced repetition, and per-answer feedback. Triggered only when the learner types /fluent-vocab. Reads spaced-repetition / mistakes / mastery DBs to pick words, presents one word at a time, scores each answer, and calls fluent-db-updater at the end.
+description: Flashcard-style vocabulary drill.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -10,10 +10,6 @@ disable-model-invocation: true
 ## Overview
 
 Flashcard-style vocabulary practice using spaced repetition. One word at a time, immediate feedback, DB update at the end. Interleaves three modes (recognition, production, cloze) to force active recall rather than passive re-reading.
-
-## When to Use
-
-Skip this skill if no vocabulary items are due and no new words are queued — offer `/fluent-review` or `/fluent-learn` instead.
 
 ## Instructions
 
@@ -62,13 +58,11 @@ Rotate the three modes so the session is not monotonous:
 
 Use the `fluent-feedback-formatter` skill's template. Score out of 10, tag severity.
 
-Track the answer for the end-of-session DB update:
+Stage the answer for the `fluent-db-updater` skill to write:
 
-- Add to `review_results[]` with `quality = floor(score / 2)` (see `fluent-fsrs-reference` skill).
+- Stage it for `review_results[]` with the `quality` for this score — see the `fluent-fsrs-reference` skill.
 - If the learner met a new word, stage it for `new_vocabulary[]`.
 - If the learner made an error, stage it for `errors[]`.
-
-Do **not** call `update-db.py` after every word — batch at session end.
 
 ### 5. Session summary
 
@@ -98,14 +92,14 @@ Call the `fluent-db-updater` skill's workflow — one `update-db.py` invocation 
 - `command_used: "/fluent-vocab"`
 - `skills_practiced: ["vocabulary"]`
 - `skill_scores.vocabulary`: `{exercises, correct, time_minutes}`
-- `errors[]`, `new_vocabulary[]`, `review_results[]` collected during the session
+- `errors[]`, `new_vocabulary[]`, `review_results[]` — the entries staged per answer
 - `focus_next_session[]` — top 2-3 weak words
+
+Save the session file to `/results/fluent-{skill}-session-{NNN}.md` — structure
+per `results/README.md`. Every `❌` line carries its category and its severity
+emoji; without them `fluent-session-analyzer` cannot parse the session.
 
 ## Critical Rules
 
-- **One word at a time.** Wait for the learner's answer before showing the next.
-- **Immediate feedback** after each — use `fluent-feedback-formatter`.
 - **Mix modes.** Don't drill 20 recognition prompts in a row — interleave for discrimination.
 - **Use target language** for greetings + transitions when the learner is B1+; for A1-A2 mix target + native.
-- **Never** update the DBs mid-session — batch at end.
-- **Never auto-invoke.** This skill is gated; must fire only on explicit `/fluent-vocab`.
