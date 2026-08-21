@@ -19,11 +19,13 @@ Use `;`. And `read-db.py --review` already returns a trimmed payload for
 
 The ponytail audit reported `.claude/hooks/ensure_data_dir.py` as having zero
 callers and queued it for deletion. It has one:
-`.claude/skills/fluent-setup/SKILL.md:24` invokes it as the prescribed bootstrap
-recipe, and `CHANGELOG.md:118` records that its *absence* was already shipped
-once as a bug ("Added missing `ensure_data_dir.py` referenced by
-`fluent-setup`"). Deleting it would have regressed that fix and broken
-onboarding. The subagent executing the deletion caught it and refused.
+`.claude/skills/fluent-setup/SKILL.md` invokes it as the prescribed bootstrap
+recipe in §"Overview" and again in §"1. Check for existing profile", and
+`CHANGELOG.md`'s 0.2.0 §"Fixed" entry "Added missing
+`.claude/hooks/ensure_data_dir.py` referenced by `fluent-setup`" records that its
+*absence* was already shipped once as a bug. Deleting it would have regressed
+that fix and broken onboarding. The subagent executing the deletion caught it
+and refused.
 
 Why it happened: in this repo the `.md` files under `.claude/skills/` *are* the
 program — they hold the bash Claude actually runs. I grepped for invocations the
