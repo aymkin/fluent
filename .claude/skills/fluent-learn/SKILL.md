@@ -1,6 +1,6 @@
 ---
 name: fluent-learn
-description: Main adaptive language-learning session that mixes skills (writing, speaking, vocabulary, reading) and exercise types based on the learner's current level, weak patterns, and due reviews. Triggered only when the learner types /fluent-learn. Greets the learner, shows today's plan, asks what to practice, runs interleaved exercises one at a time, and updates all databases at the end.
+description: Adaptive mixed-skill practice session.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -10,10 +10,6 @@ disable-model-invocation: true
 ## Overview
 
 The flagship command. Interleaves skills, adapts difficulty per answer, and covers the whole evidence-based loop: active recall → immediate feedback → spaced repetition → tracking. Typically runs 15-20 min, mixing 2-3 patterns to force discrimination.
-
-## When to Use
-
-Skip this skill the very first time a learner runs the system — route to `/fluent-setup` instead.
 
 ## Instructions
 
@@ -58,7 +54,9 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 
 ### 4. Route
 
-- 1-5 → hand off to the matching skill (`fluent-writing`, `fluent-speaking`, `fluent-vocab`, `fluent-reading`, `fluent-review`). Those skills cover everything needed; this skill's job here is just to dispatch.
+Menu items 1-5 target, in order: `fluent-writing`, `fluent-speaking`, `fluent-vocab`, `fluent-reading`, `fluent-review`.
+
+- 1-5 → all five carry `disable-model-invocation: true`, so you cannot invoke them as skills. Read `.claude/skills/<target>/SKILL.md` and follow it in this same session, then finish with step 8 below. Keep `command_used: "/fluent-learn"` so the session stays one record.
 - 6 (adaptive mix) → use this skill's own exercise sequencer (below).
 
 ### 5. Adaptive mix (option 6)
@@ -87,7 +85,7 @@ Set the starting point from the skill's `mastery_level`: **0-1 → easy**, **2-3
 
 ### 7. Per-answer feedback
 
-Use `fluent-feedback-formatter` template. Score 0-10 + severity tag. Stage for end-of-session update.
+Use `fluent-feedback-formatter` template. Score 0-10 + severity tag. Stage the result for the end-of-session payload.
 
 Also prompt the learner to **retype** the correct form after a critical mistake — motor memory helps:
 
@@ -125,11 +123,10 @@ Then use the `fluent-db-updater` skill:
 - `errors[]`, `new_vocabulary[]`, `review_results[]`
 - `breakthroughs[]`, `focus_next_session[]`, `session_notes`
 
-Save exchange to `/results/fluent-learn-session-{NNN}.md`.
+Save the session file to `/results/fluent-learn-session-{NNN}.md` — structure per `results/README.md`. Every `❌` line carries its category and its severity emoji; without them `fluent-session-analyzer` cannot parse the session.
 
 ## Critical Rules
 
-- **Never auto-invoke.** Gated; 15-20 min interactive + DB writes.
 - **Always load all 6 DBs at start.** Missing context → generic, demotivating content.
 - **One exercise at a time.**
 - **Interleave.** Don't drill one pattern for 20 min — mix 2-3 patterns to force discrimination.
