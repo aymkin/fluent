@@ -35,8 +35,10 @@ Scan for `❌` markers. Each correction has:
 
 - The wrong form ("Your answer")
 - The correct form
-- A category (grammar, formal_informal, vocabulary, prepositions, articles, spelling, missing)
+- A category — one of the labels in `fluent-feedback-formatter` §"Use these category labels"
 - A severity (🔴 critical, 🟡 moderate, 🟢 minor)
+
+Recognise every label in that canon, not only the ones a writing session tends to produce: a reading session tags `comprehension` and `inference`, a long answer tags `structure`, and a label this scan skips is a weakness the next session plan never sees.
 
 Count frequency per pattern across recent files:
 
