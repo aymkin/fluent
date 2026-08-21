@@ -1,6 +1,6 @@
 ---
 name: fluent-progress
-description: Show the learner's language learning progress, statistics, mastery levels, streak, and achievements. Use when the learner asks "how am I doing", "show my progress", "stats", "dashboard", "what's my streak", "how many words have I learned", or invokes /fluent-progress. Read-only — safe to auto-invoke.
+description: Progress dashboard — stats, mastery levels, streak, achievements. Use when the learner asks how they are doing.
 allowed-tools: Read, Bash
 ---
 
@@ -11,13 +11,6 @@ allowed-tools: Read, Bash
 Show the learner a comprehensive, personalized progress report with visual statistics, skill mastery levels, trends, and next goals. This is read-only: do not modify any database files.
 
 ## When to Use
-
-Trigger this skill when:
-
-- Learner types `/fluent-progress`.
-- Learner asks about their progress, statistics, streak, mastery, achievements, or how they're improving.
-- Learner asks "how am I doing", "show me my stats", "am I getting better".
-- After a session ends, if the learner wants a broader view than the session summary.
 
 Skip this skill when the learner is mid-practice — the ongoing session skill already shows per-turn feedback, and opening the full dashboard interrupts the flow.
 
