@@ -1,6 +1,6 @@
 ---
 name: fluent-writing
-description: Run an interactive writing practice session (emails, letters, forms, short texts) with systematic error analysis, category-tagged corrections, and detailed feedback. Triggered only when the learner types /fluent-writing. Selects a scenario matched to mastery, lets the learner compose, then analyzes grammar, register, vocabulary, structure, and spelling before updating all databases.
+description: Writing practice with systematic error analysis.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -10,10 +10,6 @@ disable-model-invocation: true
 ## Overview
 
 Full-text writing practice with systematic correction. One scenario per session, detailed feedback broken down by severity and category, DB update at end. Mastery-driven scenario selection keeps the task at the right level — challenging, not frustrating.
-
-## When to Use
-
-Skip this skill in favor of `/fluent-vocab` if the learner has not yet hit mastery 2 in basic vocabulary — writing needs a minimum word bank.
 
 ## Instructions
 
@@ -63,16 +59,20 @@ Don't correct mid-composition. Let the learner finish.
 
 ### 5. Systematic error analysis
 
-Check every sentence for these categories:
+Check every sentence against the category canon in `fluent-feedback-formatter`
+§"Use these category labels" — the single home of the list, `structure` included.
 
-1. **Grammar** — word order, conjugation, clause structure, articles
-2. **Formal/informal** — register consistency
-3. **Vocabulary** — wrong word, English mixing, register-wrong synonyms
-4. **Missing elements** — greeting, closing, required fields
-5. **Spelling** — minor at A2, weightier at B2+
-6. **Structure** — organization, flow, paragraphing
+The Title-Case headings the learner reads in the feedback (**Grammar**,
+**Formal/informal**, **Missing elements**, **Structure**, …) are display copy, not
+payload values. `errors[].category` takes the lowercase canon label
+(`formal_informal`, `missing`, `structure`, …); `update-db.py` rejects anything
+else and writes no database at all, so a display heading copied into the payload
+fails the whole update.
 
-Tag each finding with a severity: 🔴 critical, 🟡 moderate, 🟢 minor.
+Tag each finding with a severity: 🔴 critical, 🟡 moderate, 🟢 minor. Severity is
+mandatory — it feeds `mistakes-db` and drives spaced-repetition priority. Weigh
+spelling light at A2, heavier at B2+. Stage each finding for the end-of-session
+payload.
 
 ### 6. Detailed feedback
 
@@ -151,12 +151,10 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — one per distinct pattern found (dedupe; the script bumps frequency)
 - `focus_next_session[]` — top 2 patterns to drill
 
-Also save the exchange as `/results/fluent-writing-session-{NNN}.md` with the full task, the learner's original text, the corrected version, and the error table. The `fluent-session-analyzer` skill depends on this format.
+Save the session file to `/results/fluent-writing-session-{NNN}.md` — structure
+per `results/README.md`. Every `❌` line carries its category and its severity
+emoji; without them `fluent-session-analyzer` cannot parse the session.
 
 ## Critical Rules
 
 - **One scenario per session.** Don't chain multiple writing tasks — depth over breadth.
-- **Wait for the full answer** before correcting.
-- **Severity tagging is mandatory.** Fed into `mistakes-db` and drives spaced repetition priority.
-- **Always save the session file** in `/results/` for later analysis by `fluent-session-analyzer`.
-- **Never auto-invoke.** This skill is gated; must fire only on explicit `/fluent-writing`.
