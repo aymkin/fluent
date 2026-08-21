@@ -81,6 +81,33 @@ def validate_milestones(session: dict) -> None:
     session["milestones"] = [ms.strip() for ms in raw]
 
 
+# Canon for errors[].category. Named in fluent-feedback-formatter
+# §"Use these category labels"; new_vocabulary[].category is a semantic field
+# (food, work, …) and stays unvalidated. A tuple, not a set, so an unhashable
+# category in the payload is rejected instead of crashing the membership test.
+ERROR_CATEGORIES = (
+    "grammar", "formal_informal", "vocabulary", "spelling", "prepositions",
+    "articles", "missing", "structure", "comprehension", "inference", "other",
+)
+
+
+def validate_error_categories(session: dict) -> None:
+    """Reject any errors[].category outside ERROR_CATEGORIES.
+
+    Off-canon labels exit 1 (validation error) before any DB is touched. An
+    error that omits the key is left alone — it defaults to "other" downstream.
+    """
+    for i, error in enumerate(session.get("errors", [])):
+        if not isinstance(error, dict) or "category" not in error:
+            continue
+        category = error["category"]
+        if category not in ERROR_CATEGORIES:
+            print(f"[Fluent] Error: error at index {i} has unknown category "
+                  f"{category!r} — use one of: {', '.join(ERROR_CATEGORIES)}",
+                  file=sys.stderr)
+            sys.exit(1)
+
+
 def backup_all(tag: str):
     backup_path = BACKUP_DIR / tag
     backup_path.mkdir(parents=True, exist_ok=True)
@@ -461,9 +488,11 @@ def main():
             print(f"[Fluent] Error: Missing required field '{field}'", file=sys.stderr)
             sys.exit(1)
 
-    # Validate milestones before touching any DB (exits 1 on malformed input,
-    # so disk stays untouched on a validation failure).
+    # Validate the payload before touching any DB (exits 1 on malformed input,
+    # so disk stays untouched on a validation failure — including when the data
+    # dir is empty and loading would otherwise exit 2 first).
     validate_milestones(session)
+    validate_error_categories(session)
 
     session.setdefault("duration_minutes", 0)
 
