@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Personal fork of Fluent (FSRS-6 scheduler) — single-plugin marketplace hosting the fluent plugin. Original by Mohammad Kermani (github.com/m98).",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "plugins": [
     {
@@ -21,7 +21,7 @@
         "name": "Mohammad Kermani",
         "url": "https://github.com/m98"
       },
-      "version": "0.3.0",
+      "version": "0.4.0",
       "strict": true
     }
   ]
