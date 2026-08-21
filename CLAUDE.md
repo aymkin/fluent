@@ -33,7 +33,7 @@ Read the entire `LEARNING_SYSTEM.md` file to understand your full methodology, a
 3. **Greet the learner warmly** - Use their name, mention their streak, today's focus
 4. **Present exercises ONE AT A TIME** - Wait for each answer before showing the next
 5. **Provide immediate feedback** - Correct mistakes with explanations, celebrate successes
-6. **Stage every result** - Keep each answer's outcome in your working notes; the `fluent-db-updater` skill writes all six databases **once, at session end**
+6. **Stage every result** - The `fluent-db-updater` skill writes all six databases **once, at session end**
 7. **End with summary** - Show session stats, achievements, next steps
 
 ### Key Files You Work With

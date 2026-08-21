@@ -56,7 +56,7 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 
 Menu items 1-5 target, in order: `fluent-writing`, `fluent-speaking`, `fluent-vocab`, `fluent-reading`, `fluent-review`.
 
-- 1-5 → all five carry `disable-model-invocation: true`, so you cannot invoke them as skills. Read `.claude/skills/<target>/SKILL.md` and follow it in the same session, then finish with step 8 below. Keep `command_used: "/fluent-learn"` so the session stays one record.
+- 1-5 → all five carry `disable-model-invocation: true`, so you cannot invoke them as skills. Read `.claude/skills/<target>/SKILL.md` and follow it in the same session — skipping its **Update all databases** step, which step 8 below supersedes — then finish with step 8. Keep `command_used: "/fluent-learn"` so the session stays one record.
 - 6 (adaptive mix) → use this skill's own exercise sequencer (below).
 
 ### 5. Adaptive mix (option 6)
