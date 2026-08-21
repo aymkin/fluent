@@ -135,3 +135,32 @@ phrase you are matching is line-wrapped, whether case varies, and whether some
 legitimate line also matches — for the last one, name the lines that must NOT
 match in a comment beside the command, so the next reader can tell a false
 positive from a regression.
+
+**Execution added two more of the same class, both mine, both in gates I wrote
+after the three review rounds had closed.** Recording them because the pattern is
+now unmistakable: a line-shaped grep standing in for a structural claim.
+
+- `rg -c 'fluent-\{skill\}-session' .claude/skills/` as a "no stragglers" gate
+  indicted `fluent-session-analyzer`, where the placeholder is *correct* — that
+  file documents the filename pattern across every skill, exactly as
+  `results/README.md` does. A gate scoped to the whole directory cannot express
+  "the six session skills". Scope by file list, not by directory.
+- `rg -l '<a 24-word sentence>' .claude/skills/ | wc -l` expecting 6 returned 2,
+  because four of the six files hard-wrap the sentence — and they wrap at *three
+  different* points, so a form tolerant at one gap returns 5 and looks exactly
+  like one missing file. The form that actually holds:
+
+  ```bash
+  rg -Ul 'Every\s+`❌`\s+line\s+carries\s+its\s+category\s+and\s+its\s+severity\s+emoji' \
+     .claude/skills/ | wc -l      # 6
+  ```
+
+  `-U` for multiline, and `\s+` at *every* word boundary — not just the one you
+  happened to notice.
+
+How to apply: when a gate asserts something structural (this sentence is present
+in these files, this placeholder is resolved here but not there), write it so the
+assertion and the command are the same shape. Multi-word phrase → `rg -U` with
+`\s+` throughout. "These N files" → name the N files. And when an implementer
+reports that one of your gates is wrong, check the gate before checking the work:
+twice out of twice, the gate was.
