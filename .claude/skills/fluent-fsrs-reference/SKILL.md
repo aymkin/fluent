@@ -1,6 +1,6 @@
 ---
 name: fluent-fsrs-reference
-description: FSRS-6 scheduling reference for the Fluent language learning system. Use whenever a skill needs to know how a review is scheduled or how a score becomes a due date. Explains the score→quality→rating→FSRS pipeline, which fields live on a spaced-repetition item, and that intervals are computed by code — never by hand.
+description: "FSRS-6 scheduling reference: how a score becomes a due date, and which fields live on a spaced-repetition item. Use when a skill must reason about review scheduling."
 ---
 
 # FSRS Scheduling Reference
@@ -19,6 +19,17 @@ tutor score (0-10)
   → rating (1-4)       1 if score<=4, 2 if <=6, 3 if <=8, else 4
   → fsrs.schedule(...) → interval_days + due_date
 ```
+
+What each grade means:
+
+| Score | Quality | Meaning |
+|-------|---------|---------|
+| 10 | 5 | Perfect — instant recall, no hesitation |
+| 8-9 | 4 | Correct after hesitation |
+| 6-7 | 3 | Correct with difficulty |
+| 4-5 | 2 | Incorrect but remembered when shown |
+| 2-3 | 1 | Incorrect, familiar |
+| 0-1 | 0 | Complete blackout |
 
 You send `{ "item_id": "...", "quality": <0-5> }` (optionally `"score": <0-10>`)
 in `review_results[]`. `update-db.py` maps it to an FSRS rating and reschedules.
