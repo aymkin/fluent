@@ -1,6 +1,6 @@
 ---
 name: fluent-speaking
-description: Run an interactive typed conversation session simulating spoken practice — free-flowing dialogue, role-plays, and opinion questions prioritizing communication over perfect grammar. Triggered only when the learner types /fluent-speaking. Asks questions one at a time in the target language, evaluates clarity and naturalness first and grammar second, and updates all databases at the end.
+description: Typed conversation practice — communication over grammar.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -10,10 +10,6 @@ disable-model-invocation: true
 ## Overview
 
 Conversational practice through typed dialogue. Unlike `/fluent-writing`, prioritize **communication and naturalness** — grammar errors that don't block meaning are downplayed. Goal: build the learner's confidence to produce target-language output without over-analyzing.
-
-## When to Use
-
-Skip this skill below A1 mastery 2 — the learner needs a basic word bank and verb conjugations first (run `/fluent-vocab` a few times).
 
 ## Instructions
 
@@ -109,6 +105,8 @@ You could also say: "{more_natural_phrasing}"
 ---
 ```
 
+Stage the score, and any communication-blocking error, for the end-of-session DB update.
+
 ### 6. Role-play (advanced)
 
 For B1+ or when the learner is warmed up:
@@ -163,13 +161,13 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — only communication-blocking ones (don't flood mistakes-db with minor speaking slips)
 - `focus_next_session[]` — one topic + one pattern
 
-Save exchange to `/results/fluent-speaking-session-{NNN}.md`.
+Save the session file to `/results/fluent-{skill}-session-{NNN}.md` — structure
+per `results/README.md`. Every `❌` line carries its category and its severity
+emoji; without them `fluent-session-analyzer` cannot parse the session.
 
 ## Critical Rules
 
 - **Communication first.** A clear message with a missed article scores better than a grammatically perfect but confusing answer.
-- **One question at a time.** Wait for reply before next.
 - **Stay in the target language** for questions and transitions. Drop to native only for explanations.
 - **Praise natural expression.** If the learner uses "Nou..." or "Eh..." correctly, call it out — those are fluency markers.
 - **Don't over-correct.** A speaking session with 20 red marks kills confidence.
-- **Never auto-invoke.** Gated; must fire only on explicit `/fluent-speaking`.
