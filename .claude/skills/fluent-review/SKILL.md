@@ -97,7 +97,7 @@ Then stage the item for the end-of-session update. Do NOT hand-edit `spaced-repe
 { "item_id": "vocab_huis", "quality": 4 }
 ```
 
-The `update-db.py` script maps the score to an FSRS rating, reschedules via FSRS-6, and rebuilds the queue (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions` and keeps the item in today's queue, which is exactly the signal the scheduler needs.
+The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions` and keeps the item in today's queue, which is exactly the signal the scheduler needs.
 
 ### 5. Progress pulse every 5 items
 

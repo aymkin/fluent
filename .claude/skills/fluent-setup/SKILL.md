@@ -162,7 +162,7 @@ A quick 5-10 min intro session to learn your first 10 words and get familiar wit
 Type "yes" to start, "later" to begin on your own.
 ```
 
-If yes, read `.claude/skills/fluent-learn/SKILL.md` and follow it in this session.
+If yes, read `.claude/skills/fluent-learn/SKILL.md` and follow it in the same session.
 
 ## Profile Updates (existing profile)
 

@@ -161,7 +161,7 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — only communication-blocking ones (don't flood mistakes-db with minor speaking slips)
 - `focus_next_session[]` — one topic + one pattern
 
-Save the session file to `/results/fluent-{skill}-session-{NNN}.md` — structure
+Save the session file to `/results/fluent-speaking-session-{NNN}.md` — structure
 per `results/README.md`. Every `❌` line carries its category and its severity
 emoji; without them `fluent-session-analyzer` cannot parse the session.
 

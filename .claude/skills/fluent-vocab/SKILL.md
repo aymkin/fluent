@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Flashcard-style vocabulary practice using spaced repetition. One word at a time, immediate feedback, DB update at the end. Interleaves three modes (recognition, production, cloze) to force active recall rather than passive re-reading.
+Flashcard-style vocabulary practice using spaced repetition. Interleaves three modes (recognition, production, cloze) to force active recall rather than passive re-reading.
 
 ## Instructions
 
@@ -95,7 +95,7 @@ Call the `fluent-db-updater` skill's workflow — one `update-db.py` invocation 
 - `errors[]`, `new_vocabulary[]`, `review_results[]` — the entries staged per answer
 - `focus_next_session[]` — top 2-3 weak words
 
-Save the session file to `/results/fluent-{skill}-session-{NNN}.md` — structure
+Save the session file to `/results/fluent-vocab-session-{NNN}.md` — structure
 per `results/README.md`. Every `❌` line carries its category and its severity
 emoji; without them `fluent-session-analyzer` cannot parse the session.
 

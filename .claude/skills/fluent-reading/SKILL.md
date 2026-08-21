@@ -75,7 +75,7 @@ Wait for `"ready"` before asking the first question — rushing the reading step
 
 ### 5. Question sequence (one at a time)
 
-Ask one question at a time; multiple at once invites skimming.
+Multiple at once invites skimming.
 
 One block per question, headings in the target language:
 
