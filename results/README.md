@@ -10,10 +10,17 @@ structure below has to stay consistent.
 ## 📛 File naming
 
 ```
-/results/fluent-{skill}-session-{NNN}.md
+<data dir>/results/fluent-{skill}-session-{NNN}.md
 ```
 
 For example: `fluent-writing-session-012.md`.
+
+`<data dir>` is resolved at runtime — `FLUENT_DATA_DIR`, a project `data/`, or the
+`~/.claude/fluent-data` fallback — so it is not a fixed path. Ask for it:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
+```
 
 `NNN` is the **global** session counter (not per-skill) — it matches `session_id` in
 `session-log.json`.
@@ -49,8 +56,8 @@ For example: `fluent-writing-session-012.md`.
 **Correct answer:** "{correct version}"
 
 **Analysis:**
-- ❌ {error with severity emoji} — {correction} ({category})
-- ✅ {what was correct}
+- ❌ 🟡 ontbreeken → ontbreekt (grammar)
+- ✅ dat-clause built correctly
 
 **Score:** {X}/10
 
@@ -90,7 +97,9 @@ For example: `fluent-writing-session-012.md`.
 
 The `fluent-session-analyzer` skill relies on these exact markers being present:
 
-- `❌` — error line (parsed for category + severity)
+- `❌` — error line. Carries **both** a severity emoji and a category, every
+  time: the analyzer counts by category and ranks by severity, so a line
+  missing either is a mistake the next session never plans around.
 - `✅` — strength line
 - `**Score:** {X}/10` — per-question score
 - `**Accuracy:** {percent}%` — session accuracy
@@ -109,3 +118,16 @@ Call `.claude/hooks/update-db.py` once at session end with a full payload (see
 `.claude/references/db-updater-payload.example.json`). The script handles the JSON side;
 the practice skill handles the markdown side. The `fluent-db-updater` skill documents
 the payload schema.
+
+## ✅ Before you save
+
+Re-read the file you are about to write and confirm, literally:
+
+1. Every `❌` line has a severity emoji (🔴/🟡/🟢) **and** a category label.
+2. Every category label is one from `fluent-feedback-formatter`
+   §"Use these category labels" — the analyzer recognises no others.
+3. `**Score:** {X}/10` is present per question, and `**Accuracy:** {percent}%`
+   once for the session.
+
+A transcript that fails any of these is written but unreadable: the next
+session plans around the errors it can parse, and silently around nothing else.

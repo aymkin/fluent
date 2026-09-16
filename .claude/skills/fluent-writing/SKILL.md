@@ -151,9 +151,12 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — one per distinct pattern found (dedupe; the script bumps frequency)
 - `focus_next_session[]` — top 2 patterns to drill
 
-Save the session file to `/results/fluent-writing-session-{NNN}.md` — structure
-per `results/README.md`. Every `❌` line carries its category and its severity
-emoji; without them `fluent-session-analyzer` cannot parse the session.
+Save the transcript beside the databases: run
+`python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"`
+to print the data directory, then write to
+`<it>/results/fluent-writing-session-{NNN}.md`. Format:
+`${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — the canonical
+definition of every marker `fluent-session-analyzer` parses.
 
 ## Critical Rules
 

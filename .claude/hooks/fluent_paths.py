@@ -65,3 +65,10 @@ def ensure_backups_dir() -> Path:
     b = data_dir() / ".backups"
     b.mkdir(parents=True, exist_ok=True)
     return b
+
+
+if __name__ == "__main__":
+    # The data directory is resolved, not fixed: FLUENT_DATA_DIR, a project
+    # `data/`, or the ~/.claude fallback. Skills that must WRITE next to the
+    # databases (session transcripts) cannot hardcode it, so let them ask.
+    print(data_dir())

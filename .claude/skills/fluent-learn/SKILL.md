@@ -11,6 +11,8 @@ disable-model-invocation: true
 
 The flagship command. Interleaves skills, adapts difficulty per answer, and covers the whole evidence-based loop: active recall → immediate feedback → spaced repetition → tracking. Typically runs 15-20 min, mixing 2-3 patterns to force discrimination.
 
+Write every message in the language the learner writes to you in. The blocks below say what each message must carry, not which words to use.
+
 ## Instructions
 
 ### 1. Load learner context
@@ -31,32 +33,22 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 
 ### 3. Greet
 
+Open with the learner's name, their streak, reviews due, today's focus area (weakest skill or top weak pattern), and level with progress. Then offer the menu:
+
 ```markdown
-# {greeting in target language}, {name}! 👋
-
-**Today's Status:**
-- 🔥 Streak: {X} {day/days}
-- 📚 Review items due: {Y}
-- 🎯 Focus area: {weakest skill or top weak pattern}
-- ⭐ Level: {current} → {target} ({progress}%)
-
-**What would you like to practice today?**
-
 1. 📝 Writing (emails, letters, forms)
 2. 🗣️ Speaking (typed conversation)
 3. 📖 Vocabulary (flashcard drills)
 4. 👀 Reading (comprehension)
 5. 🔄 Spaced Review (today's due items)
 6. 🎲 Surprise me! (adaptive mix)
-
-**Type a number or skill name:**
 ```
 
 ### 4. Route
 
 Menu items 1-5 target, in order: `fluent-writing`, `fluent-speaking`, `fluent-vocab`, `fluent-reading`, `fluent-review`.
 
-- 1-5 → all five carry `disable-model-invocation: true`, so you cannot invoke them as skills. Read `.claude/skills/<target>/SKILL.md` and follow it in the same session — skipping its **Update all databases** step, which step 8 below supersedes — then finish with step 8. Keep `command_used: "/fluent-learn"` so the session stays one record.
+- 1-5 → all five carry `disable-model-invocation: true`, so you cannot invoke them as skills. Read `.claude/skills/<target>/SKILL.md` and follow it in this session. Persist the whole thing once, through step 8 below, with `command_used: "/fluent-learn"` — one session, one record, written at the end.
 - 6 (adaptive mix) → use this skill's own exercise sequencer (below).
 
 ### 5. Adaptive mix (option 6)
@@ -74,14 +66,13 @@ Use `fluent-session-analyzer` to choose which patterns to target.
 
 ### 6. Adaptive difficulty
 
-After every 3-4 exercises, check rolling accuracy:
+Steps 1-3 of the mix are **one decision** each: the learner's answer differs from your prompt in exactly the place the exercise tests, and nowhere else. Difficulty moves by widening what surrounds that decision, never by stacking a second one — only step 4, integration, deliberately asks for two.
+
+Set the starting point from the skill's `mastery_level`: **0-1 → easy**, **2-3 → medium**, **4-5 → hard**. Then check rolling accuracy every 3-4 exercises:
 
 - **<50%** → drop difficulty (smaller chunks, more scaffolding, offer hints)
 - **50-70%** → hold — this is the target zone
 - **>70%** → raise difficulty (longer sentences, less scaffolding, rarer vocabulary)
-
-Set the starting point from the skill's `mastery_level`: **0-1 → easy**, **2-3 → medium**,
-**4-5 → hard**. Then let the rolling accuracy above move it up or down.
 
 ### 7. Per-answer feedback
 
@@ -95,25 +86,7 @@ Now type the correct version yourself: "{correct_sentence}"
 
 ### 8. Session end
 
-```markdown
-## 🎉 Session Complete!
-
-**Today's Stats:**
-- ⏱️ Duration: {X} min
-- ✅ Exercises: {Y}
-- 📊 Accuracy: {Z}%
-- 📈 Improvement: +{N}% from start
-
-**Breakthroughs:** ✨
-- {what mastered or improved}
-
-**Next Time Focus:**
-- {what to practice next}
-
-**Streak:** 🔥 {X} {day/days}! {motivational line}
-
-{goodbye in target language}! 👏
-```
+Close with: duration, exercises done, accuracy and how it moved from the session's start, what broke through, what to focus on next time, and the streak.
 
 Then use the `fluent-db-updater` skill:
 
@@ -123,7 +96,13 @@ Then use the `fluent-db-updater` skill:
 - `errors[]`, `new_vocabulary[]`, `review_results[]`
 - `breakthroughs[]`, `focus_next_session[]`, `session_notes`
 
-Save the session file to `/results/fluent-learn-session-{NNN}.md` — structure per `results/README.md`. For a routed reading session, include the full text + Q&A for later analysis. Every `❌` line carries its category and its severity emoji; without them `fluent-session-analyzer` cannot parse the session.
+Then save the transcript beside the databases, in their `results/` directory:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
+```
+
+That prints the data directory; write to `<it>/results/fluent-learn-session-{NNN}.md`. The directory is resolved at runtime (`FLUENT_DATA_DIR`, a project `data/`, or the `~/.claude` fallback), so ask rather than assume. Format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — it is the canonical definition, and `fluent-session-analyzer` parses exactly the markers it lists. For a routed reading session, include the full text + Q&A.
 
 ## Critical Rules
 

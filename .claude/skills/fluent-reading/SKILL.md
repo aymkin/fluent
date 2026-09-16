@@ -167,10 +167,13 @@ Use the `fluent-db-updater` skill:
 - `new_vocabulary[]` — words the learner chose to save
 - `focus_next_session[]`
 
-Save the session file to `/results/fluent-reading-session-{NNN}.md` — structure
-per `results/README.md`. Include the full text + Q&A for later analysis. Every
-`❌` line carries its category and its severity emoji; without them
-`fluent-session-analyzer` cannot parse the session.
+Save the transcript beside the databases: run
+`python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"`
+to print the data directory, then write to
+`<it>/results/fluent-reading-session-{NNN}.md`. Format:
+`${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — the canonical
+definition of every marker `fluent-session-analyzer` parses. Include the full text +
+Q&A for later analysis.
 
 ## Critical Rules
 

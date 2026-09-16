@@ -11,6 +11,8 @@ disable-model-invocation: true
 
 Replay items the learner learned before, timed so they hit just before the forgetting curve drops them. This is the single most effective session type — the system depends on it running daily. Items the learner gets right get pushed further into the future; items they miss come back tomorrow.
 
+Write every message in the language the learner writes to you in. The blocks below say what each message must carry, not which words to use.
+
 ## Instructions
 
 ### 1. Load review queue
@@ -19,7 +21,9 @@ Replay items the learner learned before, timed so they hit just before the forge
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py" --review
 ```
 
-`--review` sorts `spaced-repetition.review_queue.today` by `priority` (critical → high → medium → low) and caps it at `daily_limits.review_items_per_day` server-side, so only the items you'll actually use come back expanded. Use `computed.due_reviews_count` for the true total due when writing the opening message — it can be larger than the trimmed queue. It also empties `mastery_db`/`progress_db`/`session_log` (unused by this flow — `computed.next_session_id` already covers what session_log would've been needed for) and narrows `mistakes_db.error_patterns` to just the patterns referenced by today's capped queue.
+The queue comes back sorted by `priority` and cut to `daily_limits.review_items_per_day`, expanded to just the items you will actually use.
+
+**`computed.due_reviews_count` is the real number due, and it can exceed the queue you received.** Everything past the cut is not postponed — it is simply never served today, lowest priority first. When the two numbers differ, open with both and name what got cut. A backlog the learner cannot see is a backlog nobody triages; if the overflow repeats for several days, offer to raise `review_items_per_day`.
 
 If the queue is empty:
 
@@ -34,20 +38,9 @@ Want to practice something new? Try:
 
 ### 2. Opening
 
-```markdown
-# 🔄 Today's Spaced Repetition Review
+Greet the learner by name and give: items due today (plus the overflow, if any), the estimated minutes, and one line on why review works — it interrupts forgetting just before it happens. Then start.
 
-Hallo {name}! Time to review items your brain is about to forget. This keeps everything fresh. 🧠
-
-**Items Due Today:** {count}
-**Estimated Time:** ~{minutes} min
-
-Why review? Spaced repetition prevents forgetting, moves items into long-term memory, and builds automaticity.
-
-**Ready? Let's start!** 💪
-```
-
-### 3. Generate exercise per item
+### 3. Generate one exercise per item
 
 Each item has:
 
@@ -66,26 +59,15 @@ Each item has:
 }
 ```
 
-Generate an exercise matched to `item_type`:
+**Every exercise is one decision.** The learner's answer differs from your prompt in exactly the place this item tests, and nowhere else; build the rest out of forms they already own. Count the decisions your prompt demands before you send it — at two or more, cut it down. An item that tests one thing inside a sentence that demands ten tells you nothing about that one thing.
 
-- **error_pattern**: load the pattern from `mistakes-db`, create a scenario that forces the correct form. E.g. `formal_informal_confusion` → ask the learner to complete a formal email opening.
+Match the exercise to `item_type`:
+
+- **error_pattern**: load the pattern from `mistakes-db` and build a scenario that forces the correct form. Keep that form out of the prompt — naming it is the whole test.
 - **vocabulary**: recognition (target → native), production (native → target), or cloze — rotate modes.
-- **grammar_rule**: a fill-in or error-correction exercise that tests the rule.
+- **grammar_rule**: cloze, or find the one error.
 
-Present one at a time — rushing = false positives:
-
-```markdown
-## Review {N}/{total} — {priority emoji}
-
-**Type:** {item_type}
-**Last reviewed:** {X} days ago
-**Current mastery:** {stars}
-**FSRS difficulty:** {fsrs_difficulty}/10
-
-{exercise}
-
-**Type your answer:**
-```
+Present one at a time — rushing = false positives. Each prompt carries its number in the session, the item type, days since last review, current mastery, and `fsrs_difficulty`.
 
 ### 4. Evaluate + submit the score
 
@@ -101,42 +83,11 @@ The `update-db.py` script maps the score to an FSRS rating and reschedules via F
 
 ### 5. Progress pulse every 5 items
 
-```markdown
-## Progress Update
-
-**Reviewed:** {N}/{total}
-**Accuracy:** {percent}%
-**Time Remaining:** ~{min} min
-
-Keep going! 💪
-```
+Items done out of the total, running accuracy, minutes left.
 
 ### 6. Session summary
 
-```markdown
-## 🎉 Review Session Complete!
-
-**Reviewed:** {count}
-**Accuracy:** {percent}%
-**Time:** {min} min
-
-### Breakdown
-
-**Mastered (no mistakes):** {count} — won't appear again for a while 🎉
-**Good (minor slips):** {count} — next in {X} days
-**Need more practice:** {count} — tomorrow again
-
-### Next Review Schedule
-- Tomorrow: {count}
-- This week: {count}
-- Next week: {count}
-
-**Streak:** 🔥 {X} {day/days} 🔥
-
-**Tip:** {one line of advice based on accuracy}
-
-{target-language well done}! 🌟
-```
+Give: how many were reviewed, accuracy, minutes spent. Then the breakdown — clean (gone for a while), minor slips (back in X days), missed (back tomorrow) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
 
 ### 7. Update all databases
 
@@ -148,12 +99,18 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — only patterns where the learner got it wrong (bumps frequency)
 - `focus_next_session[]` — the 2-3 items with lowest quality this session
 
-Save the session file to `/results/fluent-review-session-{NNN}.md` — structure per `results/README.md`. Every `❌` line carries its category and its severity emoji; without them `fluent-session-analyzer` cannot parse the session.
+Then save the transcript beside the databases, in their `results/` directory:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
+```
+
+That prints the data directory; write to `<it>/results/fluent-review-session-{NNN}.md`. The directory is resolved at runtime (`FLUENT_DATA_DIR`, a project `data/`, or the `~/.claude` fallback), so ask rather than assume. Format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — it is the canonical definition, and `fluent-session-analyzer` parses exactly the markers it lists.
 
 ## Critical Rules
 
-- **Daily.** The whole system assumes the learner runs `/fluent-review` every day. Missing a day breaks the intended spacing.
-- **Let the learner struggle.** If they don't remember, that's useful data (quality 0-2). The algorithm needs honest signals.
+- **Let the learner struggle.** If they don't remember, that is useful data (quality 0-2) — the algorithm needs honest signals. A guess scored as knowledge pushes the item weeks out and takes the schedule with it, so when the learner says they guessed, score the guess.
+- **Daily.** The spacing assumes a session every day. After a gap, say what the gap cost — the size of today's backlog — and triage it together; skip the scolding.
 
 ## What the Schedule Means
 
