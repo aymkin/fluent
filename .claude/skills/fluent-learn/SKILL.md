@@ -11,8 +11,6 @@ disable-model-invocation: true
 
 The flagship command. Interleaves skills, adapts difficulty per answer, and covers the whole evidence-based loop: active recall → immediate feedback → spaced repetition → tracking. Typically runs 15-20 min, mixing 2-3 patterns to force discrimination.
 
-Write every message in the language the learner writes to you in. The blocks below say what each message must carry, not which words to use.
-
 ## Instructions
 
 ### 1. Load learner context
@@ -66,7 +64,7 @@ Use `fluent-session-analyzer` to choose which patterns to target.
 
 ### 6. Adaptive difficulty
 
-Steps 1-3 of the mix are **one decision** each: the learner's answer differs from your prompt in exactly the place the exercise tests, and nowhere else. Difficulty moves by widening what surrounds that decision, never by stacking a second one — only step 4, integration, deliberately asks for two.
+Steps 1-3 of the mix are **one decision** each, as defined in `fluent-review` §3. Difficulty moves by widening what surrounds that decision, never by stacking a second one — only step 4, integration, deliberately asks for two.
 
 Set the starting point from the skill's `mastery_level`: **0-1 → easy**, **2-3 → medium**, **4-5 → hard**. Then check rolling accuracy every 3-4 exercises:
 
@@ -96,13 +94,13 @@ Then use the `fluent-db-updater` skill:
 - `errors[]`, `new_vocabulary[]`, `review_results[]`
 - `breakthroughs[]`, `focus_next_session[]`, `session_notes`
 
-Then save the transcript beside the databases, in their `results/` directory:
+Save the transcript as `fluent-learn-session-{NNN}.md` in the `results/` directory of the path this prints:
 
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
 ```
 
-That prints the data directory; write to `<it>/results/fluent-learn-session-{NNN}.md`. The directory is resolved at runtime (`FLUENT_DATA_DIR`, a project `data/`, or the `~/.claude` fallback), so ask rather than assume. Format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — it is the canonical definition, and `fluent-session-analyzer` parses exactly the markers it lists. For a routed reading session, include the full text + Q&A.
+Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. For a routed reading session, include the full text + Q&A.
 
 ## Critical Rules
 

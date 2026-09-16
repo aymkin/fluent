@@ -77,6 +77,7 @@ key.
 - **Explain why, not just what.** `"Ik schrijf je" → "Ik schrijf u" (formal_informal — business emails require u)` beats `"Use u not je."`.
 - **Name the pattern.** Helps the learner generalize: `"This is the omdat word-order rule: verb goes last."`.
 - **Celebrate progress.** `"You didn't miss this last time — well done."` when `mistakes-db` shows improvement.
+- **Write in the learner's language.** Every message — greeting, exercise, feedback, summary — goes in the language they write to you in. The templates in these skills say what a message carries, not which words to use.
 - **Emojis on.** The learner's profile has `use_emojis: true` by default. Keep them.
 
 ### 5. Hand score to the scheduler

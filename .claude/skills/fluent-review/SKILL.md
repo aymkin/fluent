@@ -11,8 +11,6 @@ disable-model-invocation: true
 
 Replay items the learner learned before, timed so they hit just before the forgetting curve drops them. This is the single most effective session type — the system depends on it running daily. Items the learner gets right get pushed further into the future; items they miss come back tomorrow.
 
-Write every message in the language the learner writes to you in. The blocks below say what each message must carry, not which words to use.
-
 ## Instructions
 
 ### 1. Load review queue
@@ -59,7 +57,7 @@ Each item has:
 }
 ```
 
-**Every exercise is one decision.** The learner's answer differs from your prompt in exactly the place this item tests, and nowhere else; build the rest out of forms they already own. Count the decisions your prompt demands before you send it — at two or more, cut it down. An item that tests one thing inside a sentence that demands ten tells you nothing about that one thing.
+**Every exercise is one decision.** The learner's answer differs from your prompt in exactly the place this item tests, and nowhere else; build the rest out of forms they already own. Count the decisions your prompt demands before you send it — at two or more, cut it down.
 
 Match the exercise to `item_type`:
 
@@ -99,18 +97,18 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — only patterns where the learner got it wrong (bumps frequency)
 - `focus_next_session[]` — the 2-3 items with lowest quality this session
 
-Then save the transcript beside the databases, in their `results/` directory:
+Save the transcript as `fluent-review-session-{NNN}.md` in the `results/` directory of the path this prints:
 
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
 ```
 
-That prints the data directory; write to `<it>/results/fluent-review-session-{NNN}.md`. The directory is resolved at runtime (`FLUENT_DATA_DIR`, a project `data/`, or the `~/.claude` fallback), so ask rather than assume. Format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — it is the canonical definition, and `fluent-session-analyzer` parses exactly the markers it lists.
+Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`.
 
 ## Critical Rules
 
 - **Let the learner struggle.** If they don't remember, that is useful data (quality 0-2) — the algorithm needs honest signals. A guess scored as knowledge pushes the item weeks out and takes the schedule with it, so when the learner says they guessed, score the guess.
-- **Daily.** The spacing assumes a session every day. After a gap, say what the gap cost — the size of today's backlog — and triage it together; skip the scolding.
+- **Daily.** The spacing assumes a session every day. After a gap, name the size of today's backlog and move straight to triaging it with the learner.
 
 ## What the Schedule Means
 

@@ -95,12 +95,14 @@ Call the `fluent-db-updater` skill's workflow — one `update-db.py` invocation 
 - `errors[]`, `new_vocabulary[]`, `review_results[]` — the entries staged per answer
 - `focus_next_session[]` — top 2-3 weak words
 
-Save the transcript beside the databases: run
-`python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"`
-to print the data directory, then write to
-`<it>/results/fluent-vocab-session-{NNN}.md`. Format:
-`${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — the canonical
-definition of every marker `fluent-session-analyzer` parses.
+Save the transcript as `fluent-vocab-session-{NNN}.md` in the
+`results/` directory of the path this prints:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
+```
+
+Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`.
 
 ## Critical Rules
 

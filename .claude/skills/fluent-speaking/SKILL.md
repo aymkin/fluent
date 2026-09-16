@@ -161,12 +161,14 @@ Use the `fluent-db-updater` skill:
 - `errors[]` — only communication-blocking ones (don't flood mistakes-db with minor speaking slips)
 - `focus_next_session[]` — one topic + one pattern
 
-Save the transcript beside the databases: run
-`python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"`
-to print the data directory, then write to
-`<it>/results/fluent-speaking-session-{NNN}.md`. Format:
-`${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — the canonical
-definition of every marker `fluent-session-analyzer` parses.
+Save the transcript as `fluent-speaking-session-{NNN}.md` in the
+`results/` directory of the path this prints:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
+```
+
+Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`.
 
 ## Critical Rules
 

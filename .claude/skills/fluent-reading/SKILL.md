@@ -167,13 +167,14 @@ Use the `fluent-db-updater` skill:
 - `new_vocabulary[]` — words the learner chose to save
 - `focus_next_session[]`
 
-Save the transcript beside the databases: run
-`python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"`
-to print the data directory, then write to
-`<it>/results/fluent-reading-session-{NNN}.md`. Format:
-`${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md` — the canonical
-definition of every marker `fluent-session-analyzer` parses. Include the full text +
-Q&A for later analysis.
+Save the transcript as `fluent-reading-session-{NNN}.md` in the
+`results/` directory of the path this prints:
+
+```bash
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
+```
+
+Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. Include the full text + Q&A.
 
 ## Critical Rules
 
