@@ -15,7 +15,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -178,14 +178,20 @@ class UpdateDbSmokeTest(unittest.TestCase):
         env = os.environ.copy()
         env.pop("FLUENT_DATA_DIR", None)
         env.pop("CLAUDE_PROJECT_DIR", None)
+        # The script measures the session whose id this names. A suite run under
+        # Claude Code inherits a real one, so scrub it and let each test say
+        # which session — if any — it is standing in for.
+        env.pop("CLAUDE_CODE_SESSION_ID", None)
         return env
 
-    def _run(self, payload: dict):
+    def _run(self, payload: dict, **env_extra):
+        env = self._subprocess_env()
+        env.update(env_extra)
         proc = subprocess.run(
             ["python3", str(SCRIPT)],
             input=json.dumps(payload).encode(),
             cwd=str(self.tmp),
-            env=self._subprocess_env(),
+            env=env,
             capture_output=True,
         )
         return proc
@@ -466,6 +472,76 @@ class UpdateDbSmokeTest(unittest.TestCase):
                 self.assertEqual(len(set(ids)), 2, msg=f"colliding ids: {ids}")
                 for i in ids:
                     self.assertFalse(i.endswith("_"), f"bare trailing underscore: {i}")
+
+    # --- measured_minutes
+
+    CLOCK_SID = "cccccccc-9999-0000-1111-222222222222"
+
+    def _write_clock(self, *offsets_min):
+        """A prompt clock for CLOCK_SID, marks at the given minutes before now,
+        the earliest of them carrying the /fluent command flag."""
+        now = datetime.now().astimezone()
+        lines = []
+        for i, off in enumerate(sorted(offsets_min, reverse=True)):
+            mark = {"sid": self.CLOCK_SID,
+                    "ts": (now - timedelta(minutes=off)).isoformat(timespec="seconds")}
+            if i == 0:
+                mark["cmd"] = True
+            lines.append(json.dumps(mark))
+        (self.tmp / "data" / ".prompt-clock.jsonl").write_text("\n".join(lines) + "\n",
+                                                               encoding="utf-8")
+
+    def test_measured_minutes_lands_on_the_session_record(self):
+        self._write_clock(9, 6, 4, 2)  # gaps of 3, 2 and 2 minutes
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        entry = self._load("session-log.json")["sessions"][-1]
+        self.assertEqual(entry["measured_minutes"], 7)
+        # The estimate is kept alongside, not replaced: two numbers side by side
+        # are what show whether the tutor's guesses were any good.
+        self.assertEqual(entry["duration_minutes"], SESSION_PAYLOAD["duration_minutes"])
+
+    def test_no_clock_leaves_the_field_off_the_record(self):
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertNotIn("measured_minutes", self._load("session-log.json")["sessions"][-1])
+
+    def test_a_measurement_in_the_payload_is_ignored(self):
+        """The field is a measurement or it is nothing. Accepting it as input
+        would hand it straight back to the guessing it exists to replace."""
+        self._write_clock(9, 6, 4, 2)
+        payload = dict(SESSION_PAYLOAD, measured_minutes=999)
+        proc = self._run(payload, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(self._load("session-log.json")["sessions"][-1]["measured_minutes"], 7)
+
+    def test_the_measurement_stays_out_of_the_running_totals(self):
+        """total_study_minutes has meant the estimate across 26 sessions.
+        Swapping the source mid-history would silently redefine it."""
+        self._write_clock(60, 57, 55)
+        before = self._load("learner-profile.json")["total_study_minutes"]
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(self._load("learner-profile.json")["total_study_minutes"],
+                         before + SESSION_PAYLOAD["duration_minutes"])
+
+    def test_stale_marks_are_pruned_after_a_successful_update(self):
+        now = datetime.now().astimezone()
+        clock = self.tmp / "data" / ".prompt-clock.jsonl"
+        clock.write_text("\n".join([
+            json.dumps({"sid": self.CLOCK_SID,
+                        "ts": (now - timedelta(hours=30)).isoformat(timespec="seconds"),
+                        "cmd": True}),
+            json.dumps({"sid": self.CLOCK_SID,
+                        "ts": (now - timedelta(minutes=5)).isoformat(timespec="seconds"),
+                        "cmd": True}),
+            json.dumps({"sid": self.CLOCK_SID,
+                        "ts": (now - timedelta(minutes=2)).isoformat(timespec="seconds")}),
+        ]) + "\n", encoding="utf-8")
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        kept = [json.loads(l) for l in clock.read_text(encoding="utf-8").splitlines() if l.strip()]
+        self.assertEqual(len(kept), 2)
 
 
 if __name__ == "__main__":

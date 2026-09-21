@@ -24,6 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fluent_paths import ensure_data_dir, ensure_backups_dir, force_utf8_io  # noqa: E402
 import fsrs  # noqa: E402
+import prompt_clock  # noqa: E402
 
 force_utf8_io()
 DATA_DIR = ensure_data_dir()
@@ -429,7 +430,7 @@ def update_spaced_repetition(sr: dict, session: dict):
     sr["metadata"]["total_items_tracked"] = len(items)
 
 
-def update_session_log(log: dict, session: dict, streak: int):
+def update_session_log(log: dict, session: dict, streak: int, measured: int = None):
     """Matches existing schema: skills_practiced (array), score_breakdown,
     topics_covered, breakthroughs, focus_next_session, achievements_earned."""
     today = session["date"]
@@ -457,6 +458,12 @@ def update_session_log(log: dict, session: dict, streak: int):
         "achievements_earned": session.get("achievements_earned", []),
         "streak_day": streak,
     }
+    # Written only when there is one: an absent key means nobody clocked the
+    # session, which is what the 26 records predating the prompt clock — and any
+    # session run without the hook — have to keep saying. A default of 0 would
+    # make them indistinguishable from a session measured at zero.
+    if measured is not None:
+        entry["measured_minutes"] = measured
     if session.get("exam_focus"):
         entry["exam_focus"] = session["exam_focus"]
     if session.get("critical_errors_identified"):
@@ -496,6 +503,13 @@ def main():
 
     session.setdefault("duration_minutes", 0)
 
+    # Measured here rather than accepted from the payload, and a payload value
+    # is dropped: nothing in this repository tells the tutor how to derive
+    # duration_minutes, so it is guessed — an input field would be guessed too,
+    # and the measurement would be a measurement in name only.
+    session.pop("measured_minutes", None)
+    measured = prompt_clock.measured_minutes(os.environ.get("CLAUDE_CODE_SESSION_ID"))
+
     files = {
         "profile": DATA_DIR / "learner-profile.json",
         "progress": DATA_DIR / "progress-db.json",
@@ -521,7 +535,7 @@ def main():
         update_mastery_db(data["mastery"], session, data["progress"])
         update_spaced_repetition(data["sr"], session)
         streak = data["profile"].get("current_streak_days", 0)
-        update_session_log(data["log"], session, streak)
+        update_session_log(data["log"], session, streak, measured)
     except Exception as e:
         import traceback
         print(f"[Fluent] Error updating databases: {e}", file=sys.stderr)
@@ -538,6 +552,14 @@ def main():
         print(f"[Fluent] Error saving databases: {e}", file=sys.stderr)
         sys.exit(2)
 
+    # After the save, and never at its expense: the marks have been read, and a
+    # scratch file that cannot be trimmed is not a reason to fail an update that
+    # already landed.
+    try:
+        prompt_clock.prune()
+    except Exception:
+        pass
+
     # Summary
     stats = data["progress"]["overall_stats"]
     total_ex, total_cor = session_totals(session)
@@ -546,6 +568,8 @@ def main():
     print(f"[Fluent] ✅ Updated 6 databases for session {session['session_id']}")
     print(f"[Fluent] 🔥 Streak: {streak} days | Sessions: {stats['total_sessions']} | Minutes: {stats['total_study_minutes']}")
     print(f"[Fluent] 📊 This session: {hit} | Overall: {stats['accuracy_rate']*100:.0f}% of {stats['total_exercises']}")
+    if measured is not None:
+        print(f"[Fluent] ⏱️  Measured: {measured} min (estimated: {session['duration_minutes']} min)")
     print(f"[Fluent] 🧠 SR: {data['sr']['metadata']['total_items_tracked']} items, "
           f"{len(data['sr']['review_queue'].get('tomorrow', []))} due tomorrow | "
           f"📝 {data['mistakes']['metadata']['total_patterns_tracked']} error patterns")

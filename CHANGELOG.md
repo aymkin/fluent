@@ -4,6 +4,31 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Session length is now measured, not estimated.** Until now the minutes on a
+  session came from the tutor's impression of how long you had been at it — no
+  document in this repository ever told it how to work the number out, and it
+  showed: across the first 26 sessions the figure landed on 15, 20 or 30 almost
+  every time. A new `UserPromptSubmit` hook (`.claude/hooks/prompt-clock.py`)
+  notes the time of each prompt you send, and at session end `update-db.py` adds
+  up the gaps between them, treating any pause longer than five minutes as a
+  break rather than study. The result is written as `measured_minutes` on the
+  session record.
+  - **Your old estimate stays right next to it.** `duration_minutes` is
+    unchanged and keeps feeding the running totals in your profile and progress
+    report, so nothing you have already been shown moves. The two numbers side
+    by side are the point: on the sessions we could check, the tutor was
+    undercounting by six to eighteen minutes.
+  - **Sessions with no measurement say so by staying silent.** Anything recorded
+    before this hook — or on a machine where it never ran — carries no
+    `measured_minutes` field at all, rather than a zero that would read as "you
+    studied for no time".
+  - The timestamps live in `<data_dir>/.prompt-clock.jsonl`, hold one day, and
+    are pruned after each session. They are gitignored, like the rest of your
+    learning data. Only prompts sent inside Claude Code are seen; the hook never
+    prints anything and never fails your prompt.
+
 ## [0.4.0] — 2026-08-21
 
 ### Changed

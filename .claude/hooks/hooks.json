@@ -24,6 +24,18 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "description": "Record a prompt timestamp so session length can be measured",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/.claude/hooks/prompt-clock.py\"",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }

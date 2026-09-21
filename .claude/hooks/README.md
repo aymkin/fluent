@@ -1,7 +1,8 @@
 # Fluent Hooks System
 
-Two hooks keep your learning data validated and backed up. Both are registered
-in `hooks.json`; the scripts alongside them are called directly by the skills.
+Three hooks keep your learning data validated and backed up, and measure how
+long you actually studied. All three are registered in `hooks.json`; the scripts
+alongside them are called directly by the skills.
 
 ## 📋 What runs
 
@@ -21,11 +22,29 @@ Prints the learner's name, language, level and streak, and counts items due
 today from `spaced-repetition.json`. With no profile yet, it points at
 `/fluent-setup` instead.
 
+### `prompt-clock.py` — UserPromptSubmit
+
+Appends one timestamp per prompt to `<data_dir>/.prompt-clock.jsonl`, flagging
+the ones that start a Fluent command. At session end `update-db.py` sums the
+gaps between your prompts — pauses longer than five minutes are breaks, not
+study — and writes the total as `measured_minutes` on the session record, beside
+the tutor's own `duration_minutes` estimate.
+
+It is silent and exits `0` whatever happens: a `UserPromptSubmit` hook's stdout
+is fed to the model, and a broken clock must cost a measurement rather than your
+prompt. The arithmetic lives in `prompt_clock.py`, which `update-db.py` also
+imports; the file holds one day of timestamps and is pruned on each update.
+
+**Sessions that ran before this hook existed, or without it, carry no
+`measured_minutes` at all** — an absent field means unmeasured, which a zero
+could not say.
+
 ### Called by skills, not by hooks
 
 `read-db.py` (loads all six databases), `update-db.py` (writes all six at
-session end), `fsrs.py` (the FSRS-6 scheduler), `fluent_paths.py` (path
-resolution), `ensure_data_dir.py` (prints the data dir, creating it if needed).
+session end), `fsrs.py` (the FSRS-6 scheduler), `prompt_clock.py` (the prompt
+clock's arithmetic), `fluent_paths.py` (path resolution), `ensure_data_dir.py`
+(prints the data dir, creating it if needed).
 
 ## 🔧 Registration
 
