@@ -37,8 +37,8 @@ Code hooks. Outside Claude Code they do not fire, so call
 `python3 .claude/hooks/read-db.py` at session start and
 `python3 .claude/hooks/update-db.py` at session end explicitly. The prompt clock
 has no such fallback: with nothing recording prompt timestamps the session
-records no `measured_minutes`, and that is the correct outcome — do not
-substitute an estimate for it.
+records no `measured_minutes`, and that is the correct outcome — the field is a
+measurement or it is absent.
 
 ## Never compute review intervals by hand
 

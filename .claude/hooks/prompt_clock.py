@@ -1,11 +1,9 @@
 """
 Prompt clock — measure how long a study session actually took.
 
-A session's length used to be whatever the tutor wrote into
-`duration_minutes`, and nothing in this repository ever told it how to derive
-that number. This module supplies the measurement instead: the
-`UserPromptSubmit` hook (`prompt-clock.py`) appends one timestamp per prompt,
-and `update-db.py` sums the gaps between them at session end.
+The `UserPromptSubmit` hook (`prompt-clock.py`) appends one timestamp per
+prompt; `update-db.py` sums the gaps between them at session end and writes the
+total as `measured_minutes`, beside the tutor's `duration_minutes` estimate.
 
 The file is a scratch pad, not a database: one JSONL line per prompt, appended
 and never rewritten by the hook, pruned by the one consumer that already writes
