@@ -551,6 +551,81 @@ class UpdateDbSmokeTest(unittest.TestCase):
         kept = [json.loads(l) for l in clock.read_text(encoding="utf-8").splitlines() if l.strip()]
         self.assertEqual(len(kept), 2)
 
+    # --- Session date
+
+    def _assert_rejected_untouched(self, payload, *in_stderr):
+        """Exit 1 naming each of ``in_stderr``, with the data dir byte-identical."""
+        before = self._snapshot()
+        proc = self._run(payload)
+        self.assertEqual(proc.returncode, 1, msg=f"stdout={proc.stdout!r}")
+        err = proc.stderr.decode()
+        for text in in_stderr:
+            self.assertIn(text, err)
+        self.assertEqual(self._snapshot(), before)
+        return err
+
+    def test_a_date_other_than_today_is_rejected_before_any_write(self):
+        """A resumed Claude Code session still remembers the day it started:
+        the tutor saved one two days late under its first day's date."""
+        for date_, extra in ((day(-2), {}), (day(-1), {}), (day(1), {}),
+                             (day(1), {"allow_backdate": True})):
+            with self.subTest(date=date_, **extra):
+                payload = dict(SESSION_PAYLOAD, date=date_, **extra)
+                err = self._assert_rejected_untouched(payload, date_, day(0), "date +%F")
+                # Naming the opt-in here would invite the tutor to add it just
+                # to clear the error, which re-files today's work under a past day.
+                self.assertNotIn("allow_backdate", err)
+
+    def test_a_malformed_date_is_rejected_before_any_write(self):
+        basic = TODAY.strftime("%Y%m%d")  # date.fromisoformat accepts this form
+        for date_, extra in ((basic, {}), (TODAY.strftime("%d-%m-%Y"), {}),
+                             (day(0) + " ", {}), ("", {}), (None, {}), (int(basic), {}),
+                             ((TODAY - timedelta(days=2)).strftime("%Y%m%d"),
+                              {"allow_backdate": True})):
+            with self.subTest(date=date_, **extra):
+                payload = dict(SESSION_PAYLOAD, date=date_, **extra)
+                self._assert_rejected_untouched(payload, repr(date_), "date +%F")
+
+    def test_allow_backdate_must_be_a_boolean(self):
+        for flag in ("true", 1, "yes", None):
+            with self.subTest(allow_backdate=flag):
+                payload = dict(SESSION_PAYLOAD, date=day(-1), allow_backdate=flag)
+                self._assert_rejected_untouched(payload, "allow_backdate", repr(flag))
+
+    def test_allow_backdate_records_a_past_session_on_its_own_day(self):
+        make_fixtures(self.tmp / "data", last_day=-3)
+        self._write_clock(9, 6, 4, 2)
+        payload = dict(SESSION_PAYLOAD, date=day(-2), allow_backdate=True)
+        proc = self._run(payload, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertIn("Backdated", proc.stdout.decode())
+
+        entry = self._load("session-log.json")["sessions"][-1]
+        self.assertEqual(entry["date"], day(-2))
+        # The clock holds only this conversation's last 24 hours, so whatever
+        # it measured is today's work, not the past day's.
+        self.assertNotIn("measured_minutes", entry)
+
+        profile = self._load("learner-profile.json")
+        self.assertEqual(profile["last_updated"], day(-2))
+        self.assertEqual(profile["current_streak_days"], 3)  # the day after day -3
+        dag = self._load("spaced-repetition.json")["items"][REVIEWED_ID]
+        self.assertEqual(dag["last_reviewed"], day(-2))
+        self.assertEqual(dag["due_date"], day(-2 + dag["interval_days"]))
+        self.assertEqual(self._load("mistakes-db.json")["error_patterns"]["verb_spreek"]["last_seen"],
+                         day(-2))
+
+    def test_allow_backdate_cannot_reach_before_the_last_recorded_session(self):
+        """Filing a day earlier than the last recorded one would rewind the
+        profile's last_updated and break the streak, and would pull the review
+        dates of cards already studied back into the past."""
+        self._assert_rejected_untouched(
+            dict(SESSION_PAYLOAD, date=day(-2), allow_backdate=True), day(-2), day(-1))
+        # The last recorded day itself is still open: a second session on it.
+        proc = self._run(dict(SESSION_PAYLOAD, date=day(-1), allow_backdate=True))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(self._load("session-log.json")["sessions"][-1]["date"], day(-1))
+
 
 if __name__ == "__main__":
     unittest.main()

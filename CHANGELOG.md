@@ -29,6 +29,25 @@ All notable changes to Fluent will be documented in this file.
     learning data. Only prompts sent inside Claude Code are seen; the hook never
     prints anything and never fails your prompt.
 
+### Fixed
+
+- **A session you come back to on a later day is filed under the day you
+  saved it.** The tutor took a session's date from its own memory of the
+  conversation, and a conversation resumed days later still remembers the day
+  it began. One session, resumed and finished on 24 September, was recorded as
+  22 September: its measured minutes counted toward the Monday, and the 30
+  cards it reviewed were scheduled from the wrong day. Three of your first 28
+  sessions were saved on a later day than the one they are filed under.
+  `update-db.py` now checks the date against your computer's calendar and
+  refuses a mismatch. Nothing is written, and the tutor is told to take the
+  date from `date +%F`.
+  - **Recording an earlier day on purpose** (say, a session whose save failed)
+    takes `"allow_backdate": true` in the payload. The date can go back as far
+    as your last recorded session and no further, because anything earlier
+    would rewind your streak and your review schedule. A future date is always
+    refused. A backdated session carries no `measured_minutes`, since the
+    prompt clock only knows about today.
+
 ## [0.4.0] — 2026-08-21
 
 ### Changed

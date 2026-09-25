@@ -63,6 +63,37 @@ def session_totals(session: dict) -> tuple:
             sum(s.get("correct", 0) for s in scores))
 
 
+def validate_date(session: dict) -> bool:
+    """Hold session['date'] to the local calendar day; True if backdated.
+
+    The tutor fills the date in from its conversation, and a Claude Code
+    session resumed days later still carries the day it started. A mismatch
+    exits 1 (validation error) before any DB is touched. Only an explicit
+    ``allow_backdate: true`` admits a past day, and never a future one.
+    """
+    today = date.today().isoformat()
+    raw = session["date"]
+    backdate = session.get("allow_backdate", False)
+    if not isinstance(backdate, bool):
+        print(f"[Fluent] Error: 'allow_backdate' must be true or false, got {backdate!r}",
+              file=sys.stderr)
+        sys.exit(1)
+    if raw == today:
+        return False
+    if backdate and isinstance(raw, str):
+        try:
+            if date.fromisoformat(raw).isoformat() == raw and raw < today:
+                return True
+        except ValueError:
+            pass
+    # Silent on allow_backdate by design: naming the opt-in here invites
+    # adding it to clear the error, which files today's work under a past day.
+    print(f"[Fluent] Error: 'date' is {raw!r} but today is {today} (local time) — "
+          f"set it to the output of `date +%F`. A resumed session still remembers "
+          f"the day it started, not the day it is saved.", file=sys.stderr)
+    sys.exit(1)
+
+
 def validate_milestones(session: dict) -> None:
     """Normalize session['milestones'] to a list of clean non-empty strings.
 
@@ -498,6 +529,7 @@ def main():
     # Validate the payload before touching any DB (exits 1 on malformed input,
     # so disk stays untouched on a validation failure — including when the data
     # dir is empty and loading would otherwise exit 2 first).
+    backdated = validate_date(session)
     validate_milestones(session)
     validate_error_categories(session)
 
@@ -508,7 +540,10 @@ def main():
     # duration_minutes, so it is guessed — an input field would be guessed too,
     # and the measurement would be a measurement in name only.
     session.pop("measured_minutes", None)
-    measured = prompt_clock.measured_minutes(os.environ.get("CLAUDE_CODE_SESSION_ID"))
+    # The clock holds this conversation's last 24 hours, so on a backdated
+    # session it would measure today's work and credit it to the past day.
+    measured = None if backdated else prompt_clock.measured_minutes(
+        os.environ.get("CLAUDE_CODE_SESSION_ID"))
 
     files = {
         "profile": DATA_DIR / "learner-profile.json",
@@ -524,6 +559,15 @@ def main():
     except Exception as e:
         print(f"[Fluent] Error loading databases: {e}", file=sys.stderr)
         sys.exit(2)
+
+    # A backdate fills the days after the last recorded session, never one
+    # before it: that would rewind last_updated, break the streak, and pull
+    # the cards reviewed since back into the past.
+    last = originals["profile"].get("last_updated")
+    if backdated and isinstance(last, str) and session["date"] < last:
+        print(f"[Fluent] Error: 'date' {session['date']} is earlier than the last "
+              f"recorded session ({last})", file=sys.stderr)
+        sys.exit(1)
 
     # Work on deep copies so a mid-run exception leaves disk untouched.
     data = {k: copy.deepcopy(v) for k, v in originals.items()}
@@ -566,6 +610,8 @@ def main():
     hit = f"{total_cor}/{total_ex} correct ({round(total_cor / total_ex * 100)}%)" if total_ex else "no exercises"
 
     print(f"[Fluent] ✅ Updated 6 databases for session {session['session_id']}")
+    if backdated:
+        print(f"[Fluent] 📅 Backdated: recorded as {session['date']} (today is {date.today().isoformat()})")
     print(f"[Fluent] 🔥 Streak: {streak} days | Sessions: {stats['total_sessions']} | Minutes: {stats['total_study_minutes']}")
     print(f"[Fluent] 📊 This session: {hit} | Overall: {stats['accuracy_rate']*100:.0f}% of {stats['total_exercises']}")
     if measured is not None:
