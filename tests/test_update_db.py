@@ -21,19 +21,31 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = REPO_ROOT / ".claude" / "hooks" / "update-db.py"
 
+# Every date counts from the real calendar day, because a session is saved on
+# the day it is dated and a faked clock would test some other program. A suite
+# run that straddles midnight can fail spuriously.
+TODAY = date.today()
 
-def make_fixtures(data_dir: Path):
+
+def day(offset: int) -> str:
+    """The ISO date ``offset`` days from TODAY."""
+    return (TODAY + timedelta(days=offset)).isoformat()
+
+
+def make_fixtures(data_dir: Path, last_day: int = -1):
+    """Six DBs holding one session, recorded ``last_day`` days from TODAY."""
+    last, created, due = day(last_day), day(last_day - 3), day(last_day + 1)
     (data_dir / "learner-profile.json").write_text(json.dumps({
         "learner": {"name": "Test", "target_language": "Dutch",
                     "current_level": "A1", "target_level": "A2"},
-        "profile_created": "2026-04-20",
-        "last_updated": "2026-04-23",
+        "profile_created": created,
+        "last_updated": last,
         "current_streak_days": 2,
         "total_sessions": 1,
         "total_study_minutes": 10,
         "skills": {
             "vocabulary": {"current_level": 1, "confidence": 60,
-                           "last_practiced": "2026-04-23",
+                           "last_practiced": last,
                            "total_practice_time": 10}
         },
         "focus_areas": [],
@@ -41,40 +53,40 @@ def make_fixtures(data_dir: Path):
         "preferences": {}
     }))
     (data_dir / "progress-db.json").write_text(json.dumps({
-        "metadata": {"last_updated": "2026-04-23", "language": "Dutch",
-                     "tracking_started": "2026-04-20"},
+        "metadata": {"last_updated": last, "language": "Dutch",
+                     "tracking_started": created},
         "overall_stats": {"total_sessions": 1, "total_exercises": 4,
                           "total_correct": 3, "total_incorrect": 1,
                           "accuracy_rate": 0.75,
                           "total_study_minutes": 10,
                           "average_session_duration": 10},
-        "accuracy_trend": [{"date": "2026-04-23", "accuracy": 0.75,
+        "accuracy_trend": [{"date": last, "accuracy": 0.75,
                             "exercises": 4}],
         "skill_progress": {
             "vocabulary": {"sessions": 1, "accuracy": 0.75,
-                           "last_practiced": "2026-04-23",
+                           "last_practiced": last,
                            "exercises_completed": 4, "correct_count": 3,
                            "incorrect_count": 1}
         },
         "weekly_summary": []
     }))
     (data_dir / "mistakes-db.json").write_text(json.dumps({
-        "metadata": {"last_updated": "2026-04-23",
+        "metadata": {"last_updated": last,
                      "total_patterns_tracked": 0, "language": "Dutch"},
         "error_patterns": {}
     }))
     (data_dir / "mastery-db.json").write_text(json.dumps({
-        "metadata": {"last_updated": "2026-04-23", "language": "Dutch"},
+        "metadata": {"last_updated": last, "language": "Dutch"},
         "skills": {
             "vocabulary": {"mastery_level": 1, "confidence_score": 0.75,
                            "total_practice_time": 10,
-                           "last_practiced": "2026-04-23",
+                           "last_practiced": last,
                            "practice_count": 4, "avg_accuracy": 0.75}
         },
         "patterns": {}
     }))
     (data_dir / "spaced-repetition.json").write_text(json.dumps({
-        "metadata": {"algorithm": "SM-2", "last_updated": "2026-04-23",
+        "metadata": {"algorithm": "SM-2", "last_updated": last,
                      "total_items_tracked": 1, "language": "Dutch"},
         "review_queue": {"today": [], "tomorrow": ["vocab_dag"],
                          "this_week": [], "later": []},
@@ -82,11 +94,11 @@ def make_fixtures(data_dir: Path):
             "vocab_dag": {
                 "id": "vocab_dag", "type": "vocabulary", "content": "dag",
                 "answer": "day / hi-bye", "category": "greetings",
-                "difficulty": "A1", "created_date": "2026-04-23",
-                "due_date": "2026-04-24", "interval_days": 1,
+                "difficulty": "A1", "created_date": last,
+                "due_date": due, "interval_days": 1,
                 "repetitions": 1, "easiness_factor": 2.5,
                 "consecutive_correct": 1, "consecutive_incorrect": 0,
-                "last_reviewed": "2026-04-23", "last_quality": 4,
+                "last_reviewed": last, "last_quality": 4,
                 "mastery_level": 1, "total_reviews": 1, "priority": "medium"
             }
         }
@@ -95,7 +107,7 @@ def make_fixtures(data_dir: Path):
         "metadata": {"language": "Dutch", "learner_name": "Test",
                      "total_sessions": 1},
         "sessions": [{
-            "session_id": "session-001", "date": "2026-04-23",
+            "session_id": "session-001", "date": last,
             "duration_minutes": 10,
             "skills_practiced": ["vocabulary"],
             "exercises_completed": 4, "accuracy": 0.75,
@@ -110,7 +122,7 @@ def make_fixtures(data_dir: Path):
 
 SESSION_PAYLOAD = {
     "session_id": "session-002",
-    "date": "2026-04-24",
+    "date": day(0),
     "duration_minutes": 15,
     "command_used": "/fluent-learn",
     "skills_practiced": ["vocabulary"],
@@ -299,38 +311,35 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = "session-003"
-        payload["date"] = "2026-04-25"
         proc = self._run(payload)
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
 
         pat = self._load("mistakes-db.json")["error_patterns"]["verb_spreek"]
         self.assertEqual(pat["frequency"], 2)
-        self.assertEqual(pat["last_seen"], "2026-04-25")
+        self.assertEqual(pat["last_seen"], SESSION_DATE)
         self.assertNotIn("last_occurred", pat)
-        self.assertEqual(pat["next_review"], "2026-04-26")
+        self.assertEqual(pat["next_review"], day(1))
 
     def test_missing_required_field_exits_1(self):
-        proc = self._run({"date": "2026-04-24"})  # no session_id
+        proc = self._run({"date": SESSION_DATE})  # no session_id
         self.assertEqual(proc.returncode, 1)
 
     def test_same_day_does_not_bump_streak(self):
-        # Profile last_updated = 2026-04-23; send a session on 2026-04-23.
+        # The first session today extends yesterday's streak; a second one
+        # the same day leaves it where it is.
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        self.assertEqual(self._load("learner-profile.json")["current_streak_days"], 3)
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = "session-003"
-        payload["date"] = "2026-04-23"
         proc = self._run(payload)
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-        with open(self.tmp / "data" / "learner-profile.json") as f:
-            profile = json.load(f)
-        self.assertEqual(profile["current_streak_days"], 2)
+        self.assertEqual(self._load("learner-profile.json")["current_streak_days"], 3)
 
     def test_streak_resets_after_a_gap(self):
-        # Profile last_updated = 2026-04-23; a session three days later is a
-        # broken streak, not a continued one.
-        payload = dict(SESSION_PAYLOAD)
-        payload["session_id"] = "session-003"
-        payload["date"] = "2026-04-26"
-        self.assertEqual(self._run(payload).returncode, 0)
+        # Last session three days ago: today's session is a broken streak,
+        # not a continued one.
+        make_fixtures(self.tmp / "data", last_day=-3)
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
         self.assertEqual(self._load("learner-profile.json")["current_streak_days"], 1)
 
     def test_overall_accuracy_is_cumulative(self):
@@ -345,10 +354,9 @@ class UpdateDbSmokeTest(unittest.TestCase):
     def test_mastery_level_climbs_with_session_count(self):
         # mastery_level is driven by progress-db's per-skill sessions/accuracy.
         # Fixture starts at 1 session / level 1; the 3rd session crosses into 2.
-        for n, day in enumerate(("2026-04-24", "2026-04-25")):
+        for n in range(2):
             payload = dict(SESSION_PAYLOAD)
             payload["session_id"] = f"session-00{n + 2}"
-            payload["date"] = day
             self.assertEqual(self._run(payload).returncode, 0)
 
         sp = self._load("progress-db.json")["skill_progress"]["vocabulary"]
@@ -358,7 +366,7 @@ class UpdateDbSmokeTest(unittest.TestCase):
 
     # --- Error categories (spec §3.1) ---
 
-    def _payload_with_error(self, session_id, error, date="2026-04-24"):
+    def _payload_with_error(self, session_id, error, date=SESSION_DATE):
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = session_id
         payload["date"] = date
@@ -404,7 +412,7 @@ class UpdateDbSmokeTest(unittest.TestCase):
 
     # --- Milestones (issue #8) ---
 
-    def _payload_with(self, session_id, milestones, date="2026-04-24"):
+    def _payload_with(self, session_id, milestones, date=SESSION_DATE):
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = session_id
         payload["date"] = date
@@ -421,14 +429,14 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(m["milestone"], text)
         # The session date and top-level session_id stamp every milestone —
         # the per-milestone "date" override is gone.
-        self.assertEqual(m["date"], "2026-04-24")
+        self.assertEqual(m["date"], SESSION_DATE)
         self.assertEqual(m["session_id"], "session-100")
 
         profile = self._load("learner-profile.json")
         ach = profile["achievements"][-1]
         self.assertEqual(ach["name"], text)
         self.assertEqual(ach["description"], text)
-        self.assertEqual(ach["earned_date"], "2026-04-24")
+        self.assertEqual(ach["earned_date"], SESSION_DATE)
         self.assertTrue(ach["id"].startswith("session_session-100_"))
 
     def test_milestone_malformed_rejected_before_any_write(self):
