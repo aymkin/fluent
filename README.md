@@ -147,7 +147,7 @@ The AI follows these guides:
 
 - **Skills** (`.claude/skills/`) — one directory per command; see the table above.
 - **Plugin manifests** (`.claude-plugin/`) — `plugin.json` + `marketplace.json` make Fluent installable via `/plugin marketplace add aymkin/fluent`.
-- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, PostToolUse JSON validation + timestamped backups. `hooks.json` is the single registration for both install paths, wired in through `plugin.json`. Backup layers and recovery: [`.claude/hooks/README.md`](.claude/hooks/README.md).
+- **Automatic Hooks** (`.claude/hooks/`) — SessionStart welcome, PostToolUse JSON validation + timestamped backups, UserPromptSubmit prompt clock that measures how long a session really took. `hooks.json` is the single registration for both install paths, wired in through `plugin.json`. Backup layers and recovery: [`.claude/hooks/README.md`](.claude/hooks/README.md).
 - **Session Results** (`/results/`) — Detailed practice logs per session, parsed by `fluent-session-analyzer` to plan future sessions.
 
 ---

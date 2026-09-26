@@ -1,6 +1,10 @@
 # Personal learning data - DO NOT commit
 /data/*.json
 /data/*.json.backup-*
+# The prompt clock: timestamps of what you typed and when. .jsonl is not
+# covered by the *.json line above.
+/data/*.jsonl
+/data/*.jsonl.tmp
 /results/*.md
 # Except the README files which explain the structure
 !/data/README.md

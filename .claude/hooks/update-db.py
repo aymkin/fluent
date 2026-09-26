@@ -24,6 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fluent_paths import ensure_data_dir, ensure_backups_dir, force_utf8_io  # noqa: E402
 import fsrs  # noqa: E402
+import prompt_clock  # noqa: E402
 
 force_utf8_io()
 DATA_DIR = ensure_data_dir()
@@ -60,6 +61,37 @@ def session_totals(session: dict) -> tuple:
     scores = session.get("skill_scores", {}).values()
     return (sum(s.get("exercises", 0) for s in scores),
             sum(s.get("correct", 0) for s in scores))
+
+
+def validate_date(session: dict) -> bool:
+    """Hold session['date'] to the local calendar day; True if backdated.
+
+    The tutor fills the date in from its conversation, and a Claude Code
+    session resumed days later still carries the day it started. A mismatch
+    exits 1 (validation error) before any DB is touched. Only an explicit
+    ``allow_backdate: true`` admits a past day, and never a future one.
+    """
+    today = date.today().isoformat()
+    raw = session["date"]
+    backdate = session.get("allow_backdate", False)
+    if not isinstance(backdate, bool):
+        print(f"[Fluent] Error: 'allow_backdate' must be true or false, got {backdate!r}",
+              file=sys.stderr)
+        sys.exit(1)
+    if raw == today:
+        return False
+    if backdate and isinstance(raw, str):
+        try:
+            if date.fromisoformat(raw).isoformat() == raw and raw < today:
+                return True
+        except ValueError:
+            pass
+    # Silent on allow_backdate by design: naming the opt-in here invites
+    # adding it to clear the error, which files today's work under a past day.
+    print(f"[Fluent] Error: 'date' is {raw!r} but today is {today} (local time) — "
+          f"set it to the output of `date +%F`. A resumed session still remembers "
+          f"the day it started, not the day it is saved.", file=sys.stderr)
+    sys.exit(1)
 
 
 def validate_milestones(session: dict) -> None:
@@ -429,7 +461,7 @@ def update_spaced_repetition(sr: dict, session: dict):
     sr["metadata"]["total_items_tracked"] = len(items)
 
 
-def update_session_log(log: dict, session: dict, streak: int):
+def update_session_log(log: dict, session: dict, streak: int, measured: int = None):
     """Matches existing schema: skills_practiced (array), score_breakdown,
     topics_covered, breakthroughs, focus_next_session, achievements_earned."""
     today = session["date"]
@@ -457,6 +489,12 @@ def update_session_log(log: dict, session: dict, streak: int):
         "achievements_earned": session.get("achievements_earned", []),
         "streak_day": streak,
     }
+    # Written only when there is one: an absent key means nobody clocked the
+    # session, which is what the 26 records predating the prompt clock — and any
+    # session run without the hook — have to keep saying. A default of 0 would
+    # make them indistinguishable from a session measured at zero.
+    if measured is not None:
+        entry["measured_minutes"] = measured
     if session.get("exam_focus"):
         entry["exam_focus"] = session["exam_focus"]
     if session.get("critical_errors_identified"):
@@ -491,10 +529,21 @@ def main():
     # Validate the payload before touching any DB (exits 1 on malformed input,
     # so disk stays untouched on a validation failure — including when the data
     # dir is empty and loading would otherwise exit 2 first).
+    backdated = validate_date(session)
     validate_milestones(session)
     validate_error_categories(session)
 
     session.setdefault("duration_minutes", 0)
+
+    # Measured here rather than accepted from the payload, and a payload value
+    # is dropped: nothing in this repository tells the tutor how to derive
+    # duration_minutes, so it is guessed — an input field would be guessed too,
+    # and the measurement would be a measurement in name only.
+    session.pop("measured_minutes", None)
+    # The clock holds this conversation's last 24 hours, so on a backdated
+    # session it would measure today's work and credit it to the past day.
+    measured = None if backdated else prompt_clock.measured_minutes(
+        os.environ.get("CLAUDE_CODE_SESSION_ID"))
 
     files = {
         "profile": DATA_DIR / "learner-profile.json",
@@ -511,6 +560,15 @@ def main():
         print(f"[Fluent] Error loading databases: {e}", file=sys.stderr)
         sys.exit(2)
 
+    # A backdate fills the days after the last recorded session, never one
+    # before it: that would rewind last_updated, break the streak, and pull
+    # the cards reviewed since back into the past.
+    last = originals["profile"].get("last_updated")
+    if backdated and isinstance(last, str) and session["date"] < last:
+        print(f"[Fluent] Error: 'date' {session['date']} is earlier than the last "
+              f"recorded session ({last})", file=sys.stderr)
+        sys.exit(1)
+
     # Work on deep copies so a mid-run exception leaves disk untouched.
     data = {k: copy.deepcopy(v) for k, v in originals.items()}
 
@@ -521,7 +579,7 @@ def main():
         update_mastery_db(data["mastery"], session, data["progress"])
         update_spaced_repetition(data["sr"], session)
         streak = data["profile"].get("current_streak_days", 0)
-        update_session_log(data["log"], session, streak)
+        update_session_log(data["log"], session, streak, measured)
     except Exception as e:
         import traceback
         print(f"[Fluent] Error updating databases: {e}", file=sys.stderr)
@@ -538,14 +596,26 @@ def main():
         print(f"[Fluent] Error saving databases: {e}", file=sys.stderr)
         sys.exit(2)
 
+    # After the save, and never at its expense: the marks have been read, and a
+    # scratch file that cannot be trimmed is not a reason to fail an update that
+    # already landed.
+    try:
+        prompt_clock.prune()
+    except Exception:
+        pass
+
     # Summary
     stats = data["progress"]["overall_stats"]
     total_ex, total_cor = session_totals(session)
     hit = f"{total_cor}/{total_ex} correct ({round(total_cor / total_ex * 100)}%)" if total_ex else "no exercises"
 
     print(f"[Fluent] ✅ Updated 6 databases for session {session['session_id']}")
+    if backdated:
+        print(f"[Fluent] 📅 Backdated: recorded as {session['date']} (today is {date.today().isoformat()})")
     print(f"[Fluent] 🔥 Streak: {streak} days | Sessions: {stats['total_sessions']} | Minutes: {stats['total_study_minutes']}")
     print(f"[Fluent] 📊 This session: {hit} | Overall: {stats['accuracy_rate']*100:.0f}% of {stats['total_exercises']}")
+    if measured is not None:
+        print(f"[Fluent] ⏱️  Measured: {measured} min (estimated: {session['duration_minutes']} min)")
     print(f"[Fluent] 🧠 SR: {data['sr']['metadata']['total_items_tracked']} items, "
           f"{len(data['sr']['review_queue'].get('tomorrow', []))} due tomorrow | "
           f"📝 {data['mistakes']['metadata']['total_patterns_tracked']} error patterns")

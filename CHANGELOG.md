@@ -4,6 +4,50 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Session length is now measured, not estimated.** Until now the minutes on a
+  session came from the tutor's impression of how long you had been at it — no
+  document in this repository ever told it how to work the number out, and it
+  showed: across the first 26 sessions the figure landed on 15, 20 or 30 almost
+  every time. A new `UserPromptSubmit` hook (`.claude/hooks/prompt-clock.py`)
+  notes the time of each prompt you send, and at session end `update-db.py` adds
+  up the gaps between them, treating any pause longer than five minutes as a
+  break rather than study. The result is written as `measured_minutes` on the
+  session record.
+  - **Your old estimate stays right next to it.** `duration_minutes` is
+    unchanged and keeps feeding the running totals in your profile and progress
+    report, so nothing you have already been shown moves. The two numbers side
+    by side are the point: on the sessions we could check, the tutor was
+    undercounting by six to eighteen minutes.
+  - **Sessions with no measurement say so by staying silent.** Anything recorded
+    before this hook — or on a machine where it never ran — carries no
+    `measured_minutes` field at all, rather than a zero that would read as "you
+    studied for no time".
+  - The timestamps live in `<data_dir>/.prompt-clock.jsonl`, hold one day, and
+    are pruned after each session. They are gitignored, like the rest of your
+    learning data. Only prompts sent inside Claude Code are seen; the hook never
+    prints anything and never fails your prompt.
+
+### Fixed
+
+- **A session you come back to on a later day is filed under the day you
+  saved it.** The tutor took a session's date from its own memory of the
+  conversation, and a conversation resumed days later still remembers the day
+  it began. One session, resumed and finished on 24 September, was recorded as
+  22 September: its measured minutes counted toward the Monday, and the 30
+  cards it reviewed were scheduled from the wrong day. Three of your first 28
+  sessions were saved on a later day than the one they are filed under.
+  `update-db.py` now checks the date against your computer's calendar and
+  refuses a mismatch. Nothing is written, and the tutor is told to take the
+  date from `date +%F`.
+  - **Recording an earlier day on purpose** (say, a session whose save failed)
+    takes `"allow_backdate": true` in the payload. The date can go back as far
+    as your last recorded session and no further, because anything earlier
+    would rewind your streak and your review schedule. A future date is always
+    refused. A backdated session carries no `measured_minutes`, since the
+    prompt clock only knows about today.
+
 ## [0.4.0] — 2026-08-21
 
 ### Changed

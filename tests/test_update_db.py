@@ -15,25 +15,37 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = REPO_ROOT / ".claude" / "hooks" / "update-db.py"
 
+# Every date counts from the real calendar day, because a session is saved on
+# the day it is dated and a faked clock would test some other program. A suite
+# run that straddles midnight can fail spuriously.
+TODAY = date.today()
 
-def make_fixtures(data_dir: Path):
+
+def day(offset: int) -> str:
+    """The ISO date ``offset`` days from TODAY."""
+    return (TODAY + timedelta(days=offset)).isoformat()
+
+
+def make_fixtures(data_dir: Path, last_day: int = -1):
+    """Six DBs holding one session, recorded ``last_day`` days from TODAY."""
+    last, created, due = day(last_day), day(last_day - 3), day(last_day + 1)
     (data_dir / "learner-profile.json").write_text(json.dumps({
         "learner": {"name": "Test", "target_language": "Dutch",
                     "current_level": "A1", "target_level": "A2"},
-        "profile_created": "2026-04-20",
-        "last_updated": "2026-04-23",
+        "profile_created": created,
+        "last_updated": last,
         "current_streak_days": 2,
         "total_sessions": 1,
         "total_study_minutes": 10,
         "skills": {
             "vocabulary": {"current_level": 1, "confidence": 60,
-                           "last_practiced": "2026-04-23",
+                           "last_practiced": last,
                            "total_practice_time": 10}
         },
         "focus_areas": [],
@@ -41,40 +53,40 @@ def make_fixtures(data_dir: Path):
         "preferences": {}
     }))
     (data_dir / "progress-db.json").write_text(json.dumps({
-        "metadata": {"last_updated": "2026-04-23", "language": "Dutch",
-                     "tracking_started": "2026-04-20"},
+        "metadata": {"last_updated": last, "language": "Dutch",
+                     "tracking_started": created},
         "overall_stats": {"total_sessions": 1, "total_exercises": 4,
                           "total_correct": 3, "total_incorrect": 1,
                           "accuracy_rate": 0.75,
                           "total_study_minutes": 10,
                           "average_session_duration": 10},
-        "accuracy_trend": [{"date": "2026-04-23", "accuracy": 0.75,
+        "accuracy_trend": [{"date": last, "accuracy": 0.75,
                             "exercises": 4}],
         "skill_progress": {
             "vocabulary": {"sessions": 1, "accuracy": 0.75,
-                           "last_practiced": "2026-04-23",
+                           "last_practiced": last,
                            "exercises_completed": 4, "correct_count": 3,
                            "incorrect_count": 1}
         },
         "weekly_summary": []
     }))
     (data_dir / "mistakes-db.json").write_text(json.dumps({
-        "metadata": {"last_updated": "2026-04-23",
+        "metadata": {"last_updated": last,
                      "total_patterns_tracked": 0, "language": "Dutch"},
         "error_patterns": {}
     }))
     (data_dir / "mastery-db.json").write_text(json.dumps({
-        "metadata": {"last_updated": "2026-04-23", "language": "Dutch"},
+        "metadata": {"last_updated": last, "language": "Dutch"},
         "skills": {
             "vocabulary": {"mastery_level": 1, "confidence_score": 0.75,
                            "total_practice_time": 10,
-                           "last_practiced": "2026-04-23",
+                           "last_practiced": last,
                            "practice_count": 4, "avg_accuracy": 0.75}
         },
         "patterns": {}
     }))
     (data_dir / "spaced-repetition.json").write_text(json.dumps({
-        "metadata": {"algorithm": "SM-2", "last_updated": "2026-04-23",
+        "metadata": {"algorithm": "SM-2", "last_updated": last,
                      "total_items_tracked": 1, "language": "Dutch"},
         "review_queue": {"today": [], "tomorrow": ["vocab_dag"],
                          "this_week": [], "later": []},
@@ -82,11 +94,11 @@ def make_fixtures(data_dir: Path):
             "vocab_dag": {
                 "id": "vocab_dag", "type": "vocabulary", "content": "dag",
                 "answer": "day / hi-bye", "category": "greetings",
-                "difficulty": "A1", "created_date": "2026-04-23",
-                "due_date": "2026-04-24", "interval_days": 1,
+                "difficulty": "A1", "created_date": last,
+                "due_date": due, "interval_days": 1,
                 "repetitions": 1, "easiness_factor": 2.5,
                 "consecutive_correct": 1, "consecutive_incorrect": 0,
-                "last_reviewed": "2026-04-23", "last_quality": 4,
+                "last_reviewed": last, "last_quality": 4,
                 "mastery_level": 1, "total_reviews": 1, "priority": "medium"
             }
         }
@@ -95,7 +107,7 @@ def make_fixtures(data_dir: Path):
         "metadata": {"language": "Dutch", "learner_name": "Test",
                      "total_sessions": 1},
         "sessions": [{
-            "session_id": "session-001", "date": "2026-04-23",
+            "session_id": "session-001", "date": last,
             "duration_minutes": 10,
             "skills_practiced": ["vocabulary"],
             "exercises_completed": 4, "accuracy": 0.75,
@@ -110,7 +122,7 @@ def make_fixtures(data_dir: Path):
 
 SESSION_PAYLOAD = {
     "session_id": "session-002",
-    "date": "2026-04-24",
+    "date": day(0),
     "duration_minutes": 15,
     "command_used": "/fluent-learn",
     "skills_practiced": ["vocabulary"],
@@ -178,14 +190,20 @@ class UpdateDbSmokeTest(unittest.TestCase):
         env = os.environ.copy()
         env.pop("FLUENT_DATA_DIR", None)
         env.pop("CLAUDE_PROJECT_DIR", None)
+        # The script measures the session whose id this names. A suite run under
+        # Claude Code inherits a real one, so scrub it and let each test say
+        # which session — if any — it is standing in for.
+        env.pop("CLAUDE_CODE_SESSION_ID", None)
         return env
 
-    def _run(self, payload: dict):
+    def _run(self, payload: dict, **env_extra):
+        env = self._subprocess_env()
+        env.update(env_extra)
         proc = subprocess.run(
             ["python3", str(SCRIPT)],
             input=json.dumps(payload).encode(),
             cwd=str(self.tmp),
-            env=self._subprocess_env(),
+            env=env,
             capture_output=True,
         )
         return proc
@@ -293,38 +311,35 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = "session-003"
-        payload["date"] = "2026-04-25"
         proc = self._run(payload)
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
 
         pat = self._load("mistakes-db.json")["error_patterns"]["verb_spreek"]
         self.assertEqual(pat["frequency"], 2)
-        self.assertEqual(pat["last_seen"], "2026-04-25")
+        self.assertEqual(pat["last_seen"], SESSION_DATE)
         self.assertNotIn("last_occurred", pat)
-        self.assertEqual(pat["next_review"], "2026-04-26")
+        self.assertEqual(pat["next_review"], day(1))
 
     def test_missing_required_field_exits_1(self):
-        proc = self._run({"date": "2026-04-24"})  # no session_id
+        proc = self._run({"date": SESSION_DATE})  # no session_id
         self.assertEqual(proc.returncode, 1)
 
     def test_same_day_does_not_bump_streak(self):
-        # Profile last_updated = 2026-04-23; send a session on 2026-04-23.
+        # The first session today extends yesterday's streak; a second one
+        # the same day leaves it where it is.
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        self.assertEqual(self._load("learner-profile.json")["current_streak_days"], 3)
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = "session-003"
-        payload["date"] = "2026-04-23"
         proc = self._run(payload)
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
-        with open(self.tmp / "data" / "learner-profile.json") as f:
-            profile = json.load(f)
-        self.assertEqual(profile["current_streak_days"], 2)
+        self.assertEqual(self._load("learner-profile.json")["current_streak_days"], 3)
 
     def test_streak_resets_after_a_gap(self):
-        # Profile last_updated = 2026-04-23; a session three days later is a
-        # broken streak, not a continued one.
-        payload = dict(SESSION_PAYLOAD)
-        payload["session_id"] = "session-003"
-        payload["date"] = "2026-04-26"
-        self.assertEqual(self._run(payload).returncode, 0)
+        # Last session three days ago: today's session is a broken streak,
+        # not a continued one.
+        make_fixtures(self.tmp / "data", last_day=-3)
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
         self.assertEqual(self._load("learner-profile.json")["current_streak_days"], 1)
 
     def test_overall_accuracy_is_cumulative(self):
@@ -339,10 +354,9 @@ class UpdateDbSmokeTest(unittest.TestCase):
     def test_mastery_level_climbs_with_session_count(self):
         # mastery_level is driven by progress-db's per-skill sessions/accuracy.
         # Fixture starts at 1 session / level 1; the 3rd session crosses into 2.
-        for n, day in enumerate(("2026-04-24", "2026-04-25")):
+        for n in range(2):
             payload = dict(SESSION_PAYLOAD)
             payload["session_id"] = f"session-00{n + 2}"
-            payload["date"] = day
             self.assertEqual(self._run(payload).returncode, 0)
 
         sp = self._load("progress-db.json")["skill_progress"]["vocabulary"]
@@ -352,7 +366,7 @@ class UpdateDbSmokeTest(unittest.TestCase):
 
     # --- Error categories (spec §3.1) ---
 
-    def _payload_with_error(self, session_id, error, date="2026-04-24"):
+    def _payload_with_error(self, session_id, error, date=SESSION_DATE):
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = session_id
         payload["date"] = date
@@ -398,7 +412,7 @@ class UpdateDbSmokeTest(unittest.TestCase):
 
     # --- Milestones (issue #8) ---
 
-    def _payload_with(self, session_id, milestones, date="2026-04-24"):
+    def _payload_with(self, session_id, milestones, date=SESSION_DATE):
         payload = dict(SESSION_PAYLOAD)
         payload["session_id"] = session_id
         payload["date"] = date
@@ -415,14 +429,14 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(m["milestone"], text)
         # The session date and top-level session_id stamp every milestone —
         # the per-milestone "date" override is gone.
-        self.assertEqual(m["date"], "2026-04-24")
+        self.assertEqual(m["date"], SESSION_DATE)
         self.assertEqual(m["session_id"], "session-100")
 
         profile = self._load("learner-profile.json")
         ach = profile["achievements"][-1]
         self.assertEqual(ach["name"], text)
         self.assertEqual(ach["description"], text)
-        self.assertEqual(ach["earned_date"], "2026-04-24")
+        self.assertEqual(ach["earned_date"], SESSION_DATE)
         self.assertTrue(ach["id"].startswith("session_session-100_"))
 
     def test_milestone_malformed_rejected_before_any_write(self):
@@ -466,6 +480,151 @@ class UpdateDbSmokeTest(unittest.TestCase):
                 self.assertEqual(len(set(ids)), 2, msg=f"colliding ids: {ids}")
                 for i in ids:
                     self.assertFalse(i.endswith("_"), f"bare trailing underscore: {i}")
+
+    # --- measured_minutes
+
+    CLOCK_SID = "cccccccc-9999-0000-1111-222222222222"
+
+    def _write_clock(self, *offsets_min):
+        """A prompt clock for CLOCK_SID, marks at the given minutes before now,
+        the earliest of them carrying the /fluent command flag."""
+        now = datetime.now().astimezone()
+        lines = []
+        for i, off in enumerate(sorted(offsets_min, reverse=True)):
+            mark = {"sid": self.CLOCK_SID,
+                    "ts": (now - timedelta(minutes=off)).isoformat(timespec="seconds")}
+            if i == 0:
+                mark["cmd"] = True
+            lines.append(json.dumps(mark))
+        (self.tmp / "data" / ".prompt-clock.jsonl").write_text("\n".join(lines) + "\n",
+                                                               encoding="utf-8")
+
+    def test_measured_minutes_lands_on_the_session_record(self):
+        self._write_clock(9, 6, 4, 2)  # gaps of 3, 2 and 2 minutes
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        entry = self._load("session-log.json")["sessions"][-1]
+        self.assertEqual(entry["measured_minutes"], 7)
+        # The estimate is kept alongside, not replaced: two numbers side by side
+        # are what show whether the tutor's guesses were any good.
+        self.assertEqual(entry["duration_minutes"], SESSION_PAYLOAD["duration_minutes"])
+
+    def test_no_clock_leaves_the_field_off_the_record(self):
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertNotIn("measured_minutes", self._load("session-log.json")["sessions"][-1])
+
+    def test_a_measurement_in_the_payload_is_ignored(self):
+        """The field is a measurement or it is nothing. Accepting it as input
+        would hand it straight back to the guessing it exists to replace."""
+        self._write_clock(9, 6, 4, 2)
+        payload = dict(SESSION_PAYLOAD, measured_minutes=999)
+        proc = self._run(payload, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(self._load("session-log.json")["sessions"][-1]["measured_minutes"], 7)
+
+    def test_the_measurement_stays_out_of_the_running_totals(self):
+        """total_study_minutes has meant the estimate across 26 sessions.
+        Swapping the source mid-history would silently redefine it."""
+        self._write_clock(60, 57, 55)
+        before = self._load("learner-profile.json")["total_study_minutes"]
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(self._load("learner-profile.json")["total_study_minutes"],
+                         before + SESSION_PAYLOAD["duration_minutes"])
+
+    def test_stale_marks_are_pruned_after_a_successful_update(self):
+        now = datetime.now().astimezone()
+        clock = self.tmp / "data" / ".prompt-clock.jsonl"
+        clock.write_text("\n".join([
+            json.dumps({"sid": self.CLOCK_SID,
+                        "ts": (now - timedelta(hours=30)).isoformat(timespec="seconds"),
+                        "cmd": True}),
+            json.dumps({"sid": self.CLOCK_SID,
+                        "ts": (now - timedelta(minutes=5)).isoformat(timespec="seconds"),
+                        "cmd": True}),
+            json.dumps({"sid": self.CLOCK_SID,
+                        "ts": (now - timedelta(minutes=2)).isoformat(timespec="seconds")}),
+        ]) + "\n", encoding="utf-8")
+        proc = self._run(SESSION_PAYLOAD, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        kept = [json.loads(l) for l in clock.read_text(encoding="utf-8").splitlines() if l.strip()]
+        self.assertEqual(len(kept), 2)
+
+    # --- Session date
+
+    def _assert_rejected_untouched(self, payload, *in_stderr):
+        """Exit 1 naming each of ``in_stderr``, with the data dir byte-identical."""
+        before = self._snapshot()
+        proc = self._run(payload)
+        self.assertEqual(proc.returncode, 1, msg=f"stdout={proc.stdout!r}")
+        err = proc.stderr.decode()
+        for text in in_stderr:
+            self.assertIn(text, err)
+        self.assertEqual(self._snapshot(), before)
+        return err
+
+    def test_a_date_other_than_today_is_rejected_before_any_write(self):
+        """A resumed Claude Code session still remembers the day it started:
+        the tutor saved one two days late under its first day's date."""
+        for date_, extra in ((day(-2), {}), (day(-1), {}), (day(1), {}),
+                             (day(1), {"allow_backdate": True})):
+            with self.subTest(date=date_, **extra):
+                payload = dict(SESSION_PAYLOAD, date=date_, **extra)
+                err = self._assert_rejected_untouched(payload, date_, day(0), "date +%F")
+                # Naming the opt-in here would invite the tutor to add it just
+                # to clear the error, which re-files today's work under a past day.
+                self.assertNotIn("allow_backdate", err)
+
+    def test_a_malformed_date_is_rejected_before_any_write(self):
+        basic = TODAY.strftime("%Y%m%d")  # date.fromisoformat accepts this form
+        for date_, extra in ((basic, {}), (TODAY.strftime("%d-%m-%Y"), {}),
+                             (day(0) + " ", {}), ("", {}), (None, {}), (int(basic), {}),
+                             ((TODAY - timedelta(days=2)).strftime("%Y%m%d"),
+                              {"allow_backdate": True})):
+            with self.subTest(date=date_, **extra):
+                payload = dict(SESSION_PAYLOAD, date=date_, **extra)
+                self._assert_rejected_untouched(payload, repr(date_), "date +%F")
+
+    def test_allow_backdate_must_be_a_boolean(self):
+        for flag in ("true", 1, "yes", None):
+            with self.subTest(allow_backdate=flag):
+                payload = dict(SESSION_PAYLOAD, date=day(-1), allow_backdate=flag)
+                self._assert_rejected_untouched(payload, "allow_backdate", repr(flag))
+
+    def test_allow_backdate_records_a_past_session_on_its_own_day(self):
+        make_fixtures(self.tmp / "data", last_day=-3)
+        self._write_clock(9, 6, 4, 2)
+        payload = dict(SESSION_PAYLOAD, date=day(-2), allow_backdate=True)
+        proc = self._run(payload, CLAUDE_CODE_SESSION_ID=self.CLOCK_SID)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertIn("Backdated", proc.stdout.decode())
+
+        entry = self._load("session-log.json")["sessions"][-1]
+        self.assertEqual(entry["date"], day(-2))
+        # The clock holds only this conversation's last 24 hours, so whatever
+        # it measured is today's work, not the past day's.
+        self.assertNotIn("measured_minutes", entry)
+
+        profile = self._load("learner-profile.json")
+        self.assertEqual(profile["last_updated"], day(-2))
+        self.assertEqual(profile["current_streak_days"], 3)  # the day after day -3
+        dag = self._load("spaced-repetition.json")["items"][REVIEWED_ID]
+        self.assertEqual(dag["last_reviewed"], day(-2))
+        self.assertEqual(dag["due_date"], day(-2 + dag["interval_days"]))
+        self.assertEqual(self._load("mistakes-db.json")["error_patterns"]["verb_spreek"]["last_seen"],
+                         day(-2))
+
+    def test_allow_backdate_cannot_reach_before_the_last_recorded_session(self):
+        """Filing a day earlier than the last recorded one would rewind the
+        profile's last_updated and break the streak, and would pull the review
+        dates of cards already studied back into the past."""
+        self._assert_rejected_untouched(
+            dict(SESSION_PAYLOAD, date=day(-2), allow_backdate=True), day(-2), day(-1))
+        # The last recorded day itself is still open: a second session on it.
+        proc = self._run(dict(SESSION_PAYLOAD, date=day(-1), allow_backdate=True))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(self._load("session-log.json")["sessions"][-1]["date"], day(-1))
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ Exit codes: `0` success, `1` validation error, `2` I/O error. On `1` or `2` no f
 **Required fields**
 
 - `session_id` — string, convention `session-NNN`. Use `computed.next_session_id` from `read-db.py`.
-- `date` — YYYY-MM-DD.
+- `date` — today, as the output of `date +%F` run while you build the payload. A resumed session still remembers the day it started; the shell knows the day it is saved. `update-db.py` rejects any other day with exit `1`.
 
 **Optional fields** — omit to skip. Full canonical example (copy-paste this and fill in):
 
@@ -57,6 +57,7 @@ Key blocks the example covers: `skill_scores`, `errors[]`, `new_vocabulary[]`, `
 - `skill_scores[].correct` counts correct exercises, not a percentage. Accuracy is derived.
 - `confidence` in `learner-profile.skills` is 0–100 integer; `accuracy` in `progress-db` is 0.0–1.0 float. The script handles the conversion.
 - `milestones[]` — each entry is a bare non-empty **string**. The object form (`{ "milestone": ..., "date": ... }`) was removed after v0.3.0 and now exits `1`, naming the offending index, with no files written. Every milestone is dated with the top-level `date` and stamped with the top-level `session_id`. Each becomes both a `session-log.milestones[]` record and a `learner-profile.achievements[]` entry.
+- `allow_backdate` — `true` when the learner asks you to record a session from an earlier day, such as one whose save failed. `date` may then name any day from the last recorded session up to yesterday, and the record carries no `measured_minutes`, because the prompt clock holds only today. A date error means `date` is wrong: rerun `date +%F`.
 
 ### 4. Read before writing
 
