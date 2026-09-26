@@ -569,6 +569,18 @@ def main():
               f"recorded session ({last})", file=sys.stderr)
         sys.exit(1)
 
+    # Every updater adds to running totals, so a rerun counts the session twice,
+    # and backup_all would overwrite the only copy of the state before it.
+    # Silent on restoring that backup by design: if the id is merely stale, the
+    # restore would erase the session that took it.
+    sid = session["session_id"]
+    if any(s.get("session_id") == sid for s in originals["log"].get("sessions", [])):
+        print(f"[Fluent] Error: session_id {sid!r} is already in the session log — a "
+              f"second run would count that session twice. If this payload was saved "
+              f"before, nothing is left to do; otherwise take "
+              f"`computed.next_session_id` from read-db.py.", file=sys.stderr)
+        sys.exit(1)
+
     # Work on deep copies so a mid-run exception leaves disk untouched.
     data = {k: copy.deepcopy(v) for k, v in originals.items()}
 
