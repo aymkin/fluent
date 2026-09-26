@@ -47,6 +47,15 @@ All notable changes to Fluent will be documented in this file.
     would rewind your streak and your review schedule. A future date is always
     refused. A backdated session carries no `measured_minutes`, since the
     prompt clock only knows about today.
+- **Saving the same session twice no longer counts it twice.** The
+  `fluent-db-updater` skill promised that resending a `session_id` would replace
+  the first save. `update-db.py` did the opposite: it appended a second
+  session-log record and added the minutes, exercises, error counts and reviews
+  again. It also overwrote that session's backup with the already-updated
+  state, leaving nothing to roll back to. A `session_id` already in your session
+  log is now refused before anything is written. To correct your last session,
+  the tutor restores `.backups/pre-update-<session_id>/` and saves again; the
+  skill now describes that route.
 
 ## [0.4.0] — 2026-08-21
 

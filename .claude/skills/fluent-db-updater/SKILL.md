@@ -73,5 +73,5 @@ Returns all 6 databases plus computed fields (`due_reviews_count`, `next_session
 
 - **Call once, at session end.** The script rebuilds the review queue each run — partial updates risk inconsistency.
 - **Never hand-edit `spaced-repetition.review_queue`.** It's regenerated from scratch on every run.
-- **Same `session_id` replaces.** Sending the same ID twice overwrites the first call. Useful for corrections, dangerous if unintentional.
-- **Backups are automatic.** Written to `.backups/pre-update-<session_id>/` before any change. Check there to roll back.
+- **One `session_id`, one run.** Every run adds to running totals, so `update-db.py` exits `1`, writing nothing, on a `session_id` already in the session log. On a retry, that exit means the first run landed.
+- **Backups are automatic.** Before any change the script copies the six databases to `<data_dir>/.backups/pre-update-<session_id>/` (`fluent_paths.py` prints `<data_dir>`). When the learner asks to correct the last saved session, copy that folder's `*.json` files back into `<data_dir>`, then send the corrected payload under the same `session_id`. The copy rolls back every session saved after it too, so this corrects the most recent session only.

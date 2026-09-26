@@ -626,6 +626,33 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, msg=proc.stderr)
         self.assertEqual(self._load("session-log.json")["sessions"][-1]["date"], day(-1))
 
+    # --- Session id
+
+    def test_a_recorded_session_id_is_rejected_before_any_write(self):
+        """A rerun would count the session twice and overwrite its backup with
+        the state after the first run, the one copy a rollback needs."""
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        # The snapshot covers .backups/, so the first run's backup must survive.
+        self._assert_rejected_untouched(SESSION_PAYLOAD, "session-002", "next_session_id")
+        # Ids this script never wrote are held to the same rule.
+        self._assert_rejected_untouched(dict(SESSION_PAYLOAD, session_id="session-001"),
+                                        "session-001")
+
+    def test_a_session_resent_after_restoring_its_backup_counts_once(self):
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        data = self.tmp / "data"
+        for f in (data / ".backups" / "pre-update-session-002").glob("*.json"):
+            shutil.copy2(f, data / f.name)
+        corrected = dict(SESSION_PAYLOAD, duration_minutes=25)
+        proc = self._run(corrected)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+
+        ids = [s["session_id"] for s in self._load("session-log.json")["sessions"]]
+        self.assertEqual(ids, ["session-001", "session-002"])
+        stats = self._load("progress-db.json")["overall_stats"]
+        self.assertEqual(stats["total_sessions"], 2)
+        self.assertEqual(stats["total_study_minutes"], 10 + 25)
+
 
 if __name__ == "__main__":
     unittest.main()
