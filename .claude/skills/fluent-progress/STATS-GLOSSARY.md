@@ -1,7 +1,5 @@
 # Optional interpretation footer
 
-Append this only if the learner seems new or asks what the numbers mean:
-
 ```markdown
 ## 📖 How to Read Your Stats
 

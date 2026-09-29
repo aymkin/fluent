@@ -8,7 +8,7 @@ allowed-tools: Read, Bash
 
 ## Overview
 
-Show the learner a comprehensive, personalized progress report with visual statistics, skill mastery levels, trends, and next goals. This is read-only: do not modify any database files.
+A progress report: skill mastery, trends, weak patterns, reviews due, next goals.
 
 ## When to Use
 
@@ -26,14 +26,7 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.p
 
 This returns a single JSON with all 6 databases + computed fields (`due_reviews_count`, `next_session_id`, `streak_active`).
 
-If the helper is unavailable, fall back to reading each file directly. Resolve the data directory via `fluent_paths.data_dir()` first — do NOT hardcode `data/` (plugin installs store data under `~/.claude/fluent-data/`):
-
-- `<data_dir>/learner-profile.json`
-- `<data_dir>/progress-db.json`
-- `<data_dir>/mastery-db.json`
-- `<data_dir>/mistakes-db.json`
-- `<data_dir>/spaced-repetition.json`
-- `<data_dir>/session-log.json`
+If the helper is unavailable, read the six JSON files directly from `fluent_paths.data_dir()`; plugin installs keep them under `~/.claude/fluent-data/`, not `data/`.
 
 If any are missing, point the learner at `/fluent-setup` and stop.
 
@@ -72,6 +65,8 @@ ASCII accuracy chart from `progress-db.weekly_summary`, then this week:
 Group `mistakes-db.error_patterns` by mastery: 🔴 Critical (0-1, high frequency),
 🟡 Working on (2-3), 🟢 Strong (4-5).
 
+When `target_level` is B1, add one line per grammar target in `.claude/references/level-b1.md`: ✅ done (its pattern in `mistakes-db` at mastery 4-5), 🔄 drilling (mastery 1-3), ⬜ not yet met (no pattern). These are course goals, not official CEFR requirements.
+
 ## 🔄 Spaced Repetition
 
 **Due today:** {count} · **Due this week:** {count} · **Mastered:** {count}
@@ -105,9 +100,6 @@ Only when the learner seems new or asks what the numbers mean — append the foo
 
 ## Critical Rules
 
-- **Read-only.** Never call `update-db.py` or edit any JSON in `data/`.
-- **Use the current streak value** from `learner-profile.json`. Never guess or increment.
-- **Use `day` vs `days`** correctly (1 = day, else days).
-- **Skip sections with no data.** If speaking hasn't been practiced, show "Not yet practiced" — don't fabricate numbers.
-- **Cite the learner by name** from `learner-profile.json`.
-- **Use target-language greetings** where natural (e.g. "Goed gedaan!" for Dutch).
+- **Read-only.** Leave `update-db.py` and every JSON in the data directory untouched.
+- **Streak** is `learner-profile.current_streak_days` as stored.
+- **Every number comes from a database.** A skill with no data reads "Not yet practiced".

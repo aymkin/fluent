@@ -44,6 +44,8 @@ All notable changes to Fluent will be documented in this file.
   `/fluent-speaking` picks B1 topics (narrating a past event, comparing,
   a hypothetical) and records your misses on B1 grammar targets.
   `/fluent-reading` picks B1 texts with subordinate clauses and a passive.
+  `/fluent-progress` lists each B1 grammar target as done, drilling or not yet
+  met.
 
 ### Fixed
 
