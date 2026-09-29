@@ -70,8 +70,11 @@ else and writes no database at all, so a display heading copied into the payload
 fails the whole update.
 
 Tag each finding with a severity: 🔴 critical, 🟡 moderate, 🟢 minor. Severity is
-mandatory — it feeds `mistakes-db` and drives spaced-repetition priority. Weigh spelling light at A2, heavier at B2+. At B1, grade as `.claude/references/level-b1.md` §"What B1 asks for" sets out: a slip that leaves the meaning clear is 🟡 or 🟢, and the Communication score leads. Stage each finding for the end-of-session
-payload.
+mandatory: `mistakes-db` stores it on the pattern, and `fluent-session-analyzer`
+weighs it when planning. Weigh spelling light at A2, heavier at B2+. At B1, grade
+as `.claude/references/level-b1.md` §"What B1 asks for" sets out: a slip that
+leaves the meaning clear is 🟡 or 🟢, and the Communication score leads. Stage
+each finding for the end-of-session payload.
 
 ### 6. Detailed feedback
 

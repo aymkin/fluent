@@ -7,15 +7,11 @@ description: 'Canonical feedback shape for every graded learner answer: correcti
 
 ## Overview
 
-Every practice session ends each turn with immediate feedback. Consistency matters — the learner builds mental models from the structure, and error patterns we mine from session files depend on predictable markers (❌, ✅, severity emoji). This skill defines the single feedback shape used across all Fluent practice skills.
+One feedback shape for every graded answer. The learner builds mental models from its structure, and `fluent-session-analyzer` mines session files for its markers (❌, ✅, severity emoji), so the shape stays fixed.
 
 ## When to Use
 
-Load this skill whenever the tutor:
-
-- Grades a learner answer in any practice skill (`fluent-learn`, `fluent-vocab`, `fluent-writing`, `fluent-speaking`, `fluent-reading`, `fluent-review`).
-- Needs to classify an error by severity before writing to `mistakes-db.json`.
-- Needs to tag an error by category (grammar, vocabulary, prepositions, etc.).
+Load this skill whenever the tutor grades a learner answer in any practice skill, and whenever it classifies an error by severity or category.
 
 Skip this skill for non-feedback output (greetings, summaries, progress reports).
 
@@ -44,11 +40,11 @@ Skip the ❌ block if the answer is fully correct. Skip the ✅ block only if tr
 
 | Symbol | Severity | Meaning | Example |
 |--------|----------|---------|---------|
-| 🔴 | Critical | Breaks communication or exam-blocker | Formal/informal mix in formal email; wrong subordinate-clause word order |
-| 🟡 | Moderate | Noticeable but understandable | Preposition error, missing article |
+| 🔴 | Critical | Breaks communication or exam-blocker | Formal/informal mix in formal email; a sentence the reader cannot decode |
+| 🟡 | Moderate | Noticeable but understandable | Subordinate-clause word order with the meaning intact, preposition error, missing article |
 | 🟢 | Minor | Low priority | Spelling, punctuation, accent marks |
 
-A severity tag is mandatory on every ❌ line; a single answer may contain multiple errors of different severity, so tag each. Drives spaced-repetition priority.
+A severity tag is mandatory on every ❌ line; a single answer may contain multiple errors of different severity, so tag each. Severity is stored on the pattern in `mistakes-db` when it is first recorded, and `fluent-session-analyzer` weighs it when planning. It does not set review priority.
 
 ### 3. Use these category labels
 
@@ -66,6 +62,8 @@ before any database is written.
 - `structure` — organisation, flow, paragraphing
 - `comprehension` — misread what the text says
 - `inference` — failed to draw what the text implies
+
+A B1 grammar target from `.claude/references/level-b1.md` is category `grammar`; give its `pattern_id` the target's name (e.g. `bijzin_omdat_word_order`) so the drill pool and `/fluent-progress` find it.
 
 `other` is the eleventh accepted value, not one of the ten: it stays accepted
 because `update-db.py` already writes it as the default when a payload omits the
@@ -87,4 +85,4 @@ After scoring, feed the score into the scheduler via the `fluent-db-updater` ski
 ## Critical Rules
 
 - **One score per answer.** Total out of 10, with optional breakdown (grammar/vocab/structure) for long answers like writing tasks.
-- **Never skip the "Correct version".** Even if perfect, echoing the target form reinforces motor memory.
+- **Always include the "Correct version"**, even after a perfect answer; echoing the target form reinforces motor memory.

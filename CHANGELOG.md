@@ -49,6 +49,12 @@ All notable changes to Fluent will be documented in this file.
 
 ### Fixed
 
+- **Severity no longer claims to drive review priority.** The feedback guides
+  said the 🔴/🟡/🟢 tag sets spaced-repetition priority; in fact `update-db.py`
+  only stores it on the error pattern, and review priority follows your answers
+  on the reviews. The guides now say so, and a wrong subordinate-clause word
+  order that leaves the message clear is marked 🟡, not 🔴.
+
 - **A session you come back to on a later day is filed under the day you
   saved it.** The tutor took a session's date from its own memory of the
   conversation, and a conversation resumed days later still remembers the day
