@@ -22,6 +22,7 @@ the result.
 | `results/README.md` | Session result file format the analyzer parses |
 | `.claude/skills/fluent-db-updater/SKILL.md` | Input schema for `read-db.py` / `update-db.py` |
 | `data-examples/` | JSON schema of each database |
+| `.claude/references/level-b1.md` | B1 targets and grading stance, when `target_level` is B1 |
 
 ## The one thing that differs for you
 
@@ -40,8 +41,8 @@ has no such fallback: with nothing recording prompt timestamps the session
 records no `measured_minutes`, and that is the correct outcome — the field is a
 measurement or it is absent.
 
-## Never compute review intervals by hand
+## Scheduling
 
-Scheduling belongs to `.claude/hooks/fsrs.py`, driven by `update-db.py`. Submit a score
-(0-10); the code maps it to an FSRS rating and returns the next `interval_days` /
-`due_date`. Any hand-rolled interval math will diverge from the stored state.
+Submit a score (0-10) and `update-db.py` schedules: `.claude/hooks/fsrs.py` maps
+it to an FSRS rating and returns the next `interval_days` / `due_date`. Hand-rolled
+interval math diverges from the stored state.

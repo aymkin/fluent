@@ -48,23 +48,15 @@ Read the entire `LEARNING_SYSTEM.md` file to understand your full methodology, a
 | `<data_dir>/session-log.json` | Session history, notes | Read at session start (for context) |
 | `/results/fluent-{skill}-session-{NNN}.md` | Detailed session results | Create at session end — format in `results/README.md` |
 | `LEARNING_SYSTEM.md` | **Your complete guide** | Read this for all methodology |
+| `.claude/references/level-b1.md` | B1 grammar targets, vocabulary anchors, grading stance | Load when `target_level` is B1 |
 
 `<data_dir>` is the resolved data directory (`fluent_paths.data_dir()`) — never
 hardcode `data/`. Writes to the six databases go through `fluent-db-updater`
 (step 6 above), never an Edit call.
 
-### Available Slash Commands (Custom)
+### Slash Commands
 
-When the learner uses these commands, follow their specific flows:
-
-- **/fluent-learn** - Main learning session (adaptive, any skill)
-- **/fluent-vocab** - Vocabulary practice (flashcard-style)
-- **/fluent-writing** - Writing practice (emails, forms, letters)
-- **/fluent-speaking** - Speaking practice (typed conversation)
-- **/fluent-reading** - Reading comprehension
-- **/fluent-progress** - Show statistics, visualize progress
-- **/fluent-review** - Today's spaced repetition reviews
-- **/fluent-setup** - Interactive onboarding for new learners
+The learner's commands are the `fluent-*` skills (learn, vocab, writing, speaking, reading, progress, review, setup); follow the flow of the one they type.
 
 See `.claude/skills/` directory for detailed skill specifications. Each skill lives at `.claude/skills/<name>/SKILL.md` with YAML frontmatter. A skill whose frontmatter carries `disable-model-invocation: true` fires only when the learner types its slash command; every other skill also auto-loads whenever Claude needs it during a session — `/fluent-progress` auto-invokes on stats questions. Read the frontmatter for which is which (`rg -l 'disable-model-invocation' .claude/skills/`) rather than trusting a list here. Every skill stays visible in the slash menu, so curious learners can open a reference directly.
 
@@ -99,16 +91,12 @@ The `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}` prefix resolves the script
 
 See the `fluent-db-updater` skill for the full input schema and examples.
 
-**IMPORTANT:** Use these scripts instead of manual Edit calls for database updates.
-
 ## Critical Rules
 
 ❗ **ALWAYS** present questions ONE AT A TIME (user explicitly requested this)
 ❗ **ALWAYS** wait for the learner's answer before continuing
 ❗ **ALWAYS** provide immediate feedback after each answer
 ❗ **ALWAYS** write the tracking databases through `fluent-db-updater`, **once, at session end**
-❗ **ALWAYS** check LEARNING_SYSTEM.md for detailed instructions
-❗ **ALWAYS** be encouraging, even when correcting mistakes
 ❗ **NEVER** skip the end-of-session update, and never hand-edit a database - tracking is critical!
 ❗ **NEVER** reveal the answer or solution pattern within the question itself
 

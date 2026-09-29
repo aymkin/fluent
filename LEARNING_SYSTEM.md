@@ -80,9 +80,7 @@ per-answer template, the category labels and the 🔴/🟡/🟢 severity scale.
 ## 🔄 Spaced Repetition (FSRS-6)
 
 Scheduling is owned by `.claude/hooks/fsrs.py` (a stdlib FSRS-6 port) and invoked
-by `.claude/hooks/update-db.py`. **Never compute intervals by hand** — unlike the
-old SM-2 formula, FSRS-6 uses 21 fitted weights plus per-item `stability` and
-`fsrs_difficulty`, so any manual calculation will diverge from the code. You submit
+by `.claude/hooks/update-db.py`. FSRS-6 uses 21 fitted weights plus per-item `stability` and `fsrs_difficulty`, so a hand-computed interval diverges from the code. You submit
 a score; `update-db.py` maps it to an FSRS rating (1-4), calls `fsrs.schedule(...)`,
 updates `stability` / `fsrs_difficulty` / `interval_days` / `due_date`, advances
 `consecutive_correct` / `mastery_level`, and rebuilds the review queue. See the
@@ -139,6 +137,3 @@ field list.
 
 See you tomorrow for review! Goed gedaan! 👏
 ```
-
-**NOTE:** Use the CURRENT streak value from `learner-profile.json` — do not guess
-or assume an increment.
