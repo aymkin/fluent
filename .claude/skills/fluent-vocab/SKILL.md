@@ -1,6 +1,6 @@
 ---
 name: fluent-vocab
-description: Flashcard-style vocabulary drill.
+description: Vocabulary drill — recognition, production and cloze on due words and weak words.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Flashcard-style vocabulary practice using spaced repetition. Interleaves three modes (recognition, production, cloze) to force active recall rather than passive re-reading.
+Flashcard-style practice on spaced-repetition words, in three interleaved modes (recognition, production, cloze), so every word is recalled rather than re-read.
 
 ## Instructions
 
@@ -34,7 +34,7 @@ Priority order:
 
 1. Items in `spaced-repetition.review_queue.today` with `item_type == "vocabulary"`.
 2. Words from `mistakes-db.json` where `category == "vocabulary"` and `mastery_level <= 2`.
-3. New high-frequency words matching `learner-profile.focus_areas`.
+3. New high-frequency words matching `learner-profile.focus_areas`. When `target_level` is B1, take them from the abstract, work and civic domains and from connectors, following the vocabulary anchors in `.claude/references/level-b1.md`. Give each noun with its article or gender marker wherever the language has one.
 
 Limit: `spaced-repetition.daily_limits.review_items_per_day` (default 20).
 
@@ -48,7 +48,7 @@ Limit: `spaced-repetition.daily_limits.review_items_per_day` (default 20).
 **Type your answer:**
 ```
 
-Rotate the three modes so the session is not monotonous:
+Alternate the three modes from prompt to prompt; interleaving is what forces discrimination:
 
 - **Recognition** (target → native) — show the word plus a `**Context:**` example sentence, ask what it means.
 - **Production** (native → target) — show the native word, ask how to say it, invite an optional sentence.
@@ -103,8 +103,3 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_pa
 ```
 
 Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`.
-
-## Critical Rules
-
-- **Mix modes.** Don't drill 20 recognition prompts in a row — interleave for discrimination.
-- **Use target language** for greetings + transitions when the learner is B1+; for A1-A2 mix target + native.

@@ -36,7 +36,8 @@ All notable changes to Fluent will be documented in this file.
   vocabulary ranges with their sources. `/fluent-learn` now adds targets you
   have not yet met to its drill pool when your target level is B1.
   `/fluent-review` moves a B1 grammar rule from cloze to typing the whole form
-  once you reach mastery 3.
+  once you reach mastery 3. `/fluent-vocab` picks new B1 words from work, civic
+  and connector vocabulary.
 
 ### Fixed
 
