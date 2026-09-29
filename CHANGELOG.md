@@ -29,6 +29,13 @@ All notable changes to Fluent will be documented in this file.
     learning data. Only prompts sent inside Claude Code are seen; the hook never
     prints anything and never fails your prompt.
 
+- **B1 targets for learners heading to B1.** A new reference,
+  `.claude/references/level-b1.md`, lists the grammar a B1 course should drill
+  (bijzin, modals in the imperfectum, passive, `om … te`, reflexive verbs,
+  relative clauses), each with a "done when you can type it unaided" test, and
+  vocabulary ranges with their sources. `/fluent-learn` now adds targets you
+  have not yet met to its drill pool when your target level is B1.
+
 ### Fixed
 
 - **A session you come back to on a later day is filed under the day you

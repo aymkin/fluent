@@ -1,6 +1,6 @@
 ---
 name: fluent-learn
-description: Adaptive mixed-skill practice session.
+description: Main adaptive session across all four skills — warm-up, two weak-pattern drills, one integration task.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-The flagship command. Interleaves skills, adapts difficulty per answer, and covers the whole evidence-based loop: active recall → immediate feedback → spaced repetition → tracking. Typically runs 15-20 min, mixing 2-3 patterns to force discrimination.
+The flagship command. Interleaves skills and adapts difficulty per answer: active recall → immediate feedback → spaced repetition → tracking. Runs about 20 min.
 
 ## Instructions
 
@@ -25,7 +25,7 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 
 - **Streak:** `learner-profile.current_streak_days`
 - **Due reviews:** `computed.due_reviews_count`
-- **Weak patterns:** `mistakes-db.error_patterns` where `mastery_level <= 2` (descending by frequency)
+- **Weak patterns:** `mistakes-db.error_patterns` where `mastery_level <= 2` (descending by frequency). When `target_level` is B1, add the grammar targets from `.claude/references/level-b1.md` that have no pattern yet; they enter the pool as candidates for the drills in step 5.
 - **Recent performance:** `progress-db.weekly_summary`
 - **Skills not practiced recently:** check `mastery-db.skills.{skill}.last_practiced`
 
@@ -58,9 +58,7 @@ Plan a 20-min session:
 3. **Targeted drill 2 (5 min)** — second weak pattern. Same structure.
 4. **Integration (5 min)** — short writing or speaking task that forces both patterns together.
 
-Run one exercise at a time with immediate feedback via `fluent-feedback-formatter`.
-
-Use `fluent-session-analyzer` to choose which patterns to target.
+Choose the patterns with `fluent-session-analyzer`. Give each exercise its feedback via `fluent-feedback-formatter` before the next one.
 
 ### 6. Adaptive difficulty
 
@@ -104,9 +102,7 @@ Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README
 
 ## Critical Rules
 
-- **Always load all 6 DBs at start.** Missing context → generic, demotivating content.
 - **One exercise at a time.**
-- **Interleave.** Don't drill one pattern for 20 min — mix 2-3 patterns to force discrimination.
-- **Use the helper skills** (`fluent-fsrs-reference`, `fluent-feedback-formatter`, `fluent-db-updater`, `fluent-session-analyzer`) — don't reimplement.
+- **Interleave.** Mix 2-3 patterns across the session to force discrimination.
 - **Use the learner's name + target-language greetings** throughout.
 - **Celebrate progress.** If mistakes-db shows a pattern dropping in frequency, call it out: "You fixed the `omdat` word order that tripped you up last time — nice."
