@@ -9,21 +9,13 @@ disable-model-invocation: true
 
 ## Overview
 
-One-time onboarding that seeds all 6 databases in the Fluent data directory. After setup, every other skill reads from those files — this is the bootstrap. Also handles profile updates and progress resets for returning users.
-
-The data directory is resolved at runtime — never write a literal `data/` path.
-`fluent_paths.py`'s module docstring documents the precedence order; always ask
-it rather than reimplementing it:
-
-```bash
-FLUENT_DATA="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"
-```
+One-time onboarding that seeds the 6 databases every other skill reads. Also handles profile updates and progress resets for returning users.
 
 ## Instructions
 
 ### 1. Check for existing profile
 
-Resolve the data directory first, then probe for `learner-profile.json`:
+Resolve the data directory at runtime; `fluent_paths.py` documents the precedence order, so ask it rather than reimplementing it, and write no literal `data/` path. Then probe for `learner-profile.json`:
 
 ```bash
 DATA_DIR="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"
@@ -71,11 +63,11 @@ If the learner picks "not sure" for current level, run a quick 5-question assess
 4. Complex subordinate clauses → B2
 5. Idiomatic expression → C1
 
-Map score to level: 0-1 correct = A1, 2 = A2, 3 = B1, 4 = B2, 5 = C1.
+Map score to level: 0-1 correct = A1, 2 = A2, 3 = B1, 4 = B2, 5 = C1. This is a rough heuristic. When the learner lands at A2 or B1, confirm with three "done when" tests from `.claude/references/level-b1.md`.
 
 ### 4. Generate the learning plan
 
-Compute expected months to target level:
+Compute expected months to target level (rough planning figures, not CEFR-measured):
 
 ```
 A1 → A2: ~100 hours
@@ -150,7 +142,7 @@ Start from the templates in `data-examples/`. Resolve the target directory via `
 - `spaced-repetition.json` — empty queues, `daily_limits.review_items_per_day: 20`.
 - `session-log.json` — empty `sessions` array, `total_sessions: 0`.
 
-Use the Write tool for each. Do not call `update-db.py` — that script is for session updates, not bootstrapping.
+Use the Write tool for each; `update-db.py` serves session updates, so bootstrapping writes the files directly. Every file starts empty, and the system builds up from real sessions.
 
 ### 6. Optional first lesson
 
@@ -166,11 +158,4 @@ If yes, read `.claude/skills/fluent-learn/SKILL.md` and follow it in the same se
 
 ## Profile Updates (existing profile)
 
-Reached when Step 1 finds an existing `learner-profile.json` — read `.claude/skills/fluent-setup/PROFILE-UPDATES.md` and follow it instead of §"Welcome" through §"Optional first lesson".
-
-## Critical Rules
-
-- **Confirm twice before reset.** "This will erase X days of progress, Y sessions, and Z mastered words. Proceed? (yes/no)".
-- **Always seed all 6 files** — every other skill assumes they exist.
-- **Back up before reset.** Hooks may not fire here; back up manually to `.backups/pre-reset-<timestamp>/`.
-- **Don't invent data.** Start every file empty — progress, mistakes, mastery all start at zero. The system builds up from real sessions.
+Reached when §"Check for existing profile" finds an existing `learner-profile.json` — read `.claude/skills/fluent-setup/PROFILE-UPDATES.md` and follow it instead of §"Welcome" through §"Optional first lesson".

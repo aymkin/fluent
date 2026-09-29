@@ -17,7 +17,7 @@ What would you like to do?
 
 - **1** — ask which field, update only that field, preserve the rest.
 - **2** — render the plan section from current data. Read-only.
-- **3** — confirm twice. This deletes every file in the resolved data directory. Back up first:
+- **3** — confirm twice, naming the stakes ("This will erase X days of progress, Y sessions, and Z mastered words. Proceed? (yes/no)"). This deletes every file in the resolved data directory. Hooks do not fire here, so back up first:
 
   ```bash
   DATA_DIR="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"
