@@ -58,6 +58,11 @@ single threshold:
   No published curve ties coverage to a CEFR level, and the 90/95/98 % thresholds
   are measured for English only. Treat a coverage figure from any other corpus as
   a comparison inside that corpus.
+- Spoken-language proxy (SUBTLEX-NL, film subtitles, lemmas, computed 2026-09-29):
+  2000 lemmas cover ≈ 90 % of tokens, 4000 ≈ 93 %, 10 000 ≈ 95-97 %
+  (Keuleers, Brysbaert & New 2010). Applying the level estimates above to this
+  curve is a calculation, not a measurement, and it does not transfer to written
+  text.
 - Selection pool for exam-relevant words: the Core and General lists of _A
   Frequency Dictionary of Dutch_ (5000 words) plus the CvTE addendum of
   Staatsexamen NT2. It is a pool to draw from, not a closed B1 list.
@@ -74,6 +79,7 @@ single threshold:
 
 ## Sources
 
+- Keuleers, Brysbaert & New 2010, SUBTLEX-NL: <https://osf.io/3d8cx/>
 - Hazenberg & Hulstijn 1996, _Applied Linguistics_:
   <https://www.scienceguide.nl/wp-content/uploads/2017/11/165030_Hazenberg_Hulstijn_Applied_Linguistics_1996.pdf>
 - Hulstijn et al. 2012, _Internationale Neerlandistiek_ (grammar test and
