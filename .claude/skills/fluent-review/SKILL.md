@@ -1,6 +1,6 @@
 ---
 name: fluent-review
-description: Today's FSRS review queue.
+description: Daily FSRS review — replay today's due items, one decision per exercise.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Replay items the learner learned before, timed so they hit just before the forgetting curve drops them. This is the single most effective session type — the system depends on it running daily. Items the learner gets right get pushed further into the future; items they miss come back tomorrow.
+Replay items the learner learned before, timed to hit just before the forgetting curve drops them. Right answers push an item further out; misses bring it back tomorrow.
 
 ## Instructions
 
@@ -36,7 +36,7 @@ Want to practice something new? Try:
 
 ### 2. Opening
 
-Greet the learner by name and give: items due today (plus the overflow, if any), the estimated minutes, and one line on why review works — it interrupts forgetting just before it happens. Then start.
+Greet the learner by name and give: items due today (plus the overflow, if any), and the estimated minutes. Then start.
 
 ### 3. Generate one exercise per item
 
@@ -63,15 +63,15 @@ Match the exercise to `item_type`:
 
 - **error_pattern**: load the pattern from `mistakes-db` and build a scenario that forces the correct form. Keep that form out of the prompt — naming it is the whole test.
 - **vocabulary**: recognition (target → native), production (native → target), or cloze — rotate modes.
-- **grammar_rule**: cloze, or find the one error.
+- **grammar_rule**: cloze, or find the one error. Once `mastery_level` reaches 3, and the rule is a target in `.claude/references/level-b1.md`, switch to that target's "done when" test: the learner types the form from a prompt in their own language.
 
-Present one at a time — rushing = false positives. Each prompt carries its number in the session, the item type, days since last review, current mastery, and `fsrs_difficulty`.
+Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its number in the session, the item type, days since last review, current mastery, and `fsrs_difficulty`.
 
 ### 4. Evaluate + submit the score
 
 Use the `fluent-feedback-formatter` skill for per-answer feedback.
 
-Then stage the item for the end-of-session update. Do NOT hand-edit `spaced-repetition.json` — the queue is rebuilt on every `update-db.py` call; use `review_results[]` in the `fluent-db-updater` payload:
+Then stage the item for the end-of-session update through `review_results[]` in the `fluent-db-updater` payload. `update-db.py` rebuilds the queue on every call, so a hand edit to `spaced-repetition.json` is overwritten:
 
 ```json
 { "item_id": "vocab_huis", "quality": 4 }

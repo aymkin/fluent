@@ -35,6 +35,8 @@ All notable changes to Fluent will be documented in this file.
   relative clauses), each with a "done when you can type it unaided" test, and
   vocabulary ranges with their sources. `/fluent-learn` now adds targets you
   have not yet met to its drill pool when your target level is B1.
+  `/fluent-review` moves a B1 grammar rule from cloze to typing the whole form
+  once you reach mastery 3.
 
 ### Fixed
 
