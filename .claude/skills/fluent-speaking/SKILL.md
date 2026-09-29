@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Conversational practice through typed dialogue. Unlike `/fluent-writing`, prioritize **communication and naturalness** — grammar errors that don't block meaning are downplayed. Goal: build the learner's confidence to produce target-language output without over-analyzing.
+Typed dialogue that rewards **communication and naturalness**; a grammar slip that leaves the message clear is noted lightly. The goal is confident output.
 
 ## Instructions
 
@@ -36,7 +36,7 @@ Today we're practicing **speaking** through typed conversation. I'll ask you que
 
 **Tips:**
 - Think in {target_language}, not {native_language}
-- Don't chase perfect grammar — focus on getting your message across
+- Aim to get your message across; grammar polish comes second
 - Use complete sentences
 - Be natural and conversational
 
@@ -57,7 +57,7 @@ A2 topics:
 9. Weekend plans
 10. Work / study
 
-B1+: opinions, comparisons, hypotheticals, complaints, narratives.
+When `target_level` is B1, take the topic from `.claude/references/level-b1.md` §"Genres" (narrate a past event, compare two options, a hypothetical, an unplanned phone call), and word the question so that answering it calls for one grammar target the learner has not yet mastered.
 
 ### 4. One question at a time
 
@@ -89,7 +89,7 @@ Feedback template (variant of `fluent-feedback-formatter`):
 
 **Communication:** {Clear / Mostly clear / Unclear} ✅
 
-**Grammar notes:** (secondary — don't over-focus)
+**Grammar notes:** (secondary — the one or two errors that matter most)
 - {major error → correction, only if communication-blocking}
 
 **Natural alternative:**
@@ -105,7 +105,7 @@ You could also say: "{more_natural_phrasing}"
 ---
 ```
 
-Stage the score, and any communication-blocking error, for the end-of-session DB update.
+Stage the score, any communication-blocking error, and any miss on a B1 target from `.claude/references/level-b1.md` for the end-of-session DB update.
 
 ### 6. Role-play (advanced)
 
@@ -158,7 +158,7 @@ Use the `fluent-db-updater` skill:
 
 - `command_used: "/fluent-speaking"`, `skills_practiced: ["speaking"]`
 - `skill_scores.speaking: {exercises: N, correct: count_of_clear_answers, time_minutes}`
-- `errors[]` — only communication-blocking ones (don't flood mistakes-db with minor speaking slips)
+- `errors[]` — the communication-blocking ones, plus misses on B1 targets; other minor slips stay out of mistakes-db
 - `focus_next_session[]` — one topic + one pattern
 
 Save the transcript as `fluent-speaking-session-{NNN}.md` in the
@@ -173,6 +173,6 @@ Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README
 ## Critical Rules
 
 - **Communication first.** A clear message with a missed article scores better than a grammatically perfect but confusing answer.
-- **Stay in the target language** for questions and transitions. Drop to native only for explanations.
+- **Target language for the conversation** (questions, transitions); feedback and explanations go in the learner's language, per `fluent-feedback-formatter`.
 - **Praise natural expression.** If the learner uses "Nou..." or "Eh..." correctly, call it out — those are fluency markers.
-- **Don't over-correct.** A speaking session with 20 red marks kills confidence.
+- **Correct sparingly.** Confidence carries a speaking session; a page of red marks ends it.

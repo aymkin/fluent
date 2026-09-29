@@ -41,6 +41,8 @@ All notable changes to Fluent will be documented in this file.
   `/fluent-writing` sets B1 tasks (opinion, complaint, inquiry) that require a
   grammar target you have not yet mastered, and grades B1 texts by whether the
   message landed before the form.
+  `/fluent-speaking` picks B1 topics (narrating a past event, comparing,
+  a hypothetical) and records your misses on B1 grammar targets.
 
 ### Fixed
 
