@@ -6,10 +6,9 @@ description: "FSRS-6 scheduling reference: how a score becomes a due date, and w
 # FSRS Scheduling Reference
 
 Fluent schedules reviews with **FSRS-6**, implemented in `.claude/hooks/fsrs.py`
-and driven by `.claude/hooks/update-db.py`. **Do not compute intervals by hand.**
-Unlike the old SM-2 formula, FSRS-6 uses 21 fitted weights, `stability`, and
-`fsrs_difficulty`; any hand calculation will diverge from the code. Skills submit
-a score/quality and let `update-db.py` do the scheduling.
+and driven by `.claude/hooks/update-db.py`. Skills submit a score or quality and
+`update-db.py` schedules: FSRS-6 uses 21 fitted weights, `stability` and
+`fsrs_difficulty`, so a hand-computed interval diverges from the code.
 
 ## The pipeline
 
@@ -45,8 +44,7 @@ in `review_results[]`. `update-db.py` maps it to an FSRS rating and reschedules.
 | `fsrs_difficulty` | FSRS item difficulty (NOT the CEFR `difficulty` key) |
 | `interval_days` / `due_date` | computed by FSRS, do not set by hand |
 
-Items created before the FSRS migration may still carry a legacy SM-2
-`easiness_factor`. Nothing reads it and new items no longer get one — ignore it.
+A legacy SM-2 `easiness_factor` on older items is read by nothing.
 
 ## When to use
 

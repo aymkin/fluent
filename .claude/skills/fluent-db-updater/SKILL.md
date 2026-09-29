@@ -7,32 +7,25 @@ description: Persist a practice session's results — errors, review results, ne
 
 ## Overview
 
-Every practice skill ends with a DB update. Instead of hand-editing 6 JSON files (error-prone, racy, easy to desync), pipe one JSON report to `update-db.py`. The script runs pre-write backups, validates the payload, applies all changes atomically via `.tmp + fsync + rename`, and rebuilds the spaced-repetition queue.
+Every practice skill ends by piping one JSON report to `update-db.py`, which backs up, validates the payload, applies all six databases atomically (`.tmp + fsync + rename`) and rebuilds the spaced-repetition queue.
 
 ## When to Use
 
-Load this skill whenever the tutor:
-
-- Finishes a practice session and needs to persist results.
-- Needs to add new vocabulary to the spaced-repetition queue.
-- Needs to record new errors, review results, or mastery changes.
-- Needs to bump `total_sessions`, `current_streak_days`, or `total_study_minutes`.
+Load this skill when a practice session ends and its results (errors, review results, new vocabulary, totals) need persisting.
 
 Skip this skill for read-only operations (use the `fluent-progress` skill or `read-db.py` directly) and during session setup (use `fluent-setup` skill instead — `update-db.py` is for session deltas, not bootstrap).
 
 ## Instructions
 
-### 1. Call the script
+### 1. Read state
 
-Run from the repo root:
+Call `read-db.py` at session start for current state and `next_session_id`; one call replaces reading each JSON file:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py" <<'EOF'
-{ ...payload... }
-EOF
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
-Exit codes: `0` success, `1` validation error, `2` I/O error. On `1` or `2` no files are touched — fix the payload, or clear the disk-space/permission problem, and retry.
+It returns all 6 databases plus computed fields (`due_reviews_count`, `next_session_id`, `streak_active`).
 
 ### 2. Fill the payload
 
@@ -59,19 +52,19 @@ Key blocks the example covers: `skill_scores`, `errors[]`, `new_vocabulary[]`, `
 - `milestones[]` — each entry is a bare non-empty **string**. The object form (`{ "milestone": ..., "date": ... }`) was removed after v0.3.0 and now exits `1`, naming the offending index, with no files written. Every milestone is dated with the top-level `date` and stamped with the top-level `session_id`. Each becomes both a `session-log.milestones[]` record and a `learner-profile.achievements[]` entry.
 - `allow_backdate` — `true` when the learner asks you to record a session from an earlier day, such as one whose save failed. `date` may then name any day from the last recorded session up to yesterday, and the record carries no `measured_minutes`, because the prompt clock holds only today. A date error means `date` is wrong: rerun `date +%F`.
 
-### 4. Read before writing
-
-Always call `read-db.py` at session start to get current state + `next_session_id`. Don't read each JSON file separately:
+### 4. Call the script
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py" <<'EOF'
+{ ...payload... }
+EOF
 ```
 
-Returns all 6 databases plus computed fields (`due_reviews_count`, `next_session_id`, `streak_active`).
+Exit codes: `0` success, `1` validation error, `2` I/O error. On `1` or `2` no files are touched — fix the payload, or clear the disk-space/permission problem, and retry.
 
 ## Critical Rules
 
 - **Call once, at session end.** The script rebuilds the review queue each run — partial updates risk inconsistency.
-- **Never hand-edit `spaced-repetition.review_queue`.** It's regenerated from scratch on every run.
+- **`review_queue` is regenerated on every run**; feed `review_results[]` and leave the queue itself alone.
 - **One `session_id`, one run.** Every run adds to running totals, so `update-db.py` exits `1`, writing nothing, on a `session_id` already in the session log. On a retry, that exit means the first run landed.
 - **Backups are automatic.** Before any change the script copies the six databases to `<data_dir>/.backups/pre-update-<session_id>/` (`fluent_paths.py` prints `<data_dir>`). When the learner asks to correct the last saved session, copy that folder's `*.json` files back into `<data_dir>`, then send the corrected payload under the same `session_id`. The copy rolls back every session saved after it too, so this corrects the most recent session only.
