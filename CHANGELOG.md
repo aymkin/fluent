@@ -38,6 +38,9 @@ All notable changes to Fluent will be documented in this file.
   `/fluent-review` moves a B1 grammar rule from cloze to typing the whole form
   once you reach mastery 3. `/fluent-vocab` picks new B1 words from work, civic
   and connector vocabulary.
+  `/fluent-writing` sets B1 tasks (opinion, complaint, inquiry) that require a
+  grammar target you have not yet mastered, and grades B1 texts by whether the
+  message landed before the form.
 
 ### Fixed
 

@@ -1,6 +1,6 @@
 ---
 name: fluent-writing
-description: Writing practice with systematic error analysis.
+description: Writing practice — one scenario, full-text correction by severity and category.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Full-text writing practice with systematic correction. One scenario per session, detailed feedback broken down by severity and category, DB update at end. Mastery-driven scenario selection keeps the task at the right level — challenging, not frustrating.
+One scenario per session, corrected as a full text. Mastery picks the scenario, so the task stays challenging and within reach.
 
 ## Instructions
 
@@ -31,7 +31,7 @@ From `mastery-db.skills`:
 - Newsletter / personal text (if overall writing < 3)
 - Mixed scenarios (if all ≥ 4)
 
-Scenarios must match the learner's CEFR level — A2 uses everyday situations, B1+ adds opinion / complaint / inquiry.
+Scenarios match the learner's CEFR level: A2 uses everyday situations. When `target_level` is B1, take the genre from `.claude/references/level-b1.md` §"Genres" (opinion, complaint, inquiry) and put one grammar target the learner has not yet mastered into **Include**, named by its function ("give a reason for your complaint"), never by its form.
 
 ### 3. Present the task
 
@@ -55,7 +55,7 @@ Scenarios must match the learner's CEFR level — A2 uses everyday situations, B
 
 ### 4. Wait for the full text
 
-Don't correct mid-composition. Let the learner finish.
+Hold all feedback until the learner sends the finished text.
 
 ### 5. Systematic error analysis
 
@@ -70,8 +70,7 @@ else and writes no database at all, so a display heading copied into the payload
 fails the whole update.
 
 Tag each finding with a severity: 🔴 critical, 🟡 moderate, 🟢 minor. Severity is
-mandatory — it feeds `mistakes-db` and drives spaced-repetition priority. Weigh
-spelling light at A2, heavier at B2+. Stage each finding for the end-of-session
+mandatory — it feeds `mistakes-db` and drives spaced-repetition priority. Weigh spelling light at A2, heavier at B2+. At B1, grade as `.claude/references/level-b1.md` §"What B1 asks for" sets out: a slip that leaves the meaning clear is 🟡 or 🟢, and the Communication score leads. Stage each finding for the end-of-session
 payload.
 
 ### 6. Detailed feedback
@@ -162,4 +161,4 @@ Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README
 
 ## Critical Rules
 
-- **One scenario per session.** Don't chain multiple writing tasks — depth over breadth.
+- **One scenario per session**; depth over breadth.
