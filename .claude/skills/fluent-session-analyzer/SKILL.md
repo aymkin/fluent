@@ -7,17 +7,13 @@ description: Parse Fluent `/results/*.md` session files to extract error pattern
 
 ## Overview
 
-Every practice session writes a markdown report to `/results/fluent-{skill}-session-{NNN}.md` (e.g. `fluent-writing-session-012.md`). This skill describes how to read those files to plan adaptive follow-up practice. Use it when the tutor needs narrative context the JSON databases don't capture — the exact sentence the learner wrote, the scenario, the feedback they received.
+Every practice session writes a markdown report to `/results/fluent-{skill}-session-{NNN}.md`. Read those files to plan follow-up practice when the textual context matters: the exact sentence the learner wrote, the scenario, the feedback they received.
 
 ## When to Use
 
-Load this skill whenever the tutor:
+Load this skill when the tutor plans today's focus, generates the next session plan, or answers "what's my weakest area" or "what should I work on".
 
-- Plans today's focus before `/fluent-learn`, `/fluent-writing`, etc.
-- Answers the learner's question "what's my weakest area" or "what should I work on".
-- Generates the next session plan.
-
-Skip this skill when aggregated JSON numbers are enough — prefer `read-db.py` for counts, trends, and mastery levels. Use this skill only when the textual context matters.
+Skip it when aggregated numbers are enough; `read-db.py` gives counts, trends and mastery levels.
 
 ## Instructions
 
@@ -56,7 +52,6 @@ Across sessions, track:
 
 - Overall accuracy per session
 - Critical vs moderate vs minor error counts
-- Writing speed (words per minute, if tracked)
 
 ### 5. Plan the next session
 
@@ -65,6 +60,8 @@ Based on the analysis:
 1. **Top 3 critical weaknesses** (highest frequency + severity) → 50% of session time.
 2. **Top 2 moderate patterns** → 30% of session time.
 3. **One full integration scenario** → 20% of session time.
+
+When `target_level` is B1, unmet targets from `.claude/references/level-b1.md` fill the drill slots the weaknesses leave open.
 
 Plan template:
 
@@ -88,14 +85,10 @@ Plan template:
 
 ### 6. Tune difficulty
 
-Use recent session accuracy to tune today's difficulty:
-
-- **<50%** → simplify, add scaffolding, smaller chunks
-- **50-70%** → correct zone, keep going
-- **>70%** → raise difficulty, introduce new patterns
+Tune today's difficulty from recent session accuracy against the 50-70% target zone, using the bands in `fluent-learn` §"Adaptive difficulty".
 
 ## Critical Rules
 
-- **Read `/results/` markdown for context.** Use `read-db.py` for numerical summaries — don't reimplement counts by re-parsing markdown when the DB already has them.
+- **`/results/` markdown supplies context**; `read-db.py` supplies the counts, so they are never re-derived from markdown.
 - **Cap the look-back window.** 3-5 recent sessions for the relevant skill. Older data is already baked into `mistakes-db.json` mastery levels.
-- **Never alter `/results/` files.** They are immutable records. Planning only.
+- **`/results/` files are immutable records**; this skill plans and edits nothing.
