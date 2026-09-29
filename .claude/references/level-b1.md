@@ -52,6 +52,12 @@ single threshold:
 
 - Measured active vocabulary of B1 speakers ≈ 4000 words (SD ≈ 1600), B2 ≈ 7000
   (Hulstijn et al. 2012, _Internationale Neerlandistiek_).
+- Text coverage by written vocabulary: 4731 base words cover 85.4 % of tokens
+  (Hazenberg & Hulstijn 1996, books 1970-1988; a "base word" excludes transparent
+  compounds and derivations, so it is not a lemma in a frequency list's sense).
+  No published curve ties coverage to a CEFR level, and the 90/95/98 % thresholds
+  are measured for English only. Treat a coverage figure from any other corpus as
+  a comparison inside that corpus.
 - Selection pool for exam-relevant words: the Core and General lists of _A
   Frequency Dictionary of Dutch_ (5000 words) plus the CvTE addendum of
   Staatsexamen NT2. It is a pool to draw from, not a closed B1 list.
@@ -70,6 +76,8 @@ single threshold:
 
 ## Sources
 
+- Hazenberg & Hulstijn 1996, _Applied Linguistics_:
+  <https://www.scienceguide.nl/wp-content/uploads/2017/11/165030_Hazenberg_Hulstijn_Applied_Linguistics_1996.pdf>
 - Hulstijn et al. 2012, _Internationale Neerlandistiek_ (grammar test and
   vocabulary size by level):
   <https://www.dbnl.org/tekst/_nee005201201_01/_nee005201201_01_0064.php>
