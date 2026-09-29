@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Present one text (100-500 words depending on level), ask 4-6 comprehension questions, extract vocabulary. Builds passive-to-active bridge: learners decode target-language writing, then answer questions that force recall.
+One text, 4-6 comprehension questions asked one at a time, then vocabulary. The learner decodes target-language writing, then answers questions that force recall.
 
 ## Instructions
 
@@ -71,13 +71,11 @@ Match the topic to `learner-profile.focus_areas` when possible.
 Take your time. When you're done, type **"ready"**.
 ```
 
-Wait for `"ready"` before asking the first question — rushing the reading step defeats the purpose.
+Stop after the text. Ask the first question only once the learner types `"ready"`; the reading step needs its full time.
 
-### 5. Question sequence (one at a time)
+### 5. Question sequence
 
-Multiple at once invites skimming.
-
-One block per question, headings in the target language:
+Send one question, then wait for the answer and give its feedback (step 6) before the next; a batch invites skimming. Write the question and its headings in the target language:
 
 ```markdown
 ## {"Question" in target_language} {N}: {type label in target_language}
@@ -89,7 +87,7 @@ One block per question, headings in the target language:
 **Type your answer:**
 ```
 
-Rotate across these types, in this order:
+Question types, in this order:
 
 1. **Main idea** — multiple choice.
 2. **Details** — a specific fact from the text, open answer.
@@ -104,9 +102,9 @@ Rotate across these types, in this order:
 
 **Answer:** {correct_answer}
 
-**Explanation:** {why — reference the text}
+**Explanation:** {why}
 
-{If incorrect: **The text says:** "{relevant_quote}"}
+**The text says:** "{relevant_quote}"
 
 **Score: {X}/10**
 
@@ -115,7 +113,7 @@ Rotate across these types, in this order:
 
 ### 7. Vocabulary review
 
-After the questions:
+After the last question:
 
 ```markdown
 ## 📚 New Vocabulary from the Text
@@ -125,12 +123,12 @@ After the questions:
 | {word 1} | {meaning} | "{sentence}" |
 | {word 2} | {meaning} | "{sentence}" |
 
-**Save these for future review?** (They'll enter spaced repetition.)
+**Which of these do you want to save for review?** (They'll enter spaced repetition.)
 
-Type "yes" to add, "no" to skip.
+Reply with the words, "all", or "none".
 ```
 
-If yes, stage each word for `new_vocabulary[]` in the end-of-session payload.
+Stage each word the learner chose for `new_vocabulary[]` in the end-of-session payload.
 
 ### 8. Session summary
 
@@ -145,6 +143,7 @@ If yes, stage each word for `new_vocabulary[]` in the end-of-session payload.
 ### Comprehension Breakdown
 - Main idea: {✅ or ❌}
 - Details: {score}
+- True / false: {score}
 - Vocabulary: {score}
 - Inference: {score}
 
@@ -178,7 +177,7 @@ Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README
 
 ## Critical Rules
 
-- **Ask questions in the target language** (at least from A2 up). Reading-comprehension checks should happen in the same language as the text.
-- **Quote the text** in explanations so the learner can trace the answer back to the source.
-- **Vocabulary opt-in.** Don't force-add every unknown word — ask the learner which they want to keep.
-- **Don't reuse a text** in consecutive sessions; vary topic and text type.
+- **Target-language questions** (from A2 up): the check runs in the language of the text.
+- **Quote the text** in every explanation, so the learner can trace the answer to its source.
+- **Vocabulary opt-in.** Only words the learner picks get saved.
+- **Fresh text** each session: change topic and text type from the previous one.
