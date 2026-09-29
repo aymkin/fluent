@@ -1,6 +1,6 @@
 ---
 name: fluent-reading
-description: Reading comprehension with a graded question sequence.
+description: Reading comprehension — one text, five question types in order, then vocabulary.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -36,7 +36,7 @@ Today we're practicing **reading comprehension**. I'll show you a short {target_
 
 **Tips:**
 - Read the whole text first
-- Don't translate every word — get the gist
+- Get the gist first; look words up afterwards
 - Use context clues for unknown words
 - Read the questions before rereading the text
 
@@ -51,7 +51,9 @@ B1 (200-350 words): opinion pieces, longer narratives, structured guides.
 
 B2+ (350-500): editorials, technical explanations, interviews.
 
-Match the topic to `learner-profile.focus_areas` when possible.
+For B1, pick a text with subordinate clauses and at least one passive, so the grammar targets in `.claude/references/level-b1.md` appear in context.
+
+Match the topic to `learner-profile.focus_areas` when possible, and change topic and text type from the previous session.
 
 ### 4. Present the text
 
@@ -174,10 +176,3 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_pa
 ```
 
 Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. Include the full text + Q&A.
-
-## Critical Rules
-
-- **Target-language questions** (from A2 up): the check runs in the language of the text.
-- **Quote the text** in every explanation, so the learner can trace the answer to its source.
-- **Vocabulary opt-in.** Only words the learner picks get saved.
-- **Fresh text** each session: change topic and text type from the previous one.

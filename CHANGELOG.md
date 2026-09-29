@@ -43,6 +43,7 @@ All notable changes to Fluent will be documented in this file.
   message landed before the form.
   `/fluent-speaking` picks B1 topics (narrating a past event, comparing,
   a hypothetical) and records your misses on B1 grammar targets.
+  `/fluent-reading` picks B1 texts with subordinate clauses and a passive.
 
 ### Fixed
 

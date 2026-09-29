@@ -71,8 +71,6 @@ single threshold:
 - Writing: opinion, complaint, inquiry, a short formal email (`u`).
 - Speaking: narrate a past event, compare two options, one hypothetical
   ("Wat zou je doen als …?"), an unplanned phone call.
-- Reading: 200-350 words, opinion pieces, guides, narratives; at least one
-  question that needs an inference.
 
 ## Sources
 
