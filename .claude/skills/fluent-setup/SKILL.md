@@ -166,7 +166,7 @@ If yes, read `.claude/skills/fluent-learn/SKILL.md` and follow it in the same se
 
 ## Profile Updates (existing profile)
 
-Reached when Step 1 finds an existing `learner-profile.json` — read `.claude/skills/fluent-setup/PROFILE-UPDATES.md` and follow it instead of Steps 2-6.
+Reached when Step 1 finds an existing `learner-profile.json` — read `.claude/skills/fluent-setup/PROFILE-UPDATES.md` and follow it instead of §"Welcome" through §"Optional first lesson".
 
 ## Critical Rules
 

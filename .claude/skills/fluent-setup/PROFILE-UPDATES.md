@@ -26,5 +26,5 @@ What would you like to do?
   cp "$DATA_DIR"/*.json "$DATA_DIR/.backups/pre-reset-$TS/"
   ```
 
-  Then restart setup from Step 2.
+  Then restart setup from §"Welcome".
 - **4** — exit cleanly.
