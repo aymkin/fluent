@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-09-30
+
 ### Added
 
 - **Session length is now measured, not estimated.** Until now the minutes on a
