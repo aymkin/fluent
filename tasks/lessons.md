@@ -164,3 +164,22 @@ assertion and the command are the same shape. Multi-word phrase → `rg -U` with
 `\s+` throughout. "These N files" → name the N files. And when an implementer
 reports that one of your gates is wrong, check the gate before checking the work:
 twice out of twice, the gate was.
+
+## 2026-10-06 — a repo-green gate says nothing about what the learner runs
+
+The session-cap plan verified the greeting and the review round by running the
+repo's `session-start.py` and `read-db.py`. Both would have gone green while the
+learner still saw "99 items due" and got 45 cards: the SessionStart hook runs
+from the installed plugin copy, `~/.claude/plugins/cache/aymkin/fluent/<version>`,
+which was 0.5.0 at commit `e7618dc`. The plan's independent review caught it,
+together with a second miss in the same lines: `--review` cut the stale
+`review_queue.today` (rebuilt only by `update-db.py`) instead of the live due
+list, so a critical card due two days earlier was never served.
+
+How to apply: a change the learner should see is live only after a release
+commit (version bump in `.claude-plugin/plugin.json` and `marketplace.json`)
+and `claude plugin update fluent@aymkin` — the marketplace is this directory,
+so no push is needed — followed by a restart. Run every behaviour gate twice:
+against the repo and against the cache copy of the new version. And before
+capping or reordering a list, check where the list comes from — a cached
+queue answers a different question than the data it was built from.
