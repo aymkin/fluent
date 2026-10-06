@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-The flagship command. Interleaves skills and adapts difficulty per answer: active recall → immediate feedback → spaced repetition → tracking. Runs about 20 min.
+The flagship command. Interleaves skills and adapts difficulty per answer: active recall → immediate feedback → spaced repetition → tracking. Holds at most the session cap (`computed.session_cap`) exercises.
 
 ## Instructions
 
@@ -31,7 +31,7 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 
 ### 3. Greet
 
-Open with the learner's name, their streak, reviews due, today's focus area (weakest skill or top weak pattern), and level with progress. Then offer the menu:
+Open with the learner's name, their streak, today's review round (due items up to the session cap), today's focus area (weakest skill or top weak pattern), and level with progress. Then offer the menu:
 
 ```markdown
 1. 📝 Writing (emails, letters, forms)
@@ -51,12 +51,14 @@ Menu items 1-5 target, in order: `fluent-writing`, `fluent-speaking`, `fluent-vo
 
 ### 5. Adaptive mix (option 6)
 
-Plan a 20-min session:
+Plan the session cap as four blocks:
 
-1. **Warm-up (3 min)** — easy vocabulary recognition on already-strong words. Builds confidence.
-2. **Targeted drill 1 (7 min)** — top weak pattern. 3-4 isolated exercises + 1 application.
-3. **Targeted drill 2 (5 min)** — second weak pattern. Same structure.
-4. **Integration (5 min)** — short writing or speaking task that forces both patterns together.
+1. **Warm-up** — 1 exercise: easy vocabulary recognition on an already-strong word. Builds confidence.
+2. **Targeted drill 1** — top weak pattern: isolated exercises, then 1 application.
+3. **Targeted drill 2** — second weak pattern. Same structure.
+4. **Integration** — 1 exercise: a short writing or speaking task that forces both patterns together.
+
+The two drills share the exercises left between warm-up and integration evenly.
 
 Choose the patterns with `fluent-session-analyzer`. Give each exercise its feedback via `fluent-feedback-formatter` before the next one.
 

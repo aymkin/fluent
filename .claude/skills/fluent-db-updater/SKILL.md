@@ -25,7 +25,7 @@ Call `read-db.py` at session start for current state and `next_session_id`; one 
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
-It returns all 6 databases plus computed fields (`due_reviews_count`, `next_session_id`, `streak_active`).
+It returns all 6 databases plus computed fields (`due_reviews_count`, `next_session_id`, `streak_active`, `session_cap`).
 
 ### 2. Fill the payload
 

@@ -36,7 +36,6 @@ def make_fixtures(data_dir: Path):
     (data_dir / "mastery-db.json").write_text(json.dumps({"skills": {"x": 1}}))
     (data_dir / "spaced-repetition.json").write_text(json.dumps({
         "metadata": {"algorithm": "FSRS-6", "total_items_tracked": 2},
-        "daily_limits": {"review_items_per_day": 20},
         "review_queue": {"today": ["grammar_referenced", "vocab_due"], "tomorrow": [],
                          "this_week": [], "later": []},
         "items": {
@@ -119,11 +118,48 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         # plain mode does not trim learner_profile
         self.assertIn("achievements", out["databases"]["learner_profile"])
 
-    def test_computed_fields_are_exactly_the_documented_four(self):
+    def test_review_round_is_the_session_cap_drawn_from_live_due_items(self):
+        # review_queue.today is rebuilt only by update-db.py, so between sessions
+        # it goes stale: here it misses a card that fell due since (crit) and
+        # still lists one reviewed after it was built (reviewed_since).
+        items = {
+            f"high_{n}": {"type": "error_pattern", "priority": "high",
+                          "due_date": f"2026-07-{10 + n:02d}"}
+            for n in range(1, 10)
+        }
+        items["high_old"] = {"type": "error_pattern", "priority": "high",
+                             "due_date": "2026-06-01"}
+        items["low_1"] = {"type": "error_pattern", "priority": "low",
+                          "due_date": "2026-06-15"}
+        items["reviewed_since"] = {"type": "error_pattern", "priority": "critical",
+                                   "due_date": "2099-01-01"}
+        items["crit"] = {"type": "grammar_rule", "priority": "critical",
+                         "due_date": "2026-07-20"}
+        (self.tmp / "data" / "spaced-repetition.json").write_text(json.dumps({
+            "daily_limits": {"review_items_per_day": 45},
+            "review_queue": {"today": [iid for iid in items if iid != "crit"],
+                             "tomorrow": [], "this_week": [], "later": []},
+            "items": items,
+        }))
+
+        out = self._run("--review")
+        sr = out["databases"]["spaced_repetition"]
+        served = sr["review_queue"]["today"]
+
+        self.assertEqual(len(served), 10)
+        self.assertEqual(served[:2], ["crit", "high_old"])  # priority, then most overdue
+        self.assertNotIn("high_9", served)          # least overdue high is cut
+        self.assertNotIn("low_1", served)           # low ranks below every high
+        self.assertNotIn("reviewed_since", served)  # no longer due
+        self.assertEqual(set(sr["items"]), set(served))
+        self.assertEqual(out["computed"]["session_cap"], 10)
+
+    def test_computed_fields_are_exactly_the_documented_five(self):
         # The skills advertise these and only these.
         self.assertEqual(
             set(self._run()["computed"]),
-            {"today", "due_reviews_count", "next_session_id", "streak_active"},
+            {"today", "due_reviews_count", "next_session_id", "streak_active",
+             "session_cap"},
         )
 
 

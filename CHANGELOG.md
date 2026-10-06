@@ -4,6 +4,32 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **A session now ends at 10 exercises.** Long sessions were putting the learner
+  off starting one: across the first 31 sessions the average was 13 exercises and
+  20 minutes, and some ran to 30 exercises or 55 minutes. The number lives in one
+  place, `SESSION_CAP = 10` in `.claude/hooks/session_cap.py`; `read-db.py`
+  publishes it as `computed.session_cap`, and every practice skill sizes itself
+  to it.
+  - **`/fluent-review` serves one round** — ten items, about ten minutes —
+    instead of everything up to `review_items_per_day`. When more is due, the
+    tutor saves the session first and then asks whether you want another round;
+    typing `/fluent-review` again starts a fresh session with its own record.
+  - **The round is the right ten.** It is drawn from everything due today, most
+    urgent first — critical before high, then the longest overdue — rather than
+    from the queue `update-db.py` wrote at the end of the previous session,
+    which missed cards that had fallen due since. On the data this was built
+    against, a critical card due two days earlier had never been offered.
+  - **The welcome line shows today's round, not the backlog.** "📅 99 items due
+    for review today" becomes "📅 Today: 10 reviews (~10 min)". The full count
+    is still in `/fluent-progress` and at the start of `/fluent-review`.
+  - `/fluent-vocab`, `/fluent-learn` and `/fluent-speaking` stop at the session
+    cap too; `/fluent-reading` asks its five questions; `/fluent-writing` was
+    already a single task.
+  - `daily_limits.review_items_per_day` is no longer read. Existing data files
+    can keep the field; it does nothing.
+
 ## [0.5.0] — 2026-09-30
 
 ### Added

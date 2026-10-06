@@ -5,8 +5,9 @@ Loads all 6 learning databases and outputs a single JSON object to stdout.
 
 Usage:
     python3 .claude/hooks/read-db.py
-    python3 .claude/hooks/read-db.py --review   # pre-sort + cap today's
-                                                  # review queue server-side,
+    python3 .claude/hooks/read-db.py --review   # serve one round: today's
+                                                  # due items, most urgent
+                                                  # first, cut to SESSION_CAP;
                                                   # and drop DB sections the
                                                   # review flow never reads
                                                   # (mastery_db, progress_db,
@@ -28,6 +29,7 @@ PRIORITY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fluent_paths import data_dir, force_utf8_io  # noqa: E402
+from session_cap import SESSION_CAP  # noqa: E402
 
 force_utf8_io()
 DATA_DIR = data_dir()
@@ -95,18 +97,22 @@ def main():
             "due_reviews_count": len(due_items),
             "next_session_id": next_session_id(sessions),
             "streak_active": streak_active,
+            "session_cap": SESSION_CAP,
         },
     }
 
     if "--review" in sys.argv[1:]:
-        limit = sr.get("daily_limits", {}).get("review_items_per_day", 20)
-        today_ids = sr.get("review_queue", {}).get("today", [])
+        # One round: today's due items, most urgent first — priority, then the
+        # longest overdue. Drawn from the items themselves, not from
+        # review_queue.today: only update-db.py rebuilds that list, so between
+        # sessions it misses cards that have fallen due since.
         capped = sorted(
-            today_ids,
-            key=lambda iid: PRIORITY_RANK.get(items.get(iid, {}).get("priority"), 4),
-        )[:limit]
+            due_items,
+            key=lambda iid: (PRIORITY_RANK.get(items[iid].get("priority"), 4),
+                             items[iid].get("due_date", "")),
+        )[:SESSION_CAP]
         sr.setdefault("review_queue", {})["today"] = capped
-        sr["items"] = {iid: items[iid] for iid in capped if iid in items}
+        sr["items"] = {iid: items[iid] for iid in capped}
 
         # review_history is write-only from this flow's perspective: the
         # template only reads last_reviewed/interval_days/etc (top-level

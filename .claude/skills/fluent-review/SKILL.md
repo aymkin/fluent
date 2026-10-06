@@ -1,6 +1,6 @@
 ---
 name: fluent-review
-description: Daily FSRS review — replay today's due items, one decision per exercise.
+description: Daily FSRS review — one round of today's due items, one decision per exercise.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -19,9 +19,9 @@ Replay items the learner learned before, timed to hit just before the forgetting
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py" --review
 ```
 
-The queue comes back sorted by `priority` and cut to `daily_limits.review_items_per_day`, expanded to just the items you will actually use.
+The queue comes back as one round: today's due items, most urgent first — `priority`, then the longest overdue — cut to the session cap (`computed.session_cap`) and expanded to just the items you will use.
 
-**`computed.due_reviews_count` is the real number due, and it can exceed the queue you received.** Everything past the cut is not postponed — it is simply never served today, lowest priority first. When the two numbers differ, open with both and name what got cut. A backlog the learner cannot see is a backlog nobody triages; if the overflow repeats for several days, offer to raise `review_items_per_day`.
+`computed.due_reviews_count` counts everything due today. Whatever this round leaves out stays due and leads the next round.
 
 If the queue is empty:
 
@@ -36,7 +36,7 @@ Want to practice something new? Try:
 
 ### 2. Opening
 
-Greet the learner by name and give: items due today (plus the overflow, if any), and the estimated minutes. Then start.
+Greet the learner by name and give: the round's size, its minutes (about one per item), and how many items wait for later rounds. Then start.
 
 ### 3. Generate one exercise per item
 
@@ -65,7 +65,7 @@ Match the exercise to `item_type`:
 - **vocabulary**: recognition (target → native), production (native → target), or cloze — rotate modes.
 - **grammar_rule**: cloze, or find the one error. Once `mastery_level` reaches 3, and the rule is a target in `.claude/references/level-b1.md`, switch to that target's "done when" test: the learner types the form from a prompt in their own language.
 
-Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its number in the session, the item type, days since last review, current mastery, and `fsrs_difficulty`.
+Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its place in the round (`Item {N}/{round size}`), the item type, days since last review, current mastery, and `fsrs_difficulty`.
 
 ### 4. Evaluate + submit the score
 
@@ -77,11 +77,11 @@ Then stage the item for the end-of-session update through `review_results[]` in 
 { "item_id": "vocab_huis", "quality": 4 }
 ```
 
-The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions` and keeps the item in today's queue, which is exactly the signal the scheduler needs.
+The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions` and brings the item back tomorrow — one day is FSRS's shortest interval — which is exactly the signal the scheduler needs.
 
 ### 5. Progress pulse every 5 items
 
-Items done out of the total, running accuracy, minutes left.
+Items done out of the round, running accuracy, minutes left.
 
 ### 6. Session summary
 
@@ -105,10 +105,14 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_pa
 
 Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`.
 
+### 8. Offer another round
+
+With the update and the transcript saved, and items still due, ask whether the learner wants another round of `{session_cap}`. On a yes, the learner types `/fluent-review` again: a new session with its own record, and its own start mark for the prompt clock.
+
 ## Critical Rules
 
 - **Let the learner struggle.** If they don't remember, that is useful data (quality 0-2) — the algorithm needs honest signals. A guess scored as knowledge pushes the item weeks out and takes the schedule with it, so when the learner says they guessed, score the guess.
-- **Daily.** The spacing assumes a session every day. After a gap, name the size of today's backlog and move straight to triaging it with the learner.
+- **Daily.** The spacing assumes a session every day. After a gap the backlog comes back round by round, most urgent first; one round is a full session.
 
 ## What the Schedule Means
 

@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-One text, 4-6 comprehension questions asked one at a time, then vocabulary. The learner decodes target-language writing, then answers questions that force recall.
+One text, five comprehension questions asked one at a time, then vocabulary. The learner decodes target-language writing, then answers questions that force recall.
 
 ## Instructions
 
@@ -32,7 +32,7 @@ Today we're practicing **reading comprehension**. I'll show you a short {target_
 
 **Focus:** main ideas, details, vocabulary in context
 **Level:** {CEFR}
-**Duration:** 15-20 min
+**Questions:** 5
 
 **Tips:**
 - Read the whole text first

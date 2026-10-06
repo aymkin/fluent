@@ -32,7 +32,7 @@ Today we're practicing **speaking** through typed conversation. I'll ask you que
 
 **Focus:** natural expression, fluency, pronunciation (typed)
 **Level:** {CEFR}
-**Duration:** 15-20 min
+**Questions:** {session_cap}
 
 **Tips:**
 - Think in {target_language}, not {native_language}
@@ -62,14 +62,14 @@ When `target_level` is B1, take the topic from `.claude/references/level-b1.md` 
 ### 4. One question at a time
 
 ```markdown
-## Question {N}: {Topic}
+## Question {N}/{session_cap}: {Topic}
 
 {Question in target language}
 
 **Type your answer in {target_language}:**
 ```
 
-Build the conversation naturally — after 3-4 Qs on one topic, transition: `Interessant! Let's talk about something else...`.
+Build the conversation naturally — after 3-4 Qs on one topic, transition: `Interessant! Let's talk about something else...`. The session ends with the answer to question {session_cap} — the session cap (`computed.session_cap`).
 
 ### 5. Evaluate
 
@@ -109,7 +109,7 @@ Stage the score, any communication-blocking error, and any miss on a B1 target f
 
 ### 6. Role-play (advanced)
 
-For B1+ or when the learner is warmed up:
+For B1+ or when the learner is warmed up. Each learner turn in the role-play counts as one question toward the session cap.
 
 ```markdown
 ## 🎭 Role-Play

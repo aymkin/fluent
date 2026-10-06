@@ -139,7 +139,7 @@ Start from the templates in `data-examples/`. Resolve the target directory via `
 - `progress-db.json` — empty stats.
 - `mistakes-db.json` — empty `error_patterns`.
 - `mastery-db.json` — `skills` entries with `mastery_level: 0` for each skill.
-- `spaced-repetition.json` — empty queues, `daily_limits.review_items_per_day: 20`.
+- `spaced-repetition.json` — empty queues.
 - `session-log.json` — empty `sessions` array, `total_sessions: 0`.
 
 Use the Write tool for each; `update-db.py` serves session updates, so bootstrapping writes the files directly. Every file starts empty, and the system builds up from real sessions.

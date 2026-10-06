@@ -100,7 +100,7 @@ python3 -c "import sys; sys.path.insert(0, '.claude/hooks'); from fluent_paths i
 
 Fluent is 12 Claude Code skills. The learner-facing ones are gated: they run
 only when you type the slash command, so a chat message can never trigger a
-20-minute session or a database write. `/fluent-progress` is read-only and also
+practice session or a database write. `/fluent-progress` is read-only and also
 auto-triggers on questions like "how am I doing?". The four helper skills
 auto-load whenever Claude needs them mid-session. All 12 appear in your `/`
 menu.

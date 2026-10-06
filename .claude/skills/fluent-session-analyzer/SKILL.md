@@ -57,16 +57,18 @@ Across sessions, track:
 
 Based on the analysis:
 
-1. **Top 3 critical weaknesses** (highest frequency + severity) → 50% of session time.
-2. **Top 2 moderate patterns** → 30% of session time.
-3. **One full integration scenario** → 20% of session time.
+1. **Top 3 critical weaknesses** (highest frequency + severity) → 50% of the session's exercises.
+2. **Top 2 moderate patterns** → 30% of the session's exercises.
+3. **One full integration scenario** → 20% of the session's exercises.
+
+The exercises add up to at most the session cap (`computed.session_cap`).
 
 When `target_level` is B1, unmet targets from `.claude/references/level-b1.md` fill the drill slots the weaknesses leave open.
 
 Plan template:
 
 ```markdown
-## Session {N} Plan ({X} min)
+## Session {N} Plan ({X} exercises)
 
 **Top 3 Weaknesses:**
 1. {pattern} — {count} occurrences, severity {emoji}
@@ -76,11 +78,11 @@ Plan template:
 - {skill}
 
 **Drill Sequence:**
-1. Warm-up ({x} min) — quick wins on known patterns
-2. Targeted drill 1 ({y} min) — focus on weakness #1
-3. Targeted drill 2 ({y} min) — focus on weakness #2
-4. Mixed integration ({z} min) — combine all patterns
-5. Full scenario ({w} min) — exam-style task
+1. Warm-up ({x} exercises) — quick wins on known patterns
+2. Targeted drill 1 ({y} exercises) — focus on weakness #1
+3. Targeted drill 2 ({y} exercises) — focus on weakness #2
+4. Mixed integration ({z} exercises) — combine all patterns
+5. Full scenario ({w} exercises) — exam-style task
 ```
 
 ### 6. Tune difficulty

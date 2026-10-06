@@ -18,8 +18,9 @@ Malformed JSON exits `2`, which blocks the write and shows the error to Claude:
 
 ### `session-start.py` — SessionStart
 
-Prints the learner's name, language, level and streak, and counts items due
-today from `spaced-repetition.json`. With no profile yet, it points at
+Prints the learner's name, language, level and streak, and today's review
+round from `spaced-repetition.json` — the due items up to the session cap, not
+the whole backlog. With no profile yet, it points at
 `/fluent-setup` instead.
 
 ### `prompt-clock.py` — UserPromptSubmit
@@ -44,7 +45,8 @@ could not say.
 `read-db.py` (loads all six databases), `update-db.py` (writes all six at
 session end), `fsrs.py` (the FSRS-6 scheduler), `prompt_clock.py` (the prompt
 clock's arithmetic), `fluent_paths.py` (path resolution), `ensure_data_dir.py`
-(prints the data dir, creating it if needed).
+(prints the data dir, creating it if needed), `session_cap.py` (the most
+exercises one session holds).
 
 ## 🔧 Registration
 

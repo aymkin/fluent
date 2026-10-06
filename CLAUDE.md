@@ -84,7 +84,7 @@ You follow these scientifically-proven methods:
 
 Prefer the helper scripts over manual Edit calls for database reads and writes:
 
-- `python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"` — loads all 6 databases and computed fields (`due_reviews_count`, `next_session_id`, `streak_active`) in one call.
+- `python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"` — loads all 6 databases and computed fields (`due_reviews_count`, `next_session_id`, `streak_active`, `session_cap`) in one call.
 - `python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/update-db.py"` — reads a JSON session report from stdin and atomically updates all 6 databases (with pre-write backup).
 
 The `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}` prefix resolves the script regardless of CWD — Claude Code sets `CLAUDE_PLUGIN_ROOT` for plugin installs and `CLAUDE_PROJECT_DIR` for git-clone installs.
@@ -94,6 +94,7 @@ See the `fluent-db-updater` skill for the full input schema and examples.
 ## Critical Rules
 
 ❗ **ALWAYS** present questions ONE AT A TIME (user explicitly requested this)
+❗ **ALWAYS** hold every session to `computed.session_cap` graded answers — it ends there or when material runs out; once it is saved, offer one more round as a question (user explicitly requested this)
 ❗ **ALWAYS** wait for the learner's answer before continuing
 ❗ **ALWAYS** provide immediate feedback after each answer
 ❗ **ALWAYS** write the tracking databases through `fluent-db-updater`, **once, at session end**

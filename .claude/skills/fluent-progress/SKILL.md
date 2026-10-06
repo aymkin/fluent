@@ -24,7 +24,7 @@ Prefer the helper script over manual Read calls:
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
-This returns a single JSON with all 6 databases + computed fields (`due_reviews_count`, `next_session_id`, `streak_active`).
+This returns a single JSON with all 6 databases + computed fields (`due_reviews_count`, `next_session_id`, `streak_active`, `session_cap`).
 
 If the helper is unavailable, read the six JSON files directly from `fluent_paths.data_dir()`; plugin installs keep them under `~/.claude/fluent-data/`, not `data/`.
 

@@ -55,22 +55,22 @@ Welcome back! You're on a {streak_days}-day streak! 🔥
 
 Today's focus:
 📝 {skill_name} practice ({mastery_level}/5 ⭐)
-🔄 {review_count} items due for review
+🔄 Today's round: {round} reviews (~{round} min)
 
 Ready? Let's make today count!"
 ```
 
-### Step 3: Check the review queue
+### Step 3: Take today's review round
 
-From `spaced-repetition.json`:
-- Load `review_queue.today` items
-- Prioritize by `priority` field (critical > high > medium > low)
-- Limit to `daily_limits.review_items_per_day` (default: 20)
+`read-db.py --review` returns it: today's due items, most urgent first —
+`priority` (critical > high > medium > low), then the longest overdue — cut to
+the session cap (`computed.session_cap`).
 
 ### Step 4: Generate a session plan
 
-Based on review items due today, `learner-profile.focus_areas`, skill balance
-(practice all 4 skills weekly), and `learner-profile.daily_goal_minutes`.
+Based on review items due today, `learner-profile.focus_areas` and skill balance
+(practice all 4 skills weekly), sized to the session cap: a session holds at
+most `computed.session_cap` exercises.
 
 Grade every answer with the `fluent-feedback-formatter` skill — it owns the
 per-answer template, the category labels and the 🔴/🟡/🟢 severity scale.

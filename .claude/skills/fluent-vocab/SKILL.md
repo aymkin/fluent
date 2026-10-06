@@ -36,7 +36,7 @@ Priority order:
 2. Words from `mistakes-db.json` where `category == "vocabulary"` and `mastery_level <= 2`.
 3. New high-frequency words matching `learner-profile.focus_areas`. When `target_level` is B1, take them from the abstract, work and civic domains and from connectors, following the vocabulary anchors in `.claude/references/level-b1.md`. Give each noun with its article or gender marker wherever the language has one.
 
-Limit: `spaced-repetition.daily_limits.review_items_per_day` (default 20).
+Take words in that order until you reach the session cap (`computed.session_cap`); that is the whole session.
 
 ### 3. Present one word at a time
 
