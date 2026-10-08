@@ -14,6 +14,13 @@ All notable changes to Fluent will be documented in this file.
   knew goes back to the drills of `/fluent-learn` and `/fluent-vocab`, and it
   loses the low priority that put it at the back of the `/fluent-review`
   round.
+- **B1 targets get their "done when" test.** `/fluent-review` switched to a
+  target's "done when" test at 3 stars only for grammar-rule cards, but a
+  target is recorded as an error pattern named after it — so the test never
+  came, and with stars now climbing past 3 a target would have shown ✅ done
+  in `/fluent-progress` after ordinary reviews. An error pattern that names a
+  B1 target now gets the test at 3 stars too, and reaches ✅ done only once
+  you pass it.
 
 ## [0.7.2] — 2026-10-08
 
