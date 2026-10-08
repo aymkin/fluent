@@ -412,17 +412,24 @@ def update_spaced_repetition(sr: dict, session: dict):
             else:
                 item["consecutive_incorrect"] = item.get("consecutive_incorrect", 0) + 1
                 item["consecutive_correct"] = 0
-            # Mastery: rough map from repetitions and quality (clamped 0..5)
+            # Mastery, 0-5 stars: +1 per clean review after the first success,
+            # at least 3 after five in a row; a miss costs one and caps it at 2.
             current = item.get("mastery_level", 0)
+            mastery = current
+            if item["repetitions"] >= 2 and item["consecutive_correct"] >= 1 and quality >= 4:
+                mastery = min(5, mastery + 1)
             if item["repetitions"] >= 5 and item["consecutive_correct"] >= 3:
-                item["mastery_level"] = min(5, max(current, 3))
-            elif item["repetitions"] >= 2 and item["consecutive_correct"] >= 1 and quality >= 4:
-                item["mastery_level"] = min(5, current + 1)
+                mastery = max(mastery, 3)
+            if quality < 3:
+                mastery = max(0, min(current - 1, 2))
+            item["mastery_level"] = mastery
             # priority heuristic
             if item.get("consecutive_incorrect", 0) >= 2:
                 item["priority"] = "high"
-            elif item.get("mastery_level", 0) >= 3:
+            elif mastery >= 3:
                 item["priority"] = "low"
+            elif current >= 3 and item.get("priority") == "low":
+                item["priority"] = "medium"  # fell below 3 on this miss
             else:
                 item["priority"] = item.get("priority", "medium")
             item.setdefault("review_history", []).append({

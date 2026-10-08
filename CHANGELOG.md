@@ -4,6 +4,17 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Stars climb to 5, and a miss costs one.** From its fifth correct review
+  on, a card stayed at 3 stars, while a card you had missed once climbed past
+  it to 5 — so in `/fluent-progress` only cards you had once missed could
+  reach 🟢 Strong, "Mastered" or ✅ done. Each review scored 8 or more now adds
+  a star, up to 5. A miss takes one off and leaves at most 2: a pattern you
+  knew goes back to the drills of `/fluent-learn` and `/fluent-vocab`, and it
+  loses the low priority that put it at the back of the `/fluent-review`
+  round.
+
 ## [0.7.2] — 2026-10-08
 
 ### Fixed

@@ -39,7 +39,7 @@ in `review_results[]`. `update-db.py` maps it to an FSRS rating and reschedules.
 |-------|---------|
 | `quality` / `last_quality` | 0-5 grade; feeds the mastery heuristic |
 | `repetitions` | consecutive-success counter; feeds mastery |
-| `mastery_level` | 0-5 stars, derived from repetitions + quality |
+| `mastery_level` | 0-5 stars: +1 per quality 4-5 review from the second success in a row, at least 3 after five in a row; a miss (quality 0-2) takes one off and caps it at 2 |
 | `stability` | FSRS memory stability (days) |
 | `fsrs_difficulty` | FSRS item difficulty (NOT the CEFR `difficulty` key) |
 | `interval_days` / `due_date` | computed by FSRS, do not set by hand |
