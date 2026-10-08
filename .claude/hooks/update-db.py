@@ -261,7 +261,7 @@ def update_progress_db(progress: dict, session: dict):
     progress.setdefault("metadata", {})["last_updated"] = today
 
 
-def update_mistakes_db(mistakes: dict, session: dict):
+def update_mistakes_db(mistakes: dict, session: dict, sr: dict):
     today = session["date"]
     patterns = mistakes.setdefault("error_patterns", {})
 
@@ -305,6 +305,14 @@ def update_mistakes_db(mistakes: dict, session: dict):
                 }],
                 "notes": error.get("notes", ""),
             }
+
+    # Reviews move mastery on the spaced-repetition item; /fluent-learn and
+    # /fluent-vocab pick weak patterns by this copy, so carry it over.
+    items = sr.get("items", {})
+    for review in session.get("review_results", []):
+        pid = review["item_id"]
+        if pid in patterns and pid in items:
+            patterns[pid]["mastery_level"] = items[pid].get("mastery_level", 0)
 
     mistakes.setdefault("metadata", {})["last_updated"] = today
     mistakes["metadata"]["total_patterns_tracked"] = len(patterns)
@@ -587,9 +595,9 @@ def main():
     try:
         update_learner_profile(data["profile"], session)
         update_progress_db(data["progress"], session)
-        update_mistakes_db(data["mistakes"], session)
         update_mastery_db(data["mastery"], session, data["progress"])
         update_spaced_repetition(data["sr"], session)
+        update_mistakes_db(data["mistakes"], session, data["sr"])
         streak = data["profile"].get("current_streak_days", 0)
         update_session_log(data["log"], session, streak, measured)
     except Exception as e:

@@ -4,6 +4,17 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Patterns you have learned leave the drills.** `/fluent-learn` and
+  `/fluent-vocab` pick weak patterns by the mastery stored in the mistakes
+  database, but a review raised mastery only on the pattern's review card — so
+  every pattern stayed at 0 there, and every pattern ever recorded was a drill
+  candidate. A review now carries the card's mastery over: pattern mastery
+  follows your reviews the way every other card's does, and a pattern leaves
+  the drill pool once it reaches 3. Existing patterns catch up at their next
+  review.
+
 ## [0.7.1] — 2026-10-08
 
 ### Fixed

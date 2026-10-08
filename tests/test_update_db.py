@@ -320,6 +320,23 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertNotIn("last_occurred", pat)
         self.assertEqual(pat["next_review"], day(1))
 
+    def test_reviews_carry_pattern_mastery_into_mistakes_db(self):
+        """/fluent-learn and /fluent-vocab pick weak patterns by mistakes-db's
+        mastery_level. Reviews raised only the spaced-repetition twin, so every
+        pattern sat at 0 there and every one was picked."""
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        for n in range(4):
+            proc = self._run(dict(SESSION_PAYLOAD, session_id=f"session-01{n}",
+                                  errors=[], new_vocabulary=[],
+                                  review_results=[{"item_id": "verb_spreek",
+                                                   "quality": 5, "score": 10}]))
+            self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+
+        item = self._load("spaced-repetition.json")["items"]["verb_spreek"]
+        self.assertEqual(item["mastery_level"], 3)  # past the skills' "<= 2"
+        pat = self._load("mistakes-db.json")["error_patterns"]["verb_spreek"]
+        self.assertEqual(pat["mastery_level"], item["mastery_level"])
+
     def test_missing_required_field_exits_1(self):
         proc = self._run({"date": SESSION_DATE})  # no session_id
         self.assertEqual(proc.returncode, 1)
