@@ -93,6 +93,11 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_pa
 - {recommended focus}
 ```
 
+When the tutor prompted before giving the answer (`fluent-feedback-formatter`
+§"Prompt before recast"), the answer line holds both attempts —
+`**Your answer:** "{first}" → (after prompt) "{retry}"` — and the question still
+has one `**Score:**`, the first attempt's.
+
 ## 🔍 Key parsing markers
 
 The `fluent-session-analyzer` skill relies on these exact markers being present:

@@ -24,8 +24,11 @@ Grade to match:
 ## Grammar targets (Dutch)
 
 Every target is a **course goal**, not an official requirement. **Done** means
-the learner types the form from a prompt in their own language, with no table in
-view and no options to choose from. Tag errors `grammar` and name the target in
+the learner types the form unaided, from a prompt in their own language that
+names what they want to say by its function (the situation and the intent),
+never by its form. A sentence to translate is the form: it hands over the
+skeleton of their own language, and the test turns into translation. No table
+in view, no options to choose from. Tag errors `grammar` and name the target in
 `pattern_id`.
 
 | Target                                | Example                                     | Done when                              | Note                            |

@@ -13,6 +13,10 @@ Replay items the learner learned before, timed to hit just before the forgetting
 
 ## Instructions
 
+### 0. Load the project's rules
+
+If a skill available in this session says to load it before `/fluent-review` — a project's own rules for this learner — load it now. Where its rules and the steps below disagree, its rules win.
+
 ### 1. Load review queue
 
 ```bash
@@ -63,7 +67,7 @@ Match the exercise to `item_type`:
 
 - **error_pattern**: load the pattern from `mistakes-db` and build a scenario that forces the correct form. Keep that form out of the prompt — naming it is the whole test.
 - **vocabulary**: recognition (target → native), production (native → target), or cloze — rotate modes.
-- **grammar_rule**: cloze, or find the one error. Once `mastery_level` reaches 3, and the rule is a target in `.claude/references/level-b1.md`, switch to that target's "done when" test: the learner types the form from a prompt in their own language.
+- **grammar_rule**: cloze, or find the one error. Once `mastery_level` reaches 3, and the rule is a target in `.claude/references/level-b1.md`, switch to that target's "done when" test, as that file defines "done".
 
 Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its place in the round (`Item {N}/{round size}`), the item type, days since last review, current mastery, and `fsrs_difficulty`.
 

@@ -13,6 +13,10 @@ The flagship command. Interleaves skills and adapts difficulty per answer: activ
 
 ## Instructions
 
+### 0. Load the project's rules
+
+If a skill available in this session says to load it before `/fluent-learn` — a project's own rules for this learner — load it now. Where its rules and the steps below disagree, its rules win.
+
 ### 1. Load learner context
 
 ```bash

@@ -4,6 +4,30 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **A miss now gets a hint before the answer.** In `/fluent-review` and in the
+  drills of `/fluent-learn`, when you get the tested part wrong, the tutor first
+  says where the error is — "look at where the verb stands" — and lets you try
+  once more; only then does it show the correct version. Until now the correct
+  version came at once, which hands the form over instead of making you find it,
+  and in classroom studies cues that make the learner self-correct work better
+  (Lyster & Saito 2010, a meta-analysis of 15 studies). Your score still comes
+  from the first attempt, so the scheduler sees what you knew, not what you
+  found with help. The session file records both attempts on one line.
+- **"Done when" tests describe a situation, not a sentence to translate.** A B1
+  grammar target counts as done when you produce it from a prompt in your own
+  language. That prompt now names what you want to say — the situation and your
+  intent — instead of handing you a sentence to translate. A translated sentence
+  carries the skeleton of your own language (a Russian «можно» invites
+  `het is mogelijk` where Dutch says `je mag`), and the test turns into
+  translation.
+- **Your project's own rules load first.** `/fluent-review` and `/fluent-learn`
+  now start by loading any skill that says to load it before them — such as a
+  project skill with rules for one learner — and those rules win where they
+  disagree with the defaults. Before, only the project's `CLAUDE.md` pointed at
+  such a skill, and nothing in the session made sure it was read.
+
 ## [0.6.0] — 2026-10-06
 
 ### Changed
