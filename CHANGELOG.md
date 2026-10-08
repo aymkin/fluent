@@ -4,6 +4,16 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **"Done" counts only the first attempt.** A target the learner gets right only
+  after the tutor's prompt is not done yet; the B1 reference said "unaided",
+  which left open whether a prompted retry counted.
+- **Project rules override every plugin default.** The new first step of
+  `/fluent-review` and `/fluent-learn` let a project's rules win only over that
+  skill's own steps; they now also win over the feedback format and the
+  grading, which is where a learner's rules usually differ.
+
 ## [0.7.0] — 2026-10-08
 
 ### Changed

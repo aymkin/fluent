@@ -15,7 +15,7 @@ The flagship command. Interleaves skills and adapts difficulty per answer: activ
 
 ### 0. Load the project's rules
 
-If a skill available in this session says to load it before `/fluent-learn` — a project's own rules for this learner — load it now. Where its rules and the steps below disagree, its rules win.
+If a skill available in this session says to load it before `/fluent-learn` — a project's own rules for this learner — load it now. Where its rules disagree with this plugin's defaults — these steps, the feedback format, the grading — its rules win.
 
 ### 1. Load learner context
 
