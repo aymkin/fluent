@@ -205,3 +205,23 @@ no clone carries. Then `git pull --ff-only` in the main checkout — the
 marketplace reads its working tree — and only then
 `claude plugin update fluent@aymkin`, the cache gate and the restart. This
 replaces "no push is needed" in the 2026-10-06 entry.
+
+## 2026-10-08 — re-read the base right before you act on it
+
+The session behind `e7fc2ef` read `origin/main` at 0.7.4 (`699734d`) with
+PR #11 still open. Minutes later PR #11 merged as 0.7.5 (`37085bd`), and the
+next message to the user still named 0.7.4 as the base; the user caught it.
+Parallel sessions here merge releases minutes apart, so a base read earlier
+in the session is a snapshot, not a fact.
+
+How to apply: re-read the base right before each step that depends on it —
+syncing, naming a base SHA or version in a plan or a summary, opening a PR —
+with `git ls-remote origin refs/heads/main` (read-only, no fetch) and
+`gh api 'repos/aymkin/fluent/contents/.claude-plugin/plugin.json?ref=main'
+--jq .content | base64 -d | jq -r .version`. When `sync_with_base_branch`
+refuses because the origin was pinned before the app asked, the user confirms
+it under Help → Troubleshooting → Review Pinned Git Origins. If the refusal
+persists, the user fast-forwards from their own terminal with
+`git -C <worktree> merge --ff-only origin/main`. Don't run that merge from
+the agent's shell: by the tool's own description, the sandbox cannot write
+`.claude/hooks` or `.claude/skills`.
