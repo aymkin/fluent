@@ -337,6 +337,49 @@ class UpdateDbSmokeTest(unittest.TestCase):
         pat = self._load("mistakes-db.json")["error_patterns"]["verb_spreek"]
         self.assertEqual(pat["mastery_level"], item["mastery_level"])
 
+    def test_review_stars_climb_to_five_and_a_miss_costs_one(self):
+        """mastery_level is 0-5 stars. From a card's fifth success on, the
+        floor branch won every review and held it at 3, while a miss reset
+        repetitions and reopened the climb past it — so a card that had been
+        forgotten outranked one that never was."""
+        errors = [dict(SESSION_PAYLOAD["errors"][0], pattern_id=pid)
+                  for pid in ("clean", "lapse")]
+        self.assertEqual(self._run(dict(SESSION_PAYLOAD, errors=errors)).returncode, 0)
+        stars = {"clean": [], "lapse": []}
+        priority, mirror = [], []
+        for n, quality in enumerate([5, 5, 5, 5, 5, 5, 1, 1, 5, 5]):
+            proc = self._run(dict(SESSION_PAYLOAD, session_id=f"session-02{n}",
+                                  errors=[], new_vocabulary=[],
+                                  review_results=[{"item_id": "clean", "quality": 5},
+                                                  {"item_id": "lapse", "quality": quality}]))
+            self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+            items = self._load("spaced-repetition.json")["items"]
+            for pid in stars:
+                stars[pid].append(items[pid]["mastery_level"])
+            priority.append(items["lapse"]["priority"])
+            mirror.append(self._load("mistakes-db.json")["error_patterns"]["lapse"]["mastery_level"])
+
+        self.assertEqual(stars, {"clean": [0, 1, 2, 3, 4, 5, 5, 5, 5, 5],
+                                 "lapse": [0, 1, 2, 3, 4, 5, 2, 1, 1, 2]})
+        # The first miss takes the card out of "low", which sorts it to the
+        # back of the 10-card review round.
+        self.assertEqual(priority[5:7], ["low", "medium"])
+        # /fluent-learn and /fluent-vocab see the drop: back in their "<= 2".
+        self.assertEqual(mirror, stars["lapse"])
+
+    def test_a_miss_leaves_a_low_card_below_three_low(self):
+        """Only a card that a miss pulls down from 3 or more leaves "low"; one
+        the tutor filed as low keeps that priority."""
+        vocab = dict(SESSION_PAYLOAD["new_vocabulary"][0], item_id="nice_to_know",
+                     priority="low")
+        self.assertEqual(self._run(dict(SESSION_PAYLOAD, new_vocabulary=[vocab])).returncode, 0)
+        proc = self._run(dict(SESSION_PAYLOAD, session_id="session-003", errors=[],
+                              new_vocabulary=[],
+                              review_results=[{"item_id": "nice_to_know", "quality": 1}]))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        item = self._load("spaced-repetition.json")["items"]["nice_to_know"]
+        self.assertEqual((item["mastery_level"], item["priority"]), (0, "low"))
+
     def test_missing_required_field_exits_1(self):
         proc = self._run({"date": SESSION_DATE})  # no session_id
         self.assertEqual(proc.returncode, 1)

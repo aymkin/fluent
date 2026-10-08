@@ -81,7 +81,7 @@ Then stage the item for the end-of-session update through `review_results[]` in 
 { "item_id": "vocab_huis", "quality": 4 }
 ```
 
-The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions` and brings the item back tomorrow — one day is FSRS's shortest interval — which is exactly the signal the scheduler needs.
+The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions`, takes `mastery_level` down to 2 or less, and brings the item back tomorrow — one day is FSRS's shortest interval — which is exactly the signal the scheduler needs.
 
 ### 5. Progress pulse every 5 items
 
