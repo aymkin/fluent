@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.7.1] — 2026-10-08
+
 ### Fixed
 
 - **"Done" counts only the first attempt.** A target the learner gets right only
