@@ -446,6 +446,32 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual((card["mastery_level"], card["last_quality"], card["total_reviews"]),
                          (5, 5, 10))
 
+    def test_a_score_beside_the_quality_leaves_the_schedule_alone(self):
+        """Quality 0-2 is a miss for the stars and the repetitions, but FSRS
+        took its rating from the score: a 5 beside quality 2 counted as a
+        recall, and a card due in a month went 88 days out instead of coming
+        back in 3. The rating now reads the quality alone; a score is only
+        recorded."""
+        pairs = {"miss": (2, 5), "pass": (3, 4), "good": (4, 9)}
+        reviews = []
+        for pid, (quality, score) in pairs.items():
+            self._seed_known_pattern(pid)
+            self._seed_known_pattern(f"{pid}_bare")
+            reviews += [{"item_id": pid, "quality": quality, "score": score},
+                        {"item_id": f"{pid}_bare", "quality": quality}]
+        proc = self._run(dict(SESSION_PAYLOAD, errors=[], new_vocabulary=[],
+                              review_results=reviews))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+
+        items = self._load("spaced-repetition.json")["items"]
+        fsrs_keys = ("last_rating", "stability", "fsrs_difficulty", "interval_days")
+        for pid, (quality, score) in pairs.items():
+            with self.subTest(quality=quality, score=score):
+                self.assertEqual({k: items[pid][k] for k in fsrs_keys},
+                                 {k: items[f"{pid}_bare"][k] for k in fsrs_keys})
+                self.assertEqual(items[pid]["review_history"][-1]["score"], score)
+        self.assertLessEqual(items["miss"]["interval_days"], 4)
+
     def test_missing_required_field_exits_1(self):
         proc = self._run({"date": SESSION_DATE})  # no session_id
         self.assertEqual(proc.returncode, 1)

@@ -404,8 +404,9 @@ def update_spaced_repetition(sr: dict, session: dict):
         quality = review["quality"]
         if item_id in items:
             item = items[item_id]
-            score = review.get("score", quality * 2)
-            rating = 1 if score <= 4 else 2 if score <= 6 else 3 if score <= 8 else 4
+            # The quality sets the rating as it sets the stars below, so a
+            # review is a miss for both or for neither; a score is only recorded.
+            rating = 1 if quality < 3 else 2 if quality < 4 else 3 if quality < 5 else 4
             fsrs_state = {
                 "stability": item.get("stability"),
                 "difficulty": item.get("fsrs_difficulty"),

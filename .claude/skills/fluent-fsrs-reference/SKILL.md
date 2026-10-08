@@ -6,7 +6,7 @@ description: "FSRS-6 scheduling reference: how a score becomes a due date, and w
 # FSRS Scheduling Reference
 
 Fluent schedules reviews with **FSRS-6**, implemented in `.claude/hooks/fsrs.py`
-and driven by `.claude/hooks/update-db.py`. Skills submit a score or quality and
+and driven by `.claude/hooks/update-db.py`. Skills submit a quality and
 `update-db.py` schedules: FSRS-6 uses 21 fitted weights, `stability` and
 `fsrs_difficulty`, so a hand-computed interval diverges from the code.
 
@@ -15,23 +15,25 @@ and driven by `.claude/hooks/update-db.py`. Skills submit a score or quality and
 ```
 tutor score (0-10)
   → quality (0-5)      quality = floor(score / 2)
-  → rating (1-4)       1 if score<=4, 2 if <=6, 3 if <=8, else 4
+  → rating (1-4)       1 if quality<=2, else quality - 1
   → fsrs.schedule(...) → interval_days + due_date
 ```
 
 What each grade means:
 
-| Score | Quality | Meaning |
-|-------|---------|---------|
-| 10 | 5 | Perfect — instant recall, no hesitation |
-| 8-9 | 4 | Correct after hesitation |
-| 6-7 | 3 | Correct with difficulty |
-| 4-5 | 2 | Incorrect but remembered when shown |
-| 2-3 | 1 | Incorrect, familiar |
-| 0-1 | 0 | Complete blackout |
+| Score | Quality | Rating | Meaning |
+|-------|---------|--------|---------|
+| 10 | 5 | 4 Easy | Perfect — instant recall, no hesitation |
+| 8-9 | 4 | 3 Good | Correct after hesitation |
+| 6-7 | 3 | 2 Hard | Correct with difficulty |
+| 4-5 | 2 | 1 Again | Incorrect but remembered when shown |
+| 2-3 | 1 | 1 Again | Incorrect, familiar |
+| 0-1 | 0 | 1 Again | Complete blackout |
 
-You send `{ "item_id": "...", "quality": <0-5> }` (optionally `"score": <0-10>`)
-in `review_results[]`. `update-db.py` maps it to an FSRS rating and reschedules.
+You send `{ "item_id": "...", "quality": <0-5> }` in `review_results[]`.
+`update-db.py` maps the quality to an FSRS rating and reschedules. Quality 0-2
+is a miss for the rating, `repetitions` and `mastery_level` alike; a `"score"`
+beside it is only recorded in the item's `review_history`.
 
 ## Fields on a spaced-repetition item
 

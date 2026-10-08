@@ -4,6 +4,17 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A miss stays a miss for the schedule.** A review graded quality 0-2 costs
+  the card a star and its run of correct reviews, but a score of 5 sent with
+  it made the scheduler count the answer as recalled and push the card out:
+  19 days instead of 1 for a card you were reviewing about weekly, 95 days
+  instead of 3 for one you were reviewing every two months. The schedule now
+  follows the quality alone, as the stars do; a score is only recorded.
+  Sessions send the quality alone, so no card you have reviewed so far was
+  scheduled this way.
+
 ## [0.7.5] — 2026-10-08
 
 ### Changed
