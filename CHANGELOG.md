@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.7.4] — 2026-10-08
+
 ### Fixed
 
 - **A mistake outside a review counts against its card.** Getting a pattern
