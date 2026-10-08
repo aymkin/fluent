@@ -4,6 +4,15 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **A missed card is no longer promised for tomorrow.** The `/fluent-review`
+  summary listed missed items as "back tomorrow", but a miss brings a card
+  back within a few days: tomorrow while it is young, later once you have
+  known it a while — a card you were reviewing every two months returns in
+  3 days. The summary now says "back within a few days"; the schedule itself
+  is unchanged.
+
 ## [0.7.4] — 2026-10-08
 
 ### Fixed
