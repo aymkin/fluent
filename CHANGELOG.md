@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-10-08
+
 ### Changed
 
 - **A miss now gets a hint before the answer.** In `/fluent-review` and in the
