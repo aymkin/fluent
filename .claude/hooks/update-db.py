@@ -380,6 +380,21 @@ def new_sr_item(item_id, today, item_type, content, answer, category, difficulty
     }
 
 
+def count_errors_as_misses(session: dict, items: dict):
+    """Add a missed review (quality 2, score 4: "incorrect but remembered when
+    shown") for each errors[] pattern that already has a card, so a mistake
+    costs the card a star wherever it was made — writing, speaking and reading
+    stage mistakes in errors[] alone. A card the session graded keeps that
+    grade as its one review; a card the session creates starts from the
+    mistake instead."""
+    graded = {r["item_id"] for r in session.get("review_results", [])}
+    session["review_results"] = session.get("review_results", []) + [
+        {"item_id": pid, "quality": 2, "score": 4}
+        for pid in dict.fromkeys(e["pattern_id"] for e in session.get("errors", []))
+        if pid in items and pid not in graded
+    ]
+
+
 def update_spaced_repetition(sr: dict, session: dict):
     today = session["date"]
     items = sr.setdefault("items", {})
@@ -603,6 +618,7 @@ def main():
         update_learner_profile(data["profile"], session)
         update_progress_db(data["progress"], session)
         update_mastery_db(data["mastery"], session, data["progress"])
+        count_errors_as_misses(session, data["sr"].get("items", {}))
         update_spaced_repetition(data["sr"], session)
         update_mistakes_db(data["mistakes"], session, data["sr"])
         streak = data["profile"].get("current_streak_days", 0)

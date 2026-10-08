@@ -150,7 +150,7 @@ Use the `fluent-db-updater` skill:
 
 - `command_used: "/fluent-writing"`, `skills_practiced: ["writing"]`
 - `skill_scores.writing: {exercises: 1, correct: 1_if_score_≥_7_else_0, time_minutes}`
-- `errors[]` — one per distinct pattern found (dedupe; the script bumps frequency)
+- `errors[]` — one per distinct pattern found (dedupe; the script bumps frequency, and a pattern that already has a card takes a missed review on it)
 - `focus_next_session[]` — top 2 patterns to drill
 
 Save the transcript as `fluent-writing-session-{NNN}.md` in the

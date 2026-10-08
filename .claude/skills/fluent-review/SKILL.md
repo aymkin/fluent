@@ -100,7 +100,7 @@ Use the `fluent-db-updater` skill:
 - `command_used: "/fluent-review"`, `skills_practiced: [derived from reviewed items]`
 - `skill_scores` — aggregate per skill touched
 - `review_results[]` — every item reviewed, with `quality`
-- `errors[]` — only patterns where the learner got it wrong (bumps frequency)
+- `errors[]` — only patterns where the learner got it wrong (bumps frequency; a pattern this round did not review takes a missed review on its card)
 - `focus_next_session[]` — the 2-3 items with lowest quality this session
 
 Save the transcript as `fluent-review-session-{NNN}.md` in the `results/` directory of the path this prints:

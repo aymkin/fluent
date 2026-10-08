@@ -380,6 +380,72 @@ class UpdateDbSmokeTest(unittest.TestCase):
         item = self._load("spaced-repetition.json")["items"]["nice_to_know"]
         self.assertEqual((item["mastery_level"], item["priority"]), (0, "low"))
 
+    def _seed_known_pattern(self, pid):
+        """A 5-star card last reviewed two weeks ago and due in a month, with
+        its mistakes-db twin: where clean reviews leave a pattern."""
+        data = self.tmp / "data"
+        sr = self._load("spaced-repetition.json")
+        sr["items"][pid] = {
+            "id": pid, "type": "error_pattern", "content": "Hij spreek",
+            "answer": "Hij spreekt", "category": "grammar", "difficulty": "",
+            "created_date": day(-90), "due_date": day(30), "interval_days": 44,
+            "repetitions": 7, "stability": 70.0, "fsrs_difficulty": 5.0,
+            "consecutive_correct": 7, "consecutive_incorrect": 0,
+            "last_reviewed": day(-14), "last_quality": 5, "mastery_level": 5,
+            "total_reviews": 9, "priority": "low",
+        }
+        (data / "spaced-repetition.json").write_text(json.dumps(sr))
+        mistakes = self._load("mistakes-db.json")
+        mistakes["error_patterns"][pid] = {
+            "category": "grammar", "subcategory": "verb_conjugation",
+            "description": "", "severity": "critical", "frequency": 1,
+            "mastery_level": 5, "difficulty_score": 0.7,
+            "last_seen": day(-90), "next_review": day(-89),
+            "consecutive_correct": 0, "consecutive_incorrect": 1,
+            "examples": [], "notes": "",
+        }
+        (data / "mistakes-db.json").write_text(json.dumps(mistakes))
+
+    def test_a_mistake_on_a_known_pattern_costs_its_card_a_star(self):
+        """/fluent-writing, /fluent-speaking and /fluent-reading stage mistakes
+        in errors[] only, and the other sessions stage a slip on a pattern they
+        did not review there too. That bumped the pattern's frequency and left
+        its card alone: a 5-star pattern the learner got wrong kept its stars,
+        stayed out of the drills, and stayed due a month out."""
+        self._seed_known_pattern("known")
+        error = SESSION_PAYLOAD["errors"][0]
+        proc = self._run(dict(SESSION_PAYLOAD, review_results=[], new_vocabulary=[],
+                              errors=[dict(error, pattern_id="known"),
+                                      dict(error, pattern_id="known"),
+                                      dict(error, pattern_id="brand_new")]))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+
+        items = self._load("spaced-repetition.json")["items"]
+        card = items["known"]
+        # One miss per card, however many entries name it.
+        self.assertEqual((card["mastery_level"], card["last_quality"], card["total_reviews"]),
+                         (2, 2, 10))
+        self.assertEqual(card["priority"], "medium")
+        self.assertLessEqual(card["interval_days"], 4)
+        self.assertEqual(card["due_date"], day(card["interval_days"]))
+        # /fluent-learn and /fluent-vocab see the drop: back in their "<= 2".
+        pattern = self._load("mistakes-db.json")["error_patterns"]["known"]
+        self.assertEqual(pattern["mastery_level"], 2)
+        # A card this payload creates starts from the mistake; no miss on top.
+        self.assertEqual(items["brand_new"]["total_reviews"], 0)
+
+    def test_a_card_graded_this_session_ignores_its_own_mistake(self):
+        """When the session grades the card itself, that grade is the card's
+        one review: an errors[] entry for the same pattern adds no second."""
+        self._seed_known_pattern("known")
+        proc = self._run(dict(SESSION_PAYLOAD, new_vocabulary=[],
+                              errors=[dict(SESSION_PAYLOAD["errors"][0], pattern_id="known")],
+                              review_results=[{"item_id": "known", "quality": 5, "score": 10}]))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        card = self._load("spaced-repetition.json")["items"]["known"]
+        self.assertEqual((card["mastery_level"], card["last_quality"], card["total_reviews"]),
+                         (5, 5, 10))
+
     def test_missing_required_field_exits_1(self):
         proc = self._run({"date": SESSION_DATE})  # no session_id
         self.assertEqual(proc.returncode, 1)
