@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-Replay items the learner learned before, timed to hit just before the forgetting curve drops them. Right answers push an item further out; misses bring it back tomorrow.
+Replay items the learner learned before, timed to hit just before the forgetting curve drops them. Right answers push an item further out; a miss resets it and brings it back within a few days.
 
 ## Instructions
 
@@ -83,7 +83,7 @@ Then stage the item for the end-of-session update through `review_results[]` in 
 { "item_id": "vocab_huis", "quality": 4 }
 ```
 
-The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions`, takes `mastery_level` down to 2 or less, and brings the item back tomorrow — one day is FSRS's shortest interval — which is exactly the signal the scheduler needs.
+The `update-db.py` script maps the score to an FSRS rating and reschedules via FSRS-6 (see `fluent-fsrs-reference` skill). A low score is not a failure to hide: `quality <= 2` resets `repetitions`, takes `mastery_level` down to 2 or less, and brings the item back within a few days — 1 day for a young item, longer for a well-established one — which is exactly the signal the scheduler needs.
 
 ### 5. Progress pulse every 5 items
 
@@ -91,7 +91,7 @@ Items done out of the round, running accuracy, minutes left.
 
 ### 6. Session summary
 
-Give: how many were reviewed, accuracy, minutes spent. Then the breakdown — clean (gone for a while), minor slips (back in X days), missed (back tomorrow) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
+Give: how many were reviewed, accuracy, minutes spent. Then the breakdown — clean (gone for a while), minor slips (back in X days), missed (back within a few days) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
 
 ### 7. Update all databases
 
