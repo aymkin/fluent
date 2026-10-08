@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.7.5] — 2026-10-08
+
 ### Changed
 
 - **A missed card is no longer promised for tomorrow.** The `/fluent-review`
