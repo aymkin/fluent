@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.7.3] — 2026-10-08
+
 ### Fixed
 
 - **Stars climb to 5, and a miss costs one.** From its fifth correct review
