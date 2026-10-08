@@ -44,7 +44,7 @@ Key blocks the example covers: `skill_scores`, `errors[]`, `new_vocabulary[]`, `
 
 ### 3. Field notes
 
-- `errors[]` — one entry per distinct mistake staged this session. Collapse duplicates (same `pattern_id`) before sending; `frequency` is bumped by the script. `category` comes from the canon in `fluent-feedback-formatter` §"Use these category labels" — `update-db.py` rejects any other value.
+- `errors[]` — one entry per distinct mistake staged this session. Collapse duplicates (same `pattern_id`) before sending; `frequency` is bumped by the script. A `pattern_id` that already has a spaced-repetition card also counts as a missed review of that card (quality 2), unless `review_results[]` grades the card in the same payload — a mistake needs no `review_results[]` entry of its own. `category` comes from the canon in `fluent-feedback-formatter` §"Use these category labels" — `update-db.py` rejects any other value.
 - `new_vocabulary[]` — items the learner met for the first time. Fill every field; incomplete entries yield incomplete spaced-repetition records.
 - `review_results[]` — items already in the queue that were reviewed; stage each result as the session runs. The script reschedules each via FSRS-6 — see the `fluent-fsrs-reference` skill for how a score becomes a due date.
 - `skill_scores[].correct` counts correct exercises, not a percentage. Accuracy is derived.

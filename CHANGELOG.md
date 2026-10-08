@@ -4,6 +4,19 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A mistake outside a review counts against its card.** Getting a pattern
+  wrong in `/fluent-writing`, `/fluent-speaking` or `/fluent-reading` — or
+  slipping on another pattern during `/fluent-review`, `/fluent-learn` or
+  `/fluent-vocab` — only raised its count in the mistakes database: its
+  review card kept its stars and its date, so a pattern at 3 stars or more
+  stayed out of the drills and a B1 target kept ✅ done. Such a mistake now
+  counts as a missed review of that card, unless the same session reviewed
+  the card itself: it loses a star and keeps at most 2, comes back within a
+  few days, and the pattern returns to the drills of `/fluent-learn` and
+  `/fluent-vocab`.
+
 ## [0.7.3] — 2026-10-08
 
 ### Fixed
