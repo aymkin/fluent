@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.7.2] — 2026-10-08
+
 ### Fixed
 
 - **Patterns you have learned leave the drills.** `/fluent-learn` and
