@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.7.6] — 2026-10-08
+
 ### Fixed
 
 - **A miss stays a miss for the schedule.** A review graded quality 0-2 costs
