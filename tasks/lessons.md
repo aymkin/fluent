@@ -194,9 +194,14 @@ caught up. Since 2026-10-08 every release reaches `main` through a GitHub pull
 request, which keeps `origin/main` the newest tree.
 
 How to apply: commit the change and its `chore(release)` bump on the branch;
-once the push is approved, push it, open the PR against `main` and merge it
-with `gh pr merge --rebase`, which keeps the history linear and the fix and
-release commits apart. Then `git pull --ff-only` in the main checkout — the
+once the push is approved, push it, then
+`gh pr create --repo aymkin/fluent --base main` and
+`gh pr merge <n> --repo aymkin/fluent --rebase` — rebase keeps the history
+linear and the fix and release commits apart. Keep `--repo` although
+`gh repo set-default` now names `aymkin/fluent`: until 2026-10-08 it named the
+upstream `m98/fluent`, where a bare `gh pr create` would have opened the PR,
+and the setting is a local git-config key (`remote.<name>.gh-resolved`) that
+no clone carries. Then `git pull --ff-only` in the main checkout — the
 marketplace reads its working tree — and only then
 `claude plugin update fluent@aymkin`, the cache gate and the restart. This
 replaces "no push is needed" in the 2026-10-06 entry.
