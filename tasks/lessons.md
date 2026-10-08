@@ -183,3 +183,20 @@ so no push is needed — followed by a restart. Run every behaviour gate twice:
 against the repo and against the cache copy of the new version. And before
 capping or reordering a list, check where the list comes from — a cached
 queue answers a different question than the data it was built from.
+
+## 2026-10-08 — releases go through a pull request
+
+Releases 0.6.0–0.7.1 were committed to the local `main` and never pushed, so
+`origin/main` sat three releases behind. Worktrees are cut from `origin/main`
+(2026-08-17), and this session's started at 0.5.0; the app's
+`sync_with_base_branch` fetches from `origin` as well, so it could not have
+caught up. Since 2026-10-08 every release reaches `main` through a GitHub pull
+request, which keeps `origin/main` the newest tree.
+
+How to apply: commit the change and its `chore(release)` bump on the branch;
+once the push is approved, push it, open the PR against `main` and merge it
+with `gh pr merge --rebase`, which keeps the history linear and the fix and
+release commits apart. Then `git pull --ff-only` in the main checkout — the
+marketplace reads its working tree — and only then
+`claude plugin update fluent@aymkin`, the cache gate and the restart. This
+replaces "no push is needed" in the 2026-10-06 entry.
