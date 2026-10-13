@@ -35,7 +35,7 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_pa
 
 **Date:** YYYY-MM-DD
 **Duration:** {X} minutes
-**Skill:** {writing/speaking/vocab/reading/review/learn}
+**Skill:** {writing/speaking/vocab/reading/extensive/review/learn}
 **Command:** {/fluent-writing, /fluent-speaking, etc.}
 
 ---

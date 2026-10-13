@@ -4,6 +4,16 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **`/fluent-extensive` — extensive reading on your own words.** A story in
+  three short episodes, built from the words you are learning in Anki right now
+  (the `Frequentie` decks, cards past "new" with an interval under 21 days).
+  Each target word comes back two or three times in different forms, so you
+  meet it in new contexts instead of on its flashcard. A five-word recognition
+  check closes the session. Anki and the Fluent review queue stay untouched;
+  the session lands in the log with its time and accuracy.
+
 ## [0.7.6] — 2026-10-08
 
 ### Fixed

@@ -56,7 +56,7 @@ hardcode `data/`. Writes to the six databases go through `fluent-db-updater`
 
 ### Slash Commands
 
-The learner's commands are the `fluent-*` skills (learn, vocab, writing, speaking, reading, progress, review, setup); follow the flow of the one they type.
+The learner's commands are the `fluent-*` skills (learn, vocab, writing, speaking, reading, extensive, progress, review, setup); follow the flow of the one they type.
 
 See `.claude/skills/` directory for detailed skill specifications. Each skill lives at `.claude/skills/<name>/SKILL.md` with YAML frontmatter. A skill whose frontmatter carries `disable-model-invocation: true` fires only when the learner types its slash command; every other skill also auto-loads whenever Claude needs it during a session — `/fluent-progress` auto-invokes on stats questions. Read the frontmatter for which is which (`rg -l 'disable-model-invocation' .claude/skills/`) rather than trusting a list here. Every skill stays visible in the slash menu, so curious learners can open a reference directly.
 
