@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-10-14
+
 ### Added
 
 - **`/fluent-listening` — listening practice for the DUO A2 exam.** A round of
