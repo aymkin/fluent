@@ -42,18 +42,19 @@ Open with the learner's name, their streak, today's review round (due items up t
 2. 🗣️ Speaking (typed conversation)
 3. 📖 Vocabulary (flashcard drills)
 4. 👀 Reading (comprehension)
-5. 🔄 Spaced Review (today's due items)
-6. 🎲 Surprise me! (adaptive mix)
+5. 🎧 Listening (spoken fragments, DUO format)
+6. 🔄 Spaced Review (today's due items)
+7. 🎲 Surprise me! (adaptive mix)
 ```
 
 ### 4. Route
 
-Menu items 1-5 target, in order: `fluent-writing`, `fluent-speaking`, `fluent-vocab`, `fluent-reading`, `fluent-review`.
+Menu items 1-6 target, in order: `fluent-writing`, `fluent-speaking`, `fluent-vocab`, `fluent-reading`, `fluent-listening`, `fluent-review`.
 
-- 1-5 → all five carry `disable-model-invocation: true`, so you cannot invoke them as skills. Read `.claude/skills/<target>/SKILL.md` and follow it in this session. Persist the whole thing once, through step 8 below, with `command_used: "/fluent-learn"` — one session, one record, written at the end.
-- 6 (adaptive mix) → use this skill's own exercise sequencer (below).
+- 1-6 → all six carry `disable-model-invocation: true`, so you cannot invoke them as skills. Read `.claude/skills/<target>/SKILL.md` and follow it in this session. Persist the whole thing once, through step 8 below, with `command_used: "/fluent-learn"` — one session, one record, written at the end.
+- 7 (adaptive mix) → use this skill's own exercise sequencer (below).
 
-### 5. Adaptive mix (option 6)
+### 5. Adaptive mix (option 7)
 
 Plan the session cap as four blocks:
 

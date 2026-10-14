@@ -98,11 +98,11 @@ python3 -c "import sys; sys.path.insert(0, '.claude/hooks'); from fluent_paths i
 
 ## 🎮 Available Commands & Skills
 
-Fluent is 13 Claude Code skills. The learner-facing ones are gated: they run
+Fluent is 14 Claude Code skills. The learner-facing ones are gated: they run
 only when you type the slash command, so a chat message can never trigger a
 practice session or a database write. `/fluent-progress` is read-only and also
 auto-triggers on questions like "how am I doing?". The four helper skills
-auto-load whenever Claude needs them mid-session. All 13 appear in your `/`
+auto-load whenever Claude needs them mid-session. All 14 appear in your `/`
 menu.
 
 | Command | What it does |
@@ -114,6 +114,7 @@ menu.
 | `/fluent-writing` | Emails, letters, forms — corrected line by line. |
 | `/fluent-speaking` | Role-play conversation, typed. |
 | `/fluent-reading` | Short texts plus comprehension questions. |
+| `/fluent-listening` | Listening in the DUO A2 format: short spoken fragments through your Mac's voices, one A/B/C question each, the transcript after your answer. |
 | `/fluent-extensive` | Extensive reading: a three-part story built from your Anki words in progress, then a five-word recognition check. |
 | `/fluent-progress` | Statistics dashboard: accuracy, streak, mastery, achievements. |
 | `/fluent-fsrs-reference` | Helper — how a score becomes a review interval. |

@@ -6,6 +6,14 @@ All notable changes to Fluent will be documented in this file.
 
 ### Added
 
+- **`/fluent-listening` — listening practice for the DUO A2 exam.** A round of
+  short spoken fragments, such as a voicemail, a chat at work or an announcement,
+  is played through your Mac's Dutch voices. Each fragment is followed by one
+  question with three options, as in the DUO Luisteren exam. You answer from
+  what you heard; the transcript, the key sentence and a few useful words come
+  after your answer. A round is ten fragments, and the speech slows down when a
+  round goes badly. The session lands in the log as listening practice, and
+  `/fluent-learn` offers it as menu option 5.
 - **`/fluent-extensive` — extensive reading on your own words.** A story in
   three short episodes, built from the words you are learning in Anki right now
   (the `Frequentie` decks, cards past "new" with an interval under 21 days).
