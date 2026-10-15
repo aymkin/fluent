@@ -4,6 +4,16 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- **`/fluent-listening` shows you the question before the recording plays.**
+  In the Claude desktop app the question was written in the same step that
+  started the audio, and the app folded it out of view, so you heard the
+  recording without knowing what to listen for. Now each question comes first
+  and ends with "write go"; the recording plays when you write **go**, and the
+  question and its options come back once it ends, for your A, B or C. On a
+  recording with two questions you see both before it plays.
+
 ## [0.9.0] — 2026-10-15
 
 ### Changed

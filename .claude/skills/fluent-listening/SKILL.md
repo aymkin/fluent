@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-A round of listening questions in the format of the DUO A2 Luisteren exam: an everyday recording, then a question with three options A/B/C, all in the target language. The recordings come from the learner's **library** — their own course audio, each track with a time-stamped transcript. Every question is audio-first: the learner answers from what they heard, and the transcript lines arrive with the feedback.
+A round of listening questions in the format of the DUO A2 Luisteren exam: a question with three options A/B/C about an everyday recording, all in the target language. The recordings come from the learner's **library** — their own course audio, each track with a time-stamped transcript. Every question is audio-first: the learner answers from what they heard, and the transcript lines arrive with the feedback.
 
 ## Instructions
 
@@ -61,7 +61,9 @@ Done when every question has its track, the timestamped `.lrc` lines that settle
 
 ### 4. Play, one question at a time
 
-Show the question:
+Each question takes two turns. Only a turn's final message is sure to stay on screen — the desktop app folds away text written before a tool call — so the question ends one turn and the recording plays in the next.
+
+**The question turn.** The turn's final message ends on the question and the cue to play. Question 1 follows the round's opening; every later question follows step 5's feedback in the same message.
 
 ```markdown
 ## Vraag {N}/{round size} — {theme title}
@@ -71,18 +73,20 @@ Show the question:
 A. {option}
 B. {option}
 C. {option}
+
+Write **go** to play the recording.
 ```
 
-Then play the whole track — the narrator's opening sets the scene, as a DUO fragment does:
+**The recording turn.** On "go", play the whole track — the narrator's opening sets the scene, as a DUO fragment does:
 
 ```bash
 afplay "<data_dir>/audio/<collection>/<theme folder>/<track>.mp3"
 ```
 
-Ask for the answer: A, B or C. Done when the answer is in — the transcript waits for the feedback (audio-first).
+`afplay` returns when the track ends. The turn's final message repeats the question with its options and asks for A, B or C, or "nog een keer" to hear it again. Done when the answer is in — the transcript waits for the feedback (audio-first).
 
-- **Second question.** On a track that carries two, show the second question right after the first answer, before any feedback; the learner answers it from the same hearing. Feedback for both follows.
-- **Replay.** On "nog een keer" (once more), play the track once more and note the replay. A second request gets the settling lines, and the question counts as missed.
+- **Second question.** On a track that carries two, the question turn shows both, and the recording turn repeats both; the learner answers both from the same hearing. Feedback for both follows.
+- **Replay.** On "nog een keer" (once more), play the track once more, end the turn on the question again, and note the replay. A second request gets the settling lines, and the question counts as missed.
 - **Audio.** Working sound is the session's precondition: when `afplay` exits non-zero or the learner hears nothing, end the round and say why.
 
 ### 5. Feedback per question
@@ -100,7 +104,7 @@ Ask for the answer: A, B or C. Done when the answer is in — the transcript wai
 **Words:** {1-3 useful words or phrases from the recording, with translations}
 ```
 
-Quote the settling lines with one or two lines around them; the full text stays in the library. Done when the learner has the lines and the explanation; then the next question.
+Quote the settling lines with one or two lines around them; the full text stays in the library. Done when the learner has the lines and the explanation. The same message goes on to the next question's question turn (step 4), so it ends on that question and its "go" cue; after the round's last question, the summary (step 6) follows the feedback instead.
 
 ### 6. Session summary
 
