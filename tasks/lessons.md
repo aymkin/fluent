@@ -225,3 +225,48 @@ persists, the user fast-forwards from their own terminal with
 `git -C <worktree> merge --ff-only origin/main`. Don't run that merge from
 the agent's shell: by the tool's own description, the sandbox cannot write
 `.claude/hooks` or `.claude/skills`.
+
+## 2026-10-14 — a negation drill must say what is negated
+
+`/fluent-review` item `grammar_niet_before_destination`: I asked "Maak de zin
+negatief" on "Mijn collega gaat morgen naar de bibliotheek." The learner wrote
+"…gaat niet morgen naar de bibliotheek" — a valid sentence if `morgen` is what
+is negated (not tomorrow, another day). The prompt gave no way to tell, so the
+miss was mine, and the prompt-before-recast hint then pointed at a non-error.
+The learner caught it: "it isn't clear what the author meant to negate; give
+Russian context."
+
+How to apply: any exercise where position of `niet` (or any scope-sensitive
+word) is the decision carries a Russian line fixing the meaning — "Мой коллега
+завтра не пойдёт в библиотеку (он не пойдёт вообще)" — so exactly one reading
+survives. Before sending, ask: does a second grammatical answer exist? If yes,
+the prompt is ambiguous; fix it, and when a learner's alternative is valid for
+another reading, void that attempt instead of scoring it as a miss.
+
+## 2026-10-14 — don't prime a due card in an earlier prompt of the same round
+
+`/fluent-review`, round of 10: I wrote `vrijwilliger` into the prompts of items 2
+and 4 (the learner even typed "een vrijwilliger" as the answer to item 4), then
+reached item 10, the card `vocab_vrijwilliger`. A recall test on that word was
+already contaminated — a correct answer would be a copy, a false positive for
+the scheduler.
+
+How to apply: before building any exercise in a round, read the round's other
+`content` / `answer` fields and keep those words out of every prompt and
+sentence frame until their own card has been graded. Build filler sentences
+from words the learner owns that are not due today.
+
+## 2026-10-15 — in the desktop app, a question written before a tool call is not seen
+
+`/fluent-listening`, question 1: I wrote the question, then ran `afplay` in the
+same turn, as SKILL.md step 4 says ("Show the question … Then play"). The
+desktop app folded the text that came before the tool call, so the learner
+heard the whole track without the question: "я не вижу вопроса". Only a
+turn's final message is reliably on screen.
+
+How to apply: anything the learner must read before a tool acts (a question
+before audio plays, an instruction before a timer starts) goes in the final
+message of its own turn. The tool runs on the learner's next message ("go"),
+and that turn's final message repeats what they need in order to answer. For
+listening: feedback + next question → "go" → `afplay` → the question again,
+asking for A/B/C.
