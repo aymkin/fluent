@@ -26,7 +26,7 @@ Done when every fragment has a situation, a proofread script with a voice per li
 
 ## 3. Play, one fragment at a time
 
-Show the question as `SKILL.md` step 4 does, with one line of context in the target language under the heading ("Je hoort een voicemail van de tandarts."). Then play the fragment line by line, each line in its role's voice — one `say` per line, with the text on stdin so quotes and apostrophes go through as written:
+Run each fragment in the two turns of `SKILL.md` step 4. The question turn adds one line of context in the target language under the heading ("Je hoort een voicemail van de tandarts."). On "go", the recording turn plays the fragment line by line, each line in its role's voice — one `say` per line, with the text on stdin so quotes and apostrophes go through as written:
 
 ```bash
 say -v Xander -r 170 <<'EOF'
