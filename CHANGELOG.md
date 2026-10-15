@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-10-15
+
 ### Changed
 
 - **`/fluent-listening` plays real recordings from your own audio library.**
