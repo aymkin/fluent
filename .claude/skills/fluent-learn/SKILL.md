@@ -42,7 +42,7 @@ Open with the learner's name, their streak, today's review round (due items up t
 2. 🗣️ Speaking (typed conversation)
 3. 📖 Vocabulary (flashcard drills)
 4. 👀 Reading (comprehension)
-5. 🎧 Listening (spoken fragments, DUO format)
+5. 🎧 Listening (recordings, DUO format)
 6. 🔄 Spaced Review (today's due items)
 7. 🎲 Surprise me! (adaptive mix)
 ```

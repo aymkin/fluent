@@ -94,6 +94,17 @@ Check where Fluent is currently looking:
 python3 -c "import sys; sys.path.insert(0, '.claude/hooks'); from fluent_paths import data_dir; print(data_dir())"
 ```
 
+### Your audio library (for `/fluent-listening`)
+
+`/fluent-listening` plays real recordings when it finds them in `audio/` inside the data directory: one folder per collection, one per theme (its name opens with the theme number), and each `.mp3` with a time-stamped `.lrc` transcript beside it. Link your course audio in rather than copying it:
+
+```bash
+mkdir -p ~/.claude/fluent-data/audio
+ln -s ~/Music/Link ~/.claude/fluent-data/audio/Link
+```
+
+The library stays on your machine; Fluent ships no audio. Without one, the session speaks its own fragments in your Mac's voices.
+
 ---
 
 ## 🎮 Available Commands & Skills
@@ -114,7 +125,7 @@ menu.
 | `/fluent-writing` | Emails, letters, forms — corrected line by line. |
 | `/fluent-speaking` | Role-play conversation, typed. |
 | `/fluent-reading` | Short texts plus comprehension questions. |
-| `/fluent-listening` | Listening in the DUO A2 format: short spoken fragments through your Mac's voices, one A/B/C question each, the transcript after your answer. |
+| `/fluent-listening` | Listening in the DUO A2 format: recordings from your own audio library (or your Mac's voices without one), one A/B/C question at a time, the transcript lines after your answer. |
 | `/fluent-extensive` | Extensive reading: a three-part story built from your Anki words in progress, then a five-word recognition check. |
 | `/fluent-progress` | Statistics dashboard: accuracy, streak, mastery, achievements. |
 | `/fluent-fsrs-reference` | Helper — how a score becomes a review interval. |
