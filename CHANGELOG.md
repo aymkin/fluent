@@ -4,6 +4,21 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **`/fluent-listening` plays real recordings from your own audio library.**
+  - **Where it looks.** Link your course audio into `audio/` in your data
+    folder: one folder per theme, each `.mp3` with its `.lrc` transcript beside
+    it.
+  - **What a round is.** The session picks tracks from that library and plays
+    them as they are. You get one exam-style A/B/C question at a time, and
+    after your answer you see the lines of the transcript that settle it.
+  - **The mix.** Each round is half themes you have already covered and half
+    themes still ahead of you. Tracks from the last three rounds wait their
+    turn.
+  - **Without a library.** The session falls back to fragments spoken in your
+    Mac's voices.
+
 ## [0.8.0] — 2026-10-14
 
 ### Added

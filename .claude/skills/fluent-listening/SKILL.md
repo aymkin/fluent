@@ -1,6 +1,6 @@
 ---
 name: fluent-listening
-description: Listening practice in the DUO A2 format — short spoken fragments, one A/B/C question each.
+description: Listening practice in the DUO A2 format — real course recordings from your audio library, one A/B/C question at a time.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-A round of short spoken fragments in the format of the DUO A2 Luisteren exam: an everyday situation, then one question with three options A/B/C, all in the target language. The macOS speech synthesizer plays each fragment through the learner's speakers. Every fragment is audio-first: the learner answers from what they heard, and the transcript arrives with the feedback.
+A round of listening questions in the format of the DUO A2 Luisteren exam: an everyday recording, then a question with three options A/B/C, all in the target language. The recordings come from the learner's **library** — their own course audio, each track with a time-stamped transcript. Every question is audio-first: the learner answers from what they heard, and the transcript lines arrive with the feedback.
 
 ## Instructions
 
@@ -23,39 +23,48 @@ If a skill available in this session says to load it before `/fluent-listening` 
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
-Need: `learner-profile` (name, target and native language, `current_level`), `computed.session_cap`, `computed.next_session_id`, and the `session_notes` of the latest `session-log` entry whose `command_used` is `/fluent-listening`: the situations, voices and speech rate of the previous round.
+Need: `learner-profile` (name, target and native language), `computed.session_cap`, `computed.next_session_id`, and the `session_notes` of the latest three `session-log` entries whose `command_used` is `/fluent-listening`: the tracks they played and the learner's covered themes.
 
-### 2. Cast the voices
+### 2. Find the library
+
+The library lives in `audio/` under the data directory this prints:
 
 ```bash
-say -v '?'
+python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
 ```
 
-Cast the voices whose locale is the target language's. For Dutch, roles go to `nl_NL` voices first, since the exam is spoken in the Netherlands; with one `nl_NL` voice installed, a dialogue's second role goes to `nl_BE`.
+```bash
+find -L "<data_dir>/audio" -name '*.mp3'
+```
 
-With no voice for the target language, end the session with the way to add one: System Settings → Accessibility → Spoken Content → System voice → Manage Voices… → the language → a voice (Claire, for Dutch).
+The layout is `audio/<collection>/<NN theme title>/<track>.mp3`. A **track** is an `.mp3` with a `.lrc` transcript beside it, and its theme number is the number that opens its folder name. A track's id is `<collection>/<track file name without .mp3>`, and its length is the last timestamp in its `.lrc`.
 
-Done when every role in the round has a voice.
+When the library has no tracks, or every eligible track (step 3) sits in the last three rounds' notes, read `SYNTHETIC.md` in this skill's folder and follow it in place of steps 3 and 4: the round then runs on the Mac's synthesized voices. Continue at step 5 either way.
 
-### 3. Write the round
+Done when the track list is in hand, or the round is on the synthetic path.
 
-The round is the session cap (`computed.session_cap`) fragments. Each fragment has:
+### 3. Choose the round
 
-- **Situation** — rotated through a conversation in the street, at the buurthuis, at work, at the doctor's or in a shop, a voicemail, a message from the children's school, an announcement, a short radio or video clip. Start with the situations the previous round's notes leave out.
-- **Script** — 40-120 words of natural speech at `current_level`, one or two roles, with times, days, prices, numbers and names said the way people say them. Proofread it: finite verb last in every bijzin, inversion after a fronted element, de/het, participle forms.
-- **Question** — in the target language, worded the way DUO asks, one decision (`fluent-review` §3). Rotate three types: main point ("Waar gaat het gesprek over?"), detail (a time, a place, a number, a name), intention or next step ("Wat gaat de man doen?").
-- **Options** — A, B and C in the target language. Each distractor names something the fragment also mentions, so the answer takes listening to the whole fragment. The right letter moves across A, B and C over the round.
+The learner's **covered themes** are the range of the latest round's notes (e.g. "covered: 5–13"). With no range in the notes, ask once: "Which themes of your course have you covered so far?"
 
-Done when every fragment has a situation, a proofread script with a voice per line, a question, three options and its answer.
+- **Pools.** Known: tracks from the covered themes. Ahead: tracks from themes above the range. Themes below the range stay out of the round.
+- **Mix.** Half the round's questions come from known tracks, half from ahead tracks.
+- **Fresh first.** Take tracks absent from the last three rounds' notes first. Tracks under 20 seconds are too short to carry a question.
+- **Questions per track.** One question; a track over 90 seconds may carry a second, so a round of `computed.session_cap` questions plays fewer tracks.
 
-### 4. Play, one fragment at a time
+Read each chosen track's `.lrc`. Write its questions by the rules in §Questions below, with two limits that come from the transcript:
 
-Show the fragment:
+- The `.lrc` is an automatic transcript and some lines are misheard. Base a question only on lines that read as correct Dutch, and write the question and options in your own correct Dutch.
+- The opening line of a track is the narrator's title and situation ("Op het werk. Twee collega's praten over een vergadering."). The question asks for something the conversation itself settles.
+
+Done when every question has its track, the timestamped `.lrc` lines that settle it, three options and its answer.
+
+### 4. Play, one question at a time
+
+Show the question:
 
 ```markdown
-## Fragment {N}/{round size}: {situation, in the target language}
-
-{one line of context in the target language, e.g. "Je hoort een voicemail van de tandarts."}
+## Vraag {N}/{round size} — {theme title}
 
 **{question}**
 
@@ -64,48 +73,49 @@ B. {option}
 C. {option}
 ```
 
-Then play it line by line, each line in its role's voice. One `say` per line, with the text on stdin, so quotes and apostrophes go through as written:
+Then play the whole track — the narrator's opening sets the scene, as a DUO fragment does:
 
 ```bash
-say -v Xander -r 170 <<'EOF'
-{line}
-EOF
+afplay "<data_dir>/audio/<collection>/<theme folder>/<track>.mp3"
 ```
 
 Ask for the answer: A, B or C. Done when the answer is in — the transcript waits for the feedback (audio-first).
 
-- **Speech rate** — 170 words per minute. When the running accuracy is below 50% after four fragments, play the rest of the round at 150 and tell the learner.
-- **Replay** — on "nog een keer" (once more), play the fragment once more and note the replay. A second request gets the transcript, and the fragment counts as missed.
-- **Audio** — working sound is the session's precondition: when `say` exits non-zero or the learner hears nothing, end the round and say why.
+- **Second question.** On a track that carries two, show the second question right after the first answer, before any feedback; the learner answers it from the same hearing. Feedback for both follows.
+- **Replay.** On "nog een keer" (once more), play the track once more and note the replay. A second request gets the settling lines, and the question counts as missed.
+- **Audio.** Working sound is the session's precondition: when `afplay` exits non-zero or the learner hears nothing, end the round and say why.
 
-### 5. Feedback per fragment
+### 5. Feedback per question
 
 ```markdown
 {✅ or ❌} **{right letter}. {right option}**
 
-**Transcript:**
-> {the script, role by role; the sentence that settles the question in **bold**}
+**From the recording** (automatic transcript):
+> [{mm:ss}] {line before}
+> [{mm:ss}] **{the line that settles the question}**
+> [{mm:ss}] {line after}
 
-{why, in the learner's native language: where the fragment settles the question, and what made the distractor tempting}
+{why, in the learner's native language: where the recording settles the question, and what made the distractor tempting}
 
-**Words:** {1-3 useful words or phrases from the fragment, with translations}
+**Words:** {1-3 useful words or phrases from the recording, with translations}
 ```
 
-Done when the learner has the transcript and the explanation; then the next fragment.
+Quote the settling lines with one or two lines around them; the full text stays in the library. Done when the learner has the lines and the explanation; then the next question.
 
 ### 6. Session summary
 
 ```markdown
 ## 🎧 Listening Session Complete!
 
-**Fragments:** {N} · **Correct:** {X} ({percent}%) · **Replays:** {R} · **Speech rate:** {rate}
+**Questions:** {N} · **Correct:** {X} ({percent}%) · **Replays:** {R}
+**Known themes:** {x}/{n} · **Ahead:** {x}/{n}
 
 ### By question type
 - Main point: {x}/{n}
 - Detail: {x}/{n}
 - Intention / next step: {x}/{n}
 
-### Words from today's fragments
+### Words from today's recordings
 | {target_language} | {native_language} |
 |-------|---------|
 | {word} | {meaning} |
@@ -113,30 +123,31 @@ Done when the learner has the transcript and the explanation; then the next frag
 **Which of these do you want to save for review?** Reply with the words, "all", or "none".
 ```
 
-Stage each word the learner chose for `new_vocabulary[]`. When the round scored above 80%, close with a pointer to the official DUO practice exams (oefenexamens Luisteren on inburgeren.nl): they play recorded human voices, as the exam does.
+Stage each word the learner chose for `new_vocabulary[]`. When the round scored above 80%, close with a pointer to the official DUO practice exams (oefenexamens Luisteren on inburgeren.nl): they are the exam's own format.
 
 ### 7. Save
 
 Use the `fluent-db-updater` skill:
 
 - `command_used: "/fluent-listening"`, `skills_practiced: ["listening"]`
-- `skill_scores.listening: {exercises: N, correct: count_right, time_minutes}`
+- `skill_scores.listening: {exercises: N questions, correct: count_right, time_minutes}`
 - `errors[]` — one per question type missed twice or more: category `comprehension` for main point and detail, `inference` for intention and next step (canon: `fluent-feedback-formatter` §"Use these category labels")
 - `new_vocabulary[]` — the words the learner chose
-- `session_notes` — the situations, voices, speech rate and replays, which the next round rotates from
+- `session_notes` — the track ids played, the covered themes ("covered: 5–13") and the replays, which the next rounds rotate from
 - `focus_next_session[]` — the weakest question type
 
-Save the transcript as `fluent-listening-session-{NNN}.md` in the
-`results/` directory of the path this prints:
-
-```bash
-python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
-```
-
-Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. Include every script with its question, the answer given and the verdict.
+Save the transcript as `fluent-listening-session-{NNN}.md` in the `results/` directory of the data directory (step 2). Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. Per question: the track id, the question and options, the answer given, the verdict, and the settling lines as quoted in step 5.
 
 Done when `fluent-db-updater` reports the write and the transcript file exists.
 
 ### 8. Offer another round
 
 With everything saved, ask whether the learner wants another round, as CLAUDE.md's session-cap rule asks. On a yes, the learner types `/fluent-listening` again: a new session with its own record.
+
+## Questions
+
+The rules for every question, on a library track or a synthetic fragment:
+
+- **Wording** — in the target language, the way DUO asks, one decision (`fluent-review` §3).
+- **Types** — rotate across the round: main point ("Waar gaat het gesprek over?"), detail (a time, a place, a number, a name), intention or next step ("Wat gaat de man doen?").
+- **Options** — A, B and C in the target language. Each distractor names something the recording also mentions, so the answer takes listening to the whole recording. The right letter moves across A, B and C over the round.
