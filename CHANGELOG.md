@@ -4,6 +4,14 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **The session log keeps each skill's counts.** Every new session record
+  carries `skill_scores`: per skill, the exercises, the correct answers and
+  the minutes, as the session counted them. Until now the log kept only each
+  skill's share of right answers, so the time a session gave to reading or to
+  listening was lost.
+
 ## [0.9.1] — 2026-10-15
 
 ### Fixed

@@ -6,36 +6,47 @@
   },
   "sessions": [
     {
-      "session_id": "001",
+      "session_id": "session-001",
       "date": "{YYYY-MM-DD}",
-      "time_start": "{HH:MM:SS}",
-      "time_end": "{HH:MM:SS}",
       "duration_minutes": 0,
-      "skill_practiced": "{writing|speaking|vocabulary|reading|listening|mixed}",
+      "skills_practiced": [
+        "{skill}"
+      ],
       "command_used": "{/fluent-learn|/fluent-vocab|/fluent-writing|/fluent-speaking|/fluent-reading|/fluent-listening|/fluent-extensive|/fluent-review}",
       "exercises_completed": 0,
-      "exercises_correct": 0,
-      "exercises_incorrect": 0,
       "accuracy": 0.0,
-      "focus_areas": [
-        "{grammar_pattern}",
-        "{vocabulary_topic}"
+      "score_breakdown": {
+        "{skill}": 0.0
+      },
+      "topics_covered": [
+        "{topic}"
       ],
-      "new_patterns_encountered": [
-        "{pattern_name}"
+      "breakthroughs": [
+        "{breakthrough}"
       ],
-      "mastered_this_session": [
-        "{pattern_that_reached_level_5}"
+      "focus_next_session": [
+        "{focus}"
       ],
-      "notes": "{any_observations_or_achievements}",
-      "streak_day": 0
+      "notes": "{any_observations}",
+      "achievements_earned": [
+        "{achievement}"
+      ],
+      "streak_day": 0,
+      "measured_minutes": 0,
+      "skill_scores": {
+        "{skill}": {
+          "exercises": 0,
+          "correct": 0,
+          "time_minutes": 0
+        }
+      }
     }
   ],
   "milestones": [
     {
       "date": "{YYYY-MM-DD}",
       "milestone": "{description}",
-      "session_id": "001"
+      "session_id": "session-001"
     }
   ]
 }
