@@ -685,6 +685,26 @@ class UpdateDbSmokeTest(unittest.TestCase):
         self.assertEqual(self._load("learner-profile.json")["total_study_minutes"],
                          before + SESSION_PAYLOAD["duration_minutes"])
 
+    def test_skill_scores_land_on_the_session_record(self):
+        """score_breakdown keeps only the ratios; weighing skills by time or by
+        exercises takes the counts. Recorded as counted: a missing count is 0."""
+        payload = dict(SESSION_PAYLOAD, skill_scores={
+            "vocabulary": {"exercises": 5, "correct": 4, "time_minutes": 10},
+            "grammar": {"exercises": 3, "correct": 3},
+        })
+        proc = self._run(payload)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertEqual(self._load("session-log.json")["sessions"][-1]["skill_scores"], {
+            "vocabulary": {"exercises": 5, "correct": 4, "time_minutes": 10},
+            "grammar": {"exercises": 3, "correct": 3, "time_minutes": 0},
+        })
+
+    def test_no_skill_scores_leaves_the_field_off_the_record(self):
+        payload = {k: v for k, v in SESSION_PAYLOAD.items() if k != "skill_scores"}
+        proc = self._run(payload)
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        self.assertNotIn("skill_scores", self._load("session-log.json")["sessions"][-1])
+
     def test_stale_marks_are_pruned_after_a_successful_update(self):
         now = datetime.now().astimezone()
         clock = self.tmp / "data" / ".prompt-clock.jsonl"

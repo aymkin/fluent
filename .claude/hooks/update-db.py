@@ -526,6 +526,14 @@ def update_session_log(log: dict, session: dict, streak: int, measured: int = No
     # make them indistinguishable from a session measured at zero.
     if measured is not None:
         entry["measured_minutes"] = measured
+    # The counts behind score_breakdown, which keeps only their ratios: time per
+    # skill, and accuracy over a skill's last exercises, take the counts. Recorded
+    # as the databases above counted them, a missing count as 0.
+    if skill_scores:
+        entry["skill_scores"] = {
+            skill: {k: s.get(k, 0) for k in ("exercises", "correct", "time_minutes")}
+            for skill, s in skill_scores.items()
+        }
     if session.get("exam_focus"):
         entry["exam_focus"] = session["exam_focus"]
     if session.get("critical_errors_identified"):
