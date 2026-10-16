@@ -11,6 +11,13 @@ All notable changes to Fluent will be documented in this file.
   the minutes, as the session counted them. Until now the log kept only each
   skill's share of right answers, so the time a session gave to reading or to
   listening was lost.
+- **Earlier sessions get their counts back.**
+  `python3 .claude/hooks/backfill_skill_scores.py` rebuilds `skill_scores` for
+  the sessions recorded before, from the backup each save leaves in
+  `.backups/`. A session is filled only when the rebuilt counts give back the
+  shares already in its record and agree with `mastery-db.json`; every other
+  one is reported and left alone. It only reports until you add `--write`, and
+  then backs up your data before it writes.
 
 ## [0.9.1] — 2026-10-15
 
