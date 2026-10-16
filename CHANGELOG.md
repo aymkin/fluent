@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-10-16
+
 ### Added
 
 - **The session log keeps each skill's counts.** Every new session record
