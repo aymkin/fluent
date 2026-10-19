@@ -67,7 +67,7 @@ Read each chosen track's `.lrc`. Write the fragment's frame and its questions by
 - The `.lrc` is an automatic transcript and some lines are misheard. Base a question only on lines that read as correct Dutch, and write the question and options in your own correct Dutch.
 - The opening line of a track is the narrator's title and situation ("Op het werk. Twee collega's praten over een vergadering."). The questions ask for something the conversation itself settles.
 
-Done when every fragment has its frame, its questions in the order the recording settles them, each with its settling `.lrc` lines, its options and its answer.
+Open the round: greet the learner by name and give the round's size, its four fragments and its time budget (1.8 minutes a question). Done when every fragment has its frame, its questions in the order the recording settles them, each with its settling `.lrc` lines, its options and its answer.
 
 ### 4. Play, one fragment at a time
 
