@@ -6,6 +6,8 @@ All notable changes to Fluent will be documented in this file.
 
 ### Improvements
 
+- **The `/fluent-learn` menu names the exam formats.** Writing, speaking,
+  reading and listening show their DUO A2 form and about how long each takes.
 - **`/fluent-speaking` follows the DUO A2 Spreken exam.** A session is two of
   the exam's four blocks, eight answers: a question you hear (spoken by your
   Mac's Dutch voice, the text shown after your answer), then questions on one,

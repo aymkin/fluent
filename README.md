@@ -122,10 +122,10 @@ menu.
 | `/fluent-review` | Today's spaced-repetition queue. **Start every day here.** |
 | `/fluent-learn` | Adaptive mixed practice; the AI picks what you need most. |
 | `/fluent-vocab` | Flashcard drills, both directions plus cloze. |
-| `/fluent-writing` | Emails, letters, forms — corrected line by line. |
-| `/fluent-speaking` | Role-play conversation, typed. |
-| `/fluent-reading` | Short texts plus comprehension questions. |
-| `/fluent-listening` | Listening in the DUO A2 format: recordings from your own audio library (or your Mac's voices without one), one A/B/C question at a time, the transcript lines after your answer. |
+| `/fluent-writing` | The DUO A2 Schrijven exam: four tasks (email, neighbourhood paper, form, note) in 40 minutes, each scored on DUO's rubric. `/fluent-writing b1` for the B1 task. |
+| `/fluent-speaking` | The DUO A2 Spreken exam, typed: two of its four blocks, a question you hear and then pictures, scored on DUO's rubric. `/fluent-speaking b1` for the B1 conversation. |
+| `/fluent-reading` | The DUO A2 Lezen exam: four short everyday texts with two or three multiple-choice questions each, at exam pace. `/fluent-reading b1` for the B1 text. |
+| `/fluent-listening` | Listening in the DUO A2 format: four fragments from your own audio library (or your Mac's voices without one), two or three A/B/C questions on each of four fragments, the transcript lines after your answers. |
 | `/fluent-extensive` | Extensive reading: a three-part story built from your Anki words in progress, then a five-word recognition check. |
 | `/fluent-progress` | Statistics dashboard: accuracy, streak, mastery, achievements. |
 | `/fluent-fsrs-reference` | Helper — how a score becomes a review interval. |

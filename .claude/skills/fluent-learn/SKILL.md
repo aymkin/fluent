@@ -38,11 +38,11 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 Open with the learner's name, their streak, today's review round (due items up to the session cap), today's focus area (weakest skill or top weak pattern), and level with progress. Then offer the menu:
 
 ```markdown
-1. 📝 Writing (emails, letters, forms)
-2. 🗣️ Speaking (typed conversation)
+1. 📝 Writing (DUO A2 exam: four tasks, about 40 min)
+2. 🗣️ Speaking (DUO A2 exam: two blocks, about 18 min)
 3. 📖 Vocabulary (flashcard drills)
-4. 👀 Reading (comprehension)
-5. 🎧 Listening (recordings, DUO format)
+4. 👀 Reading (DUO A2 exam: four texts, about 26 min)
+5. 🎧 Listening (DUO A2 exam: four fragments, about 18 min)
 6. 🔄 Spaced Review (today's due items)
 7. 🎲 Surprise me! (adaptive mix)
 ```
