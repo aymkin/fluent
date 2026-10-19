@@ -270,3 +270,27 @@ message of its own turn. The tool runs on the learner's next message ("go"),
 and that turn's final message repeats what they need in order to answer. For
 listening: feedback + next question → "go" → `afplay` → the question again,
 asking for A/B/C.
+
+## 2026-10-19 — a spelling drill must not test a proper name
+
+`/fluent-review`, item 5: the card holds the name Sanne (from `Sane`), and I
+built "find the spelling error: Mijn vriendin Sane woont in Utrecht". The
+learner objected: nothing in the rules decides how a name is spelled, and Sane
+is a real name. The exercise had two valid readings, so I voided the attempt
+and swapped in a common word (mannen).
+
+How to apply: when a card's content is a proper name, keep the rule and change
+the word — build the exercise on a common noun or verb that follows the same
+rule (double consonant after a short vowel: mannen, katten).
+
+## 2026-10-19 — a word-order drill must pick the case where the rule is the only valid order
+
+`/fluent-review`, item 8 (time before object): I gave "de rekening · nu · betaal
+· ik". With a definite object both "nu de rekening" and "de rekening nu" are
+correct, so "Ik betaal de rekening nu" was not a miss. The card's own sentence
+has an indefinite object (oude bestanden).
+
+How to apply: for `grammar_middlefield_time_before_object`, use an object with
+no article or with `een` (nieuwe schoenen, een boek), and give the chunks in a
+neutral order. Before sending any reorder exercise, write down the other order
+and check it is wrong.
