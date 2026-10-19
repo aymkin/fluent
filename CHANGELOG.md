@@ -6,6 +6,13 @@ All notable changes to Fluent will be documented in this file.
 
 ### Improvements
 
+- **`/fluent-speaking` follows the DUO A2 Spreken exam.** A session is two of
+  the exam's four blocks, eight answers: a question you hear (spoken by your
+  Mac's Dutch voice, the text shown after your answer), then questions on one,
+  two and three pictures with the exam's two-part prompts. Pictures are listed
+  in your language. Each answer is scored on DUO's rubric for what typing can
+  show, 8 of the exam's 12 points, and the summary says plainly that fluency
+  and pronunciation are not scored. The old free chat is now `/fluent-speaking b1`.
 - **`/fluent-writing` is the DUO A2 Schrijven exam.** A session is four tasks
   in the exam's forms: an email from three bullet points, a text for the
   neighbourhood paper, a form, and a note or a second email. Each task is
