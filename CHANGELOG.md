@@ -4,6 +4,17 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Improvements
+
+- **`/fluent-listening` runs a round the way the DUO A2 exam is built.**
+  A round is four fragments of 3, 3, 2 and 2 questions, each with the exam's
+  two-line frame and the instruction to read the questions before you listen.
+  The questions ask what the exam asks, a detail or what someone must do, with
+  three options and now and then four. The summary shows your time against the
+  exam's pace. The exam format itself is written down in
+  `.claude/references/exam-a2.md`, which the speaking, reading and writing
+  skills will share.
+
 ## [0.10.0] — 2026-10-16
 
 ### Added
