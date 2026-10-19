@@ -6,6 +6,13 @@ All notable changes to Fluent will be documented in this file.
 
 ### Improvements
 
+- **`/fluent-reading` runs a round the way the DUO A2 exam is built.**
+  A round is four short everyday texts (a letter, a folder, an email, house
+  rules), each with two or three multiple-choice questions about one fact in
+  it, three options and about every second one with four. You read the question
+  first, then the text, and the summary shows your time against the exam's
+  pace. The old five-question flow with open answers and inference questions is
+  now `/fluent-reading b1`.
 - **`/fluent-listening` runs a round the way the DUO A2 exam is built.**
   A round is four fragments of 3, 3, 2 and 2 questions, each with the exam's
   two-line frame and the instruction to read the questions before you listen.
