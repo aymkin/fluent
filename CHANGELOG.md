@@ -6,6 +6,13 @@ All notable changes to Fluent will be documented in this file.
 
 ### Improvements
 
+- **`/fluent-writing` is the DUO A2 Schrijven exam.** A session is four tasks
+  in the exam's forms: an email from three bullet points, a text for the
+  neighbourhood paper, a form, and a note or a second email. Each task is
+  scored on DUO's rubric (up to 10, up to 7 for a form) and shown as points and
+  a score out of 10, with your writing time against the exam's 40 minutes. Spelling
+  now counts as the rubric counts it, not lightly. The old one-scenario session
+  is now `/fluent-writing b1`.
 - **`/fluent-reading` runs a round the way the DUO A2 exam is built.**
   A round is four short everyday texts (a letter, a folder, an email, house
   rules), each with two or three multiple-choice questions about one fact in
