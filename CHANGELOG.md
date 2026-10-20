@@ -4,6 +4,15 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **`/fluent-grammar` — grammar practice, theory first.** A session is one rule
+  and five exercises on it. A rule you meet for the first time opens with its
+  theory in your language, two examples and a contrast; a rule you have practised
+  goes straight to the exercises, and its theory follows a series below 7 out of
+  10. The series is one review of the rule, scored out of 10, and the time spent
+  on theory counts as grammar time. A project's own rules can name the next rule.
+
 ### Improvements
 
 - **The `/fluent-learn` menu names the exam formats.** Writing, speaking,

@@ -109,11 +109,11 @@ The library stays on your machine; Fluent ships no audio. Without one, the sessi
 
 ## 🎮 Available Commands & Skills
 
-Fluent is 14 Claude Code skills. The learner-facing ones are gated: they run
+Fluent is 15 Claude Code skills. The learner-facing ones are gated: they run
 only when you type the slash command, so a chat message can never trigger a
 practice session or a database write. `/fluent-progress` is read-only and also
 auto-triggers on questions like "how am I doing?". The four helper skills
-auto-load whenever Claude needs them mid-session. All 14 appear in your `/`
+auto-load whenever Claude needs them mid-session. All 15 appear in your `/`
 menu.
 
 | Command | What it does |
@@ -122,6 +122,7 @@ menu.
 | `/fluent-review` | Today's spaced-repetition queue. **Start every day here.** |
 | `/fluent-learn` | Adaptive mixed practice; the AI picks what you need most. |
 | `/fluent-vocab` | Flashcard drills, both directions plus cloze. |
+| `/fluent-grammar` | One grammar rule: its theory first when the rule is new, then five exercises scored out of 10. The theory time counts as grammar time. |
 | `/fluent-writing` | The DUO A2 Schrijven exam: four tasks (email, neighbourhood paper, form, note) in 40 minutes, each scored on DUO's rubric. `/fluent-writing b1` for the B1 task. |
 | `/fluent-speaking` | The DUO A2 Spreken exam, typed: two of its four blocks, a question you hear and then pictures, scored on DUO's rubric. `/fluent-speaking b1` for the B1 conversation. |
 | `/fluent-reading` | The DUO A2 Lezen exam: four short everyday texts with two or three multiple-choice questions each, at exam pace. `/fluent-reading b1` for the B1 text. |
