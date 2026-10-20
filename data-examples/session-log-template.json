@@ -12,7 +12,7 @@
       "skills_practiced": [
         "{skill}"
       ],
-      "command_used": "{/fluent-learn|/fluent-vocab|/fluent-writing|/fluent-speaking|/fluent-reading|/fluent-listening|/fluent-extensive|/fluent-review}",
+      "command_used": "{/fluent-learn|/fluent-vocab|/fluent-grammar|/fluent-writing|/fluent-speaking|/fluent-reading|/fluent-listening|/fluent-extensive|/fluent-review}",
       "exercises_completed": 0,
       "accuracy": 0.0,
       "score_breakdown": {
