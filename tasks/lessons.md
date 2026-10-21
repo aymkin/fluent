@@ -294,3 +294,15 @@ How to apply: for `grammar_middlefield_time_before_object`, use an object with
 no article or with `een` (nieuwe schoenen, een boek), and give the chunks in a
 neutral order. Before sending any reorder exercise, write down the other order
 and check it is wrong.
+
+## 2026-10-21 — grammar theory starts with what the rule is for
+
+`/fluent-grammar`, rule `grammar_zijn_perfect_beweging`: my theory named the
+rule and gave its mechanics (zijn vs hebben, two Dutch examples) but never said
+why the perfect tense exists. The learner asked for the purpose first, then
+typical sentences in Russian next to the simplest Dutch ones.
+
+How to apply: step 3 of `.claude/skills/fluent-grammar/SKILL.md` now fixes four
+parts — what it is for, what it says, two typical pairs, one contrast. Open with
+the job the rule does in speech (the perfect tense: tell what has already
+happened) before any form.
