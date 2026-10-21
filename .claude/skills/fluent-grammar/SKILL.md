@@ -39,13 +39,20 @@ Open the session: greet the learner by name and name the rule. Done when one rul
 date +%s
 ```
 
-Teach the rule in the learner's native language: what it says, two examples in the target language, and one contrast with the form it is confused with. End the message on "go?" and wait.
+Teach the rule in the learner's native language, in four parts, in this order:
+
+1. **What it is for** — the job the rule does in speech, in one or two sentences: what the learner can say with it that they could not say without it (the perfect tense: tell what has already happened).
+2. **What it says** — the rule itself, short.
+3. **Typical pairs** — two everyday sentences a learner at this level really says, each in the native language, then in the simplest target-language version: the shortest sentence, the most frequent verbs.
+4. **One contrast** — the form the rule is confused with, as a ❌ and ✅ pair.
+
+End the message on "go?" and wait.
 
 ```bash
 date +%s
 ```
 
-Theory minutes = (this number − the first) ÷ 60, rounded up. Done when the learner has answered "go".
+Theory minutes = (this number − the first) ÷ 60, rounded up. Done when the message held all four parts and the learner has answered "go".
 
 A practised rule skips this step and goes to step 4.
 
