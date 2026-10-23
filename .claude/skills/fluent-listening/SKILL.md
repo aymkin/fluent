@@ -55,7 +55,7 @@ Done when the track list is in hand, or the round is on the synthetic path.
 
 ### 3. Choose the round
 
-The learner's **covered themes** are the range of the latest round's notes (e.g. "covered: 5–13"). With no range in the notes, ask once: "Which themes of your course have you covered so far?"
+The learner's **covered themes** are the range of the latest round's notes (e.g. "covered: 5–13"). With no range in the notes, ask once: «Какие темы курса уже пройдены?»
 
 - **Pools.** Known: tracks from the covered themes. Ahead: tracks from themes above the range. Themes below the range stay out of the round.
 - **Mix.** Two fragments come from known tracks, two from ahead tracks; the two three-question fragments go one to each pool.
@@ -94,7 +94,7 @@ A. {option}
 B. {option}
 C. {option}
 
-Write **go** to play the fragment.
+Напиши **go**, чтобы включить фрагмент.
 ```
 
 **The recording turn.** On "go", play the whole track — the narrator's opening sets the scene, as a DUO fragment does:
@@ -113,14 +113,14 @@ afplay "<data_dir>/audio/<collection>/<theme folder>/<track>.mp3"
 ```markdown
 {✅ or ❌} **{right letter}. {right option}**
 
-**From the recording** (automatic transcript):
+**Из записи** (автоматическая расшифровка):
 > [{mm:ss}] {line before}
 > [{mm:ss}] **{the line that settles the question}**
 > [{mm:ss}] {line after}
 
 {why, in the learner's native language: where the recording settles the question, and what made the distractor tempting}
 
-**Words:** {1-3 useful words or phrases from the recording, with translations}
+**Слова:** {1-3 useful words or phrases from the recording, with translations}
 ```
 
 Give the block once for each question of the fragment, in order. Quote the settling lines with one or two lines around them; the full text stays in the library. Done when the learner has the lines and the explanation for every question of the fragment. The same message goes on to the next fragment's question turn (step 4), so it ends on that fragment's questions and its "go" cue; after the round's last fragment, the summary (step 6) follows the feedback instead.
@@ -134,22 +134,22 @@ date +%s
 Minutes taken = (this number − the start mark) ÷ 60, rounded up.
 
 ```markdown
-## 🎧 Listening Session Complete!
+## 🎧 Сессия по аудированию завершена!
 
-**Questions:** {N} · **Correct:** {X} ({percent}%) · **Replays:** {R}
-**Time:** {minutes} of {budget} min (exam pace: 1.8 min a question)
-**Known themes:** {x}/{n} · **Ahead:** {x}/{n}
+**Вопросов:** {N} · **Верно:** {X} ({percent}%) · **Повторов:** {R}
+**Время:** {minutes} из {budget} мин (темп экзамена: 1,8 мин на вопрос)
+**Знакомые темы:** {x}/{n} · **Впереди:** {x}/{n}
 
-### By question type
-- Detail (how long, when, where, who, why, how much): {x}/{n}
-- What someone must or will do: {x}/{n}
+### По типам вопросов
+- Деталь (сколько длится, когда, где, кто, почему, сколько стоит): {x}/{n}
+- Что человеку нужно или предстоит сделать: {x}/{n}
 
-### Words from today's recordings
+### Слова из сегодняшних записей
 | {target_language} | {native_language} |
 |-------|---------|
 | {word} | {meaning} |
 
-**Which of these do you want to save for review?** Reply with the words, "all", or "none".
+**Какие из них сохранить для повторения?** Напиши слова, **all** или **none**.
 ```
 
 Stage each word the learner chose for `new_vocabulary[]`. Close with the way to the exam's own material: DUO's three practice exams for Luisteren (`inburgeren.nl/examen-doen/oefenen.jsp`) hold 25 questions in 45 minutes; one taken under exam conditions shows what a tutor round cannot — and the learner can report the result here. When the round scored above 80%, say it is time for one of them.
