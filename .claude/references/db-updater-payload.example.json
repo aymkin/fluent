@@ -31,7 +31,7 @@
       "item_id": "het_huis",
       "item_type": "vocabulary",
       "content": "het huis",
-      "answer": "the house",
+      "answer": "дом",
       "category": "essential_nouns",
       "difficulty": "A1",
       "initial_quality": 4,
@@ -45,9 +45,9 @@
   ],
 
   "topics_covered": ["articles", "house_vocabulary"],
-  "breakthroughs": ["First correct use of 'het' vs 'de'"],
-  "focus_next_session": ["Drill de/het article gender"],
-  "session_notes": "Strong session. Article gender still tricky.",
+  "breakthroughs": ["Первый верный выбор het и de"],
+  "focus_next_session": ["Артикли de/het: род существительных"],
+  "session_notes": "Сильная сессия. Род существительных пока даётся трудно.",
   "achievements_earned": [],
-  "milestones": ["Reached 100 words learned", "Completed first full conversation"]
+  "milestones": ["Выучено 100 слов", "Первый полный разговор"]
 }

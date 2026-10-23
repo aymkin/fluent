@@ -1,23 +1,23 @@
 # Profile Updates (existing profile)
 
 ```markdown
-# 👋 Welcome back, {name}!
+# 👋 С возвращением, {name}!
 
-You already have a learning profile.
+У тебя уже есть профиль обучения.
 
-What would you like to do?
+Что хочешь сделать?
 
-1. **Update profile** — change goals, timeline, or preferences
-2. **View current plan** — see your learning schedule
-3. **Reset progress** — start fresh (⚠️ erases all progress!)
-4. **Cancel** — keep everything as is
+1. **Обновить профиль** — изменить цели, сроки или предпочтения
+2. **Посмотреть текущий план** — расписание занятий
+3. **Сбросить прогресс** — начать с нуля (⚠️ весь прогресс будет стёрт!)
+4. **Отмена** — оставить всё как есть
 
-**Type 1, 2, 3, or 4:**
+**Напиши 1, 2, 3 или 4:**
 ```
 
 - **1** — ask which field, update only that field, preserve the rest.
 - **2** — render the plan section from current data. Read-only.
-- **3** — confirm twice, naming the stakes ("This will erase X days of progress, Y sessions, and Z mastered words. Proceed? (yes/no)"). This deletes every file in the resolved data directory. Hooks do not fire here, so back up first:
+- **3** — confirm twice, naming the stakes («Будет стёрт весь прогресс: дней — X, сессий — Y, освоенных слов — Z. Продолжить? (yes/no)»). This deletes every file in the resolved data directory. Hooks do not fire here, so back up first:
 
   ```bash
   DATA_DIR="$(python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/ensure_data_dir.py")"

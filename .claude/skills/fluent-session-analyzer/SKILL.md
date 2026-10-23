@@ -68,21 +68,21 @@ When `target_level` is B1, unmet targets from `.claude/references/level-b1.md` f
 Plan template:
 
 ```markdown
-## Session {N} Plan ({X} exercises)
+## План сессии {N} ({X} упр.)
 
-**Top 3 Weaknesses:**
-1. {pattern} — {count} occurrences, severity {emoji}
+**Три главные слабости:**
+1. {pattern} — {count} раз, серьёзность {emoji}
 2. ...
 
-**Strengths to Reinforce:**
+**Сильные стороны для закрепления:**
 - {skill}
 
-**Drill Sequence:**
-1. Warm-up ({x} exercises) — quick wins on known patterns
-2. Targeted drill 1 ({y} exercises) — focus on weakness #1
-3. Targeted drill 2 ({y} exercises) — focus on weakness #2
-4. Mixed integration ({z} exercises) — combine all patterns
-5. Full scenario ({w} exercises) — exam-style task
+**Последовательность упражнений:**
+1. Разминка ({x} упр.) — быстрые успехи на знакомых паттернах
+2. Целевая тренировка 1 ({y} упр.) — слабость №1
+3. Целевая тренировка 2 ({y} упр.) — слабость №2
+4. Смешанная интеграция ({z} упр.) — все паттерны вместе
+5. Полный сценарий ({w} упр.) — задание в формате экзамена
 ```
 
 ### 6. Tune difficulty

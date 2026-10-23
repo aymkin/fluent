@@ -38,13 +38,13 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 Open with the learner's name, their streak, today's review round (due items up to the session cap), today's focus area (weakest skill or top weak pattern), and level with progress. Then offer the menu:
 
 ```markdown
-1. 📝 Writing (DUO A2 exam: four tasks, about 40 min)
-2. 🗣️ Speaking (DUO A2 exam: two blocks, about 18 min)
-3. 📖 Vocabulary (flashcard drills)
-4. 👀 Reading (DUO A2 exam: four texts, about 26 min)
-5. 🎧 Listening (DUO A2 exam: four fragments, about 18 min)
-6. 🔄 Spaced Review (today's due items)
-7. 🎲 Surprise me! (adaptive mix)
+1. 📝 Письмо (экзамен DUO A2: четыре задания, около 40 мин)
+2. 🗣️ Говорение (экзамен DUO A2: два блока, около 18 мин)
+3. 📖 Лексика (карточки)
+4. 👀 Чтение (экзамен DUO A2: четыре текста, около 26 мин)
+5. 🎧 Аудирование (экзамен DUO A2: четыре фрагмента, около 18 мин)
+6. 🔄 Повторение (сегодняшние элементы)
+7. 🎲 Удиви меня! (адаптивная смесь)
 ```
 
 ### 4. Route
@@ -84,7 +84,7 @@ Use `fluent-feedback-formatter` template. Score 0-10 + severity tag. Stage the r
 Also prompt the learner to **retype** the correct form after a critical mistake — motor memory helps:
 
 ```markdown
-Now type the correct version yourself: "{correct_sentence}"
+Теперь напиши правильный вариант: "{correct_sentence}"
 ```
 
 ### 8. Session end
@@ -112,4 +112,4 @@ Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README
 - **One exercise at a time.**
 - **Interleave.** Mix 2-3 patterns across the session to force discrimination.
 - **Use the learner's name + target-language greetings** throughout.
-- **Celebrate progress.** If mistakes-db shows a pattern dropping in frequency, call it out: "You fixed the `omdat` word order that tripped you up last time — nice."
+- **Celebrate progress.** If mistakes-db shows a pattern dropping in frequency, call it out: «Порядок слов с `omdat`, который сбивал в прошлый раз, теперь верный — отлично!»

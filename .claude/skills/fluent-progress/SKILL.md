@@ -35,57 +35,57 @@ If any are missing, point the learner at `/fluent-setup` and stop.
 Use this exact structure. Fill in values from the databases; compute percentages and progress bars yourself.
 
 ```markdown
-# 📊 {learner_name}'s {target_language} Learning Dashboard
+# 📊 {learner_name}: дашборд изучения языка — {target_language}
 
-**Last Updated:** {today}
+**Обновлено:** {today}
 
-## 🎯 Overview
+## 🎯 Обзор
 
-**Level:** {current_level} → {target_level} · {progress_bar} {percentage}%
-**Streak:** 🔥 {streak_days} {day_or_days} {streak_message}
-**Total:** {total_sessions} sessions · {total_minutes} min ({hours} h) over {total_days} days
+**Уровень:** {current_level} → {target_level} · {progress_bar} {percentage}%
+**Серия:** 🔥 {streak_days} {day_or_days} {streak_message}
+**Всего:** {total_sessions} сессий · {total_minutes} мин ({hours} ч) за {total_days} дней
 
-## 💪 Skills Mastery
+## 💪 Освоение навыков
 
-One block per skill practised (writing ✍️ / speaking 🗣️ / vocabulary 📚 / reading 👀):
+Один блок на каждый практиковавшийся навык (письмо ✍️ / говорение 🗣️ / лексика 📚 / чтение 👀):
 
 ### {Skill} {emoji}
-**Level:** {n}/5 {stars} · **{Accuracy|Comprehension}:** {percent}% · **Last practiced:** {date}
+**Уровень:** {n}/5 {stars} · **{Точность|Понимание}:** {percent}% · **Последняя практика:** {date}
 {progress_bar}
 
-Vocabulary also gets **Words known** / **Words mastered**.
+У лексики есть ещё **Слов известно** / **Слов освоено**.
 
-## 📈 Progress Trends
+## 📈 Динамика
 
-ASCII accuracy chart from `progress-db.weekly_summary`, then this week:
-{sessions} sessions · {minutes} min · {exercises} exercises · {percent}% · skills: {list}
+ASCII-график точности из `progress-db.weekly_summary`, затем эта неделя:
+{sessions} сессий · {minutes} мин · {exercises} упражнений · {percent}% · навыки: {list}
 
-## 🎯 Focus Areas
+## 🎯 Над чем работать
 
-Group `mistakes-db.error_patterns` by mastery: 🔴 Critical (0-1, high frequency),
-🟡 Working on (2-3), 🟢 Strong (4-5).
+Сгруппируй `mistakes-db.error_patterns` по освоению: 🔴 Критично (0-1, высокая частота),
+🟡 В работе (2-3), 🟢 Сильное (4-5).
 
-When `target_level` is B1, add one line per grammar target in `.claude/references/level-b1.md`: ✅ done (its pattern in `mistakes-db` at mastery 4-5), 🔄 drilling (mastery 1-3), ⬜ not yet met (no pattern). These are course goals, not official CEFR requirements.
+When `target_level` is B1, add one line per grammar target in `.claude/references/level-b1.md`: ✅ готово (its pattern in `mistakes-db` at mastery 4-5), 🔄 в работе (mastery 1-3), ⬜ ещё не встречалось (no pattern). Это цели курса, а не официальные требования CEFR.
 
-## 🔄 Spaced Repetition
+## 🔄 Интервальные повторения
 
-**Due today:** {count} · **Due this week:** {count} · **Mastered:** {count}
+**На сегодня:** {count} · **На этой неделе:** {count} · **Освоено:** {count}
 
-## 🏆 Achievements
+## 🏆 Достижения
 
 {list from learner-profile → achievements; if empty, say so — achievements are
 earned from the milestones recorded at session end, there is no fixed catalogue}
 
-## 📅 Session History
+## 📅 История сессий
 
-| Date | Duration | Skill | Accuracy |
+| Дата | Длительность | Навык | Точность |
 |------|----------|-------|----------|
 {most recent 5-10 sessions from session-log}
 
-## 🎯 Next Goals & Recommendations
+## 🎯 Цели и рекомендации
 
-**This week:** {weak patterns + due reviews} · **This month:** {skill mastery gaps}
-· **Long-term:** {target level gap}
+**На этой неделе:** {weak patterns + due reviews} · **В этом месяце:** {skill mastery gaps}
+· **Надолго:** {target level gap}
 
 1. {top weak area from mistakes-db}
 2. {skill not practiced recently}
@@ -93,6 +93,8 @@ earned from the milestones recorded at session end, there is no fixed catalogue}
 
 "{personalized motivational message}"
 ```
+
+Fill the placeholders in Russian: `{Skill}` as «Письмо», «Говорение», «Лексика», «Чтение», «Аудирование», «Грамматика»; `{target_language}` and `{native_language}` as «нидерландский», «русский»; `{day_or_days}` as «день», «дня» or «дней» by the Russian rule (1 день, 2–4 дня, 5–20 дней, 21 день).
 
 ### 3. Optional interpretation footer
 
@@ -102,4 +104,4 @@ Only when the learner seems new or asks what the numbers mean — append the foo
 
 - **Read-only.** Leave `update-db.py` and every JSON in the data directory untouched.
 - **Streak** is `learner-profile.current_streak_days` as stored.
-- **Every number comes from a database.** A skill with no data reads "Not yet practiced".
+- **Every number comes from a database.** A skill with no data reads «Ещё не практиковалось».

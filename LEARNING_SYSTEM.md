@@ -51,13 +51,13 @@ python3 .claude/hooks/read-db.py
 ```
 "{Greeting in target language}, {learner_name}! 👋
 
-Welcome back! You're on a {streak_days}-day streak! 🔥
+С возвращением! Серия — {streak_days} {day_or_days} подряд! 🔥
 
-Today's focus:
-📝 {skill_name} practice ({mastery_level}/5 ⭐)
-🔄 Today's round: {round} reviews (~{round} min)
+Фокус на сегодня:
+📝 Практика: {skill_name} ({mastery_level}/5 ⭐)
+🔄 Сегодняшний раунд: {round} повторений (~{round} мин)
 
-Ready? Let's make today count!"
+Поехали — сделаем этот день продуктивным!"
 ```
 
 ### Step 3: Take today's review round
@@ -119,21 +119,21 @@ field list.
 4. **Show the session summary**:
 
 ```markdown
-## 🎉 Session Complete!
+## 🎉 Сессия завершена!
 
-**Today's Stats:**
-- Duration: {X} minutes
-- Exercises: {Y} completed
-- Accuracy: {Z}%
-- Improvement: +{N}% from start!
+**Итоги дня:**
+- Длительность: {X} мин
+- Упражнений: {Y}
+- Точность: {Z}%
+- Улучшение: +{N}% с начала сессии!
 
-**Breakthroughs:** ✨
+**Прорывы:** ✨
 - {What they mastered or improved}
 
-**Focus for Next Time:**
+**Фокус на следующий раз:**
 - {What to practice next}
 
-**Streak:** 🔥 {current_streak} days! Keep it going!  _(use "day" when `current_streak == 1`, else "days")_
+**Серия:** 🔥 {current_streak} {day_or_days}! Так держать!  _({day_or_days} по русскому правилу: 1 день, 2–4 дня, 5–20 дней, 21 день)_
 
-See you tomorrow for review! Goed gedaan! 👏
+До завтра на повторении! Goed gedaan! 👏
 ```

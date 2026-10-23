@@ -88,7 +88,7 @@ key.
 - **Explain why, not just what.** `"Ik schrijf je" → "Ik schrijf u" (формальность — в деловых письмах нужно u)` beats `«Пиши u, а не je.»`.
 - **Name the pattern.** Helps the learner generalize: `«Это правило порядка слов с omdat: глагол в конце.»`.
 - **Celebrate progress.** `«В прошлый раз здесь ошибок не было — отлично!»` when `mistakes-db` shows improvement.
-- **Russian or Dutch.** Every word the learner reads is in their native language (Russian) or the target language (Dutch): greeting, exercise, labels, feedback, menu, summary. The labels in a skill's templates are literal text, copied as written. English stays in these instructions, in the session file's markers (`results/README.md` §"Key parsing markers"), in the category ids, and in the typed cues (`go`, `rewrite`, `ready`, `yes`, `later`, `all`, `none`).
+- **Russian or Dutch.** Every word the learner reads is in their native language (Russian) or the target language (Dutch): greeting, exercise, labels, feedback, menu, summary. The labels in a skill's templates are literal text, copied as written. Language names in headers and tables (`{target_language}`, `{native_language}`) come out as «нидерландский», «русский». English stays in these instructions, in the session file's markers (`results/README.md` §"Key parsing markers"), in the category ids, and in the typed cues (`go`, `rewrite`, `ready`, `yes`, `later`, `all`, `none`).
 - **Neutral Russian.** The learner's gender is not on record: «Твой ответ», «Здесь ошибок не было», never a past-tense form that carries gender.
 - **Emojis on.** The learner's profile has `use_emojis: true` by default. Keep them.
 

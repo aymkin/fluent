@@ -55,9 +55,9 @@ Done when all three episodes are written and each target has its 2-3 uses.
 ### 4. Read, one episode at a time
 
 ```markdown
-# 📚 Extensive Reading
+# 📚 Экстенсивное чтение
 
-Hallo {name}! A story in three parts, built from your words in progress. Read for the flow; meaning comes from the context.
+Hallo {name}! История из трёх частей, собранная из слов, которые ты сейчас учишь. Читай ради потока: значение подскажет контекст.
 
 ## Deel {N}/3: {episode title}
 
@@ -65,7 +65,7 @@ Hallo {name}! A story in three parts, built from your words in progress. Read fo
 
 ---
 
-Type **"verder"** for the next part, or list the words you didn't recognise.
+Напиши **"verder"** для следующей части или перечисли незнакомые слова.
 ```
 
 Send one episode, then wait. Record the words the learner names as unrecognised. The learner may stop after any episode; then go to step 5 with the episodes read.
@@ -75,9 +75,9 @@ Done when three episodes are read or the learner stopped.
 ### 5. Forms table
 
 ```markdown
-## 🔁 Your words in this story
+## 🔁 Твои слова в этой истории
 
-| Word | {native_language} | Forms in the story |
+| Слово | {native_language} | Формы в истории |
 |------|-------------------|--------------------|
 | {target} | {Translation} | {each form as it appeared} |
 ```
@@ -93,13 +93,13 @@ Five targets, one at a time. Each sits in a new sentence, one that appears nowhe
 
 "{new sentence with the target}"
 
-What does **{form of the target}** mean here?
+Что значит **{form of the target}** здесь?
 
 a) {meaning}
 b) {meaning}
 c) {meaning}
 
-**Type your answer:**
+**Напиши ответ:**
 ```
 
 Options are in the learner's native language. Grade each answer with `fluent-feedback-formatter` before sending the next one.
@@ -109,15 +109,15 @@ Done when five answers are graded.
 ### 7. Session summary
 
 ```markdown
-## 📊 Extensive Reading Complete!
+## 📊 Экстенсивное чтение завершено!
 
-**Story:** {title} — {episodes read}/3 episodes, ~{words} words
-**Target words:** {count}
-**Recognition check:** {correct}/5
-**Accuracy:** {percent}%
+**История:** {title} — прочитано {episodes read}/3 частей, ~{words} слов
+**Целевые слова:** {count}
+**Проверка узнавания:** {correct}/5
+**Точность:** {percent}%
 
-### Not recognised yet 👀
-{list, or "none"}
+### Пока не узнаются 👀
+{list, or "нет"}
 
 **{target-language well done}!** 📖✨
 ```
