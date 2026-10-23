@@ -27,21 +27,21 @@ If it exists, jump to **Profile updates** below. Otherwise continue.
 ### 2. Welcome
 
 ```markdown
-# 🌍 Welcome to Your Personal Language Learning System!
+# 🌍 Добро пожаловать в твою личную систему изучения языка!
 
-This AI-powered system will help you learn any language through:
-- 📊 Systematic progress tracking
-- 🧠 Spaced repetition (scientifically proven)
-- 🎮 Gamification (streaks, achievements)
-- 📈 Adaptive difficulty
-- 🎯 Personalized to YOUR goals
+Эта система на базе ИИ поможет выучить любой язык:
+- 📊 Систематический учёт прогресса
+- 🧠 Интервальные повторения (научно доказанный метод)
+- 🎮 Геймификация (серии, достижения)
+- 📈 Адаптивная сложность
+- 🎯 Под ТВОИ цели
 
-**Let's get you set up!** (~5 minutes)
+**Давай всё настроим!** (~5 минут)
 ```
 
 ### 3. Collect info
 
-Use the `AskUserQuestion` tool to gather questions in batches when possible. Required fields:
+Use the `AskUserQuestion` tool to gather questions in batches when possible; word each question and its options in Russian. Required fields:
 
 1. **Name** — personalizes greetings.
 2. **Target language** — the language being learned (e.g. Spanish, French, German, Japanese, Korean, Arabic, Dutch).
@@ -87,49 +87,51 @@ Adjust:
 Present:
 
 ```markdown
-## 🎉 Setup Complete!
+## 🎉 Настройка завершена!
 
-**Your Learning Profile:**
-- 👤 Name: {name}
-- 🌍 Learning: {target_language}
-- 📚 Native: {native_language}
-- 📊 Level: {current} → {target}
-- 📅 Timeline: {timeline}
-- ⏱️ Daily time: {minutes} min
-- 💡 Goal: {goal}
+**Твой профиль:**
+- 👤 Имя: {name}
+- 🌍 Изучаю: {target_language}
+- 📚 Родной язык: {native_language}
+- 📊 Уровень: {current} → {target}
+- 📅 Срок: {timeline}
+- ⏱️ Время в день: {minutes} мин
+- 💡 Цель: {goal}
 
-## 📋 Personalized Plan
+## 📋 Персональный план
 
-**Estimated time:** {months} months
-**Total study hours:** ~{hours} hours
+**Ориентировочное время:** {months} мес.
+**Всего часов занятий:** ~{hours} ч
 
-### Weekly Schedule
-**Daily:**
-- 🔄 `/fluent-review` — spaced repetition ({X} min)
-- 📚 `/fluent-vocab` — new vocabulary ({Y} min)
+### Расписание на неделю
+**Каждый день:**
+- 🔄 `/fluent-review` — интервальные повторения ({X} мин)
+- 📚 `/fluent-vocab` — новая лексика ({Y} мин)
 
-**Alternating:**
-- 📝 `/fluent-writing` (Mon/Wed/Fri)
-- 🗣️ `/fluent-speaking` (Tue/Thu/Sat)
-- 📖 `/fluent-reading` (Sun)
+**По очереди:**
+- 📝 `/fluent-writing` (пн/ср/пт)
+- 🗣️ `/fluent-speaking` (вт/чт/сб)
+- 📖 `/fluent-reading` (вс)
 
-**Weekly:**
-- 📊 `/fluent-progress` — check stats (5 min)
+**Раз в неделю:**
+- 📊 `/fluent-progress` — проверить статистику (5 мин)
 
-### Milestones
-- Month 1: {reasonable short-term}
-- Month 3: {quarter-way}
-- Month 6: {half-way}
-- Target date: {target_level}!
+### Вехи
+- Месяц 1: {reasonable short-term}
+- Месяц 3: {quarter-way}
+- Месяц 6: {half-way}
+- Целевая дата: {target_level}!
 
-### Next Steps
-1. Start now — type `/fluent-learn`
-2. Daily habit — `/fluent-review` every day
-3. Weekly — `/fluent-progress` to see stats
-4. Stay consistent — even 10 min daily beats 2 hours weekly
+### Что дальше
+1. Начни сейчас — напиши `/fluent-learn`
+2. Ежедневная привычка — `/fluent-review` каждый день
+3. Раз в неделю — `/fluent-progress`, чтобы увидеть статистику
+4. Регулярность — даже 10 минут в день лучше, чем 2 часа в неделю
 
-**Your journey to {target_language} fluency starts now!** 🚀
+**Твой путь к свободному владению языком ({target_language}) начинается сейчас!** 🚀
 ```
+
+`{target_language}` and `{native_language}` appear as «нидерландский», «русский»; the goal and the timeline come out in Russian too.
 
 ### 5. Write databases
 
@@ -147,11 +149,11 @@ Use the Write tool for each; `update-db.py` serves session updates, so bootstrap
 ### 6. Optional first lesson
 
 ```markdown
-## 🎓 Want to start your first lesson now?
+## 🎓 Начнём первый урок прямо сейчас?
 
-A quick 5-10 min intro session to learn your first 10 words and get familiar with the system.
+Короткое вводное занятие на 5–10 минут: выучим первые 10 слов и познакомимся с системой.
 
-Type "yes" to start, "later" to begin on your own.
+Напиши "yes", чтобы начать, или "later", чтобы начать самостоятельно.
 ```
 
 If yes, read `.claude/skills/fluent-learn/SKILL.md` and follow it in the same session.
