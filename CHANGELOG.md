@@ -53,7 +53,8 @@ All notable changes to Fluent will be documented in this file.
   mistake is named in Russian. The result files keep their English markers, so
   the next-session planner reads them as before. The summaries and prompts of
   `/fluent-grammar`, `/fluent-vocab` and `/fluent-review` are Russian too, and
-  the other skills follow.
+  so are the feedback, rubric tables and summaries of `/fluent-writing` and
+  `/fluent-speaking`; the other skills follow.
 
 ## [0.10.0] — 2026-10-16
 

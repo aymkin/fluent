@@ -52,7 +52,7 @@ Greet the learner by name and give: the two blocks, the eight answers, the exam-
 
 {A man / A woman} stelt je een vraag.
 
-Write **go** to hear it.
+Напиши **go**, чтобы услышать вопрос.
 ```
 
 On "go", speak it with a Dutch voice, the text on stdin so quotes go through as written (Xander, `nl_NL`, for a man; Ellen, `nl_BE`, for a woman):
@@ -78,7 +78,7 @@ EOF
 Plaatje {1}: {description in the learner's language}
 Plaatje {2}: {description}
 
-**Type your answer in Dutch:**
+**Напиши ответ по-нидерландски:**
 ```
 
 Pictures are listed in the learner's language, one line each, without the Dutch words the learner has to find. Done when the answer is in.
@@ -99,22 +99,22 @@ Feedback, a variant of `fluent-feedback-formatter`:
 ```markdown
 {✅ or 🟡} {one-line encouragement}
 
-**What you said:** "{their answer}"
-{block 1 only: **The question was:** "{the question}"}
+**Твой ответ:** "{their answer}"
+{block 1 only: **Вопрос был:** "{the question}"}
 
-**Both parts answered:** {part 1 ✅/❌} · {part 2 ✅/❌}
+**Обе части ответа:** {part 1 ✅/❌} · {part 2 ✅/❌}
 
-**Corrections:**
+**Исправления:**
 - ❌ {🔴/🟡/🟢} "{wrong}" → **"{correct}"** ({category} — {why})
 - ✅ "{right}" — {specific praise}
 
-**Natural version:** "{a version the learner could say}"
+**Естественный вариант:** "{a version the learner could say}"
 
-| Adequaatheid | Grammatica | Woordgebruik | Coherentie | Total |
+| Adequaatheid | Grammatica | Woordgebruik | Coherentie | Итого |
 |---|---|---|---|---|
 | {a}/3 | {g}/2 | {w}/2 | {c}/1 | **{P}/8** |
 
-**Score: {X}/10** — {P} ÷ 8 × 10, rounded
+**Оценка: {X}/10** — {P} ÷ 8 × 10, округлено
 ```
 
 The assessors apply DUO's own rubric; this is the tutor's estimate of its typed part. The same message goes on to the next question (step 4); after the eighth answer, the summary (step 6) follows the feedback.
@@ -128,19 +128,19 @@ date +%s
 Minutes taken = (this number − the start mark) ÷ 60, rounded up.
 
 ```markdown
-## 🎉 Speaking Session Complete!
+## 🎉 Сессия по говорению завершена!
 
-| Block | Question | Points | Score |
+| Блок | Вопрос | Баллы | Оценка |
 |---|---|---|---|
 | {B} | {N} | {P}/8 | {X}/10 |
 
-**Time:** {minutes} of {budget} min (exam pace: 2.2 min an answer)
-**Weakest aspect:** {aspect}
-**Not scored:** Vloeiendheid and Uitspraak (4 of the exam's 12 points): they need your voice.
+**Время:** {minutes} из {budget} мин (темп экзамена: 2,2 мин на ответ)
+**Слабое место:** {aspect}
+**Не оценивается:** Vloeiendheid и Uitspraak (4 из 12 баллов экзамена): для них нужен голос.
 
-### For next time
-- Say today's three best natural versions aloud once.
-- Practice: {weak area}
+### На следующий раз
+- Произнеси вслух три лучших естественных варианта за сегодня, по одному разу.
+- Потренировать: {weak area}
 ```
 
 Close with the way to the exam's own material: DUO's three practice exams for Spreken (`inburgeren.nl/examen-doen/oefenen.jsp`) run in the exam's own player with the microphone and the video questions, which a typed round cannot give; one taken before the exam shows what the voice adds.
@@ -182,4 +182,4 @@ The form of each block is the exam's (`.claude/references/exam-a2.md` §Spreken)
 
 ## B1 conversation
 
-With the argument `b1`: a typed conversation of `computed.session_cap` questions, one at a time, on topics from `.claude/references/level-b1.md` §"Genres" (narrate a past event, compare two options, a hypothetical, an unplanned phone call), each worded so that answering it calls for one grammar target the learner has not yet mastered. After three or four questions on one topic, change topic. Score each answer: Communication 0–5 (clear, answers the question), Grammar 0–3, Vocabulary 0–2, total out of 10; a slip that leaves the message clear is noted lightly, and the Communication score leads. Feedback is the template of step 5 with the four rubric columns replaced by those three scores. Update: `skill_scores.speaking: {exercises: N, correct: count of clear answers, time_minutes}`; `errors[]` hold the communication-blocking ones and misses on a B1 target from `.claude/references/level-b1.md`.
+With the argument `b1`: a typed conversation of `computed.session_cap` questions, one at a time, on topics from `.claude/references/level-b1.md` §"Genres" (narrate a past event, compare two options, a hypothetical, an unplanned phone call), each worded so that answering it calls for one grammar target the learner has not yet mastered. After three or four questions on one topic, change topic. Score each answer: Communication 0–5 (clear, answers the question), Grammar 0–3, Vocabulary 0–2, total out of 10; a slip that leaves the message clear is noted lightly, and the Communication score leads. Feedback is the template of step 5 with the four rubric columns replaced by those three scores, headed «Коммуникация», «Грамматика», «Лексика». Update: `skill_scores.speaking: {exercises: N, correct: count of clear answers, time_minutes}`; `errors[]` hold the communication-blocking ones and misses on a B1 target from `.claude/references/level-b1.md`.

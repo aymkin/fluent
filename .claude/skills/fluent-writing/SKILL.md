@@ -67,7 +67,7 @@ Work in the order the rubric ranks the aspects:
 
 Check every sentence against the category canon in `fluent-feedback-formatter` §"Use these category labels" — the single home of the list, `structure` included.
 
-The Title-Case headings the learner reads in the feedback are display copy, not payload values. `errors[].category` takes the lowercase canon label (`formal_informal`, `missing`, `structure`, …); `update-db.py` rejects anything else and writes no database at all, so a display heading copied into the payload fails the whole update.
+The headings the learner reads in the feedback are display copy, not payload values. `errors[].category` takes the lowercase canon label (`formal_informal`, `missing`, `structure`, …); `update-db.py` rejects anything else and writes no database at all, so a display heading copied into the payload fails the whole update.
 
 Tag each finding with a severity: 🔴 critical, 🟡 moderate, 🟢 minor. Severity is mandatory: `mistakes-db` stores it on the pattern, and `fluent-session-analyzer` weighs it when planning. Stage each finding for the end-of-session payload.
 
@@ -76,61 +76,61 @@ Tag each finding with a severity: 🔴 critical, 🟡 moderate, 🟢 minor. Seve
 Diverges slightly from the standard `fluent-feedback-formatter` template because a writing answer is a whole text. Use this variant:
 
 ```markdown
-## Feedback — taak {T}/4: {task type}
+## Разбор — taak {T}/4: {task type}
 
-### ✅ What worked
+### ✅ Что получилось
 - {strength}
 
-### ❌ To fix
+### ❌ Что исправить
 
-**Critical:** 🔴
+**Критично:** 🔴
 - {issue}: "{wrong}" → **"{correct}"** — {why}
 
-**Moderate:** 🟡
+**Умеренно:** 🟡
 - {issue}: {explanation}
 
-**Minor:** 🟢
+**Мелочи:** 🟢
 - {spelling / punctuation}
 
-### 📝 Corrected version
+### 📝 Исправленный текст
 
 {fully corrected text}
 
-### Rubric (DUO, my estimate)
+### Рубрика (DUO, моя оценка)
 
-| Aspect | Points |
+| Критерий | Баллы |
 |---|---|
 | Adequaatheid | {a}/3 |
 | Grammatica | {g}/2 |
 | Spelling | {s}/2 |
 | Woordgebruik | {w}/2 |
 | Coherentie | {c}/1 |
-| **Total** | **{P}/{max}** |
+| **Итого** | **{P}/{max}** |
 
-**Score: {X}/10** — {P} ÷ {max} × 10, rounded
-**Time:** {minutes} min
+**Оценка: {X}/10** — {P} ÷ {max} × 10, округлено
+**Время:** {minutes} мин
 ```
 
-The maximum is 10 on an email, a neighbourhood-paper text and a note, with every row; 7 on a form, with Adequaatheid, Spelling and Woordgebruik only. An Adequaatheid of 0 zeroes every other row. The assessors apply DUO's own rubric; this is the tutor's estimate of it.
+The maximum is 10 on an email, a neighbourhood-paper text and a note, with every row; 7 on a form, with Adequaatheid, Spelling and Woordgebruik only. An Adequaatheid of 0 zeroes every other row. The assessors apply DUO's own rubric; this is the tutor's estimate of it. `{task type}` is shown as «письмо», «текст для районной газеты», «анкета» or «записка»; `session_notes` keep the type words of step 9.
 
 ### 7. Next task
 
-If the Score is below 7, offer a second try at this task: "Type **rewrite** to write it again with the corrections, or **go** for the next task." The rewrite is practice and the Score stays the first text's. Every feedback message ends on that cue ("Type **go** for task {T+1}."); after **go**, return to step 3 with the next task. After the fourth task, the summary (step 8) follows the feedback instead.
+If the **Оценка** is below 7, offer a second try at this task: «Напиши **rewrite**, чтобы написать текст заново с исправлениями, или **go** — следующее задание.» The rewrite is practice and the score stays the first text's. Every feedback message ends on that cue («Напиши **go** для задания {T+1}.»); after **go**, return to step 3 with the next task. After the fourth task, the summary (step 8) follows the feedback instead.
 
 ### 8. Session summary
 
 ```markdown
-## 📊 Writing Session Complete!
+## 📊 Сессия по письму завершена!
 
-| Task | Type | Points | Score |
+| Задание | Тип | Баллы | Оценка |
 |---|---|---|---|
 | 1 | {type} | {P}/{max} | {X}/10 |
 
-**Time:** {total minutes} of 40 min for the four tasks
-**Weakest aspect:** {aspect}
-**Next time:**
-- Focus on: {weak pattern}
-- Review: {relevant flashcards}
+**Время:** {total minutes} из 40 мин на четыре задания
+**Слабое место:** {aspect}
+**В следующий раз:**
+- Сосредоточиться на: {weak pattern}
+- Повторить: {relevant flashcards}
 ```
 
 Close with the way to the exam's own material: DUO's three practice exams for Schrijven (`inburgeren.nl/examen-doen/oefenen.jsp`, PDF) are written by hand in 40 minutes; the learner can type what they wrote and send it here to be scored on the same rubric.
@@ -179,7 +179,7 @@ Onderwerp: {subject}
 
 {Beste mevrouw/meneer … , or Hallo …,}
 
-[write here]
+[schrijf hier]
 
 {closing}
 ```
@@ -192,4 +192,4 @@ Onderwerp: {subject}
 
 ## B1 task
 
-With the argument `b1`: one scenario for the session. Take the genre from `.claude/references/level-b1.md` §"Genres" (opinion, complaint, inquiry, a short formal email) and put one grammar target the learner has not yet mastered into **Include**, named by its function ("give a reason for your complaint"), never by its form. Present it as **Scenario** (in the learner's language), **Task**, **Requirements** (length in words, **Include**, register, level) and wait for the full text. Analyse as step 5, but with B1's grading stance from `.claude/references/level-b1.md` §"What B1 asks for": a slip that leaves the meaning clear is 🟡 or 🟢, and Communication leads. Give the feedback of step 6 with **Score: {X}/10** and a breakdown of Grammar, Vocabulary, Structure and Communication, each out of 10. Update: `skill_scores.writing: {exercises: 1, correct: 1 if the Score is 7 or more else 0, time_minutes}`.
+With the argument `b1`: one scenario for the session. Take the genre from `.claude/references/level-b1.md` §"Genres" (opinion, complaint, inquiry, a short formal email) and put one grammar target the learner has not yet mastered into **Включи**, named by its function ("give a reason for your complaint"), never by its form. Present it as **Ситуация**, **Задание**, **Требования** (length in words, **Включи**, register, level) and wait for the full text. Analyse as step 5, but with B1's grading stance from `.claude/references/level-b1.md` §"What B1 asks for": a slip that leaves the meaning clear is 🟡 or 🟢, and Communication leads. Give the feedback of step 6 with **Оценка: {X}/10** and a breakdown of «Грамматика», «Лексика», «Структура» and «Коммуникация», each out of 10. Update: `skill_scores.writing: {exercises: 1, correct: 1 if the Score is 7 or more else 0, time_minutes}`.
