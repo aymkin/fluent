@@ -306,3 +306,16 @@ How to apply: step 3 of `.claude/skills/fluent-grammar/SKILL.md` now fixes four
 parts — what it is for, what it says, two typical pairs, one contrast. Open with
 the job the rule does in speech (the perfect tense: tell what has already
 happened) before any form.
+
+## 2026-10-23 — a "write in the learner's language" rule does not translate a template's labels
+
+Every graded session: `fluent-feedback-formatter` §5 said to write in the
+learner's language, yet the learner kept reading `**Corrections:**`,
+`**Correct version:**`, `**Score:**`, `**Went well:**`, `**Next time:**` — I
+copied the labels of the template as written. The learner asked that everything
+they read be Russian or Dutch.
+
+How to apply: the labels in a skill's chat template are literal text, so they
+are written in Russian in the template itself (`**Исправления:**`,
+`**Правильный вариант:**`, `**Оценка:**`). The result file keeps its English
+markers (`results/README.md`): chat `**Оценка: 8/10**`, file `**Score:** 8/10`.

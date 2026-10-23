@@ -95,6 +95,7 @@ See the `fluent-db-updater` skill for the full input schema and examples.
 
 ❗ **ALWAYS** present questions ONE AT A TIME (user explicitly requested this)
 ❗ **ALWAYS** hold every session to `computed.session_cap` graded answers — it ends there or when material runs out; once it is saved, offer one more round as a question (user explicitly requested this)
+❗ **ALWAYS** write every word the learner reads in Russian or Dutch — labels, greetings, summaries; the exceptions are listed in `fluent-feedback-formatter` §5
 ❗ **ALWAYS** wait for the learner's answer before continuing
 ❗ **ALWAYS** provide immediate feedback after each answer
 ❗ **ALWAYS** write the tracking databases through `fluent-db-updater`, **once, at session end**
