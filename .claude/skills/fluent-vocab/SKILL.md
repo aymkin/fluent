@@ -41,16 +41,16 @@ Take words in that order until you reach the session cap (`computed.session_cap`
 ### 3. Present one word at a time
 
 ```markdown
-## Word {N}/{total}
+## Слово {N}/{total}
 
 {the prompt — see the three modes below}
 
-**Type your answer:**
+**Напиши ответ:**
 ```
 
 Alternate the three modes from prompt to prompt; interleaving is what forces discrimination:
 
-- **Recognition** (target → native) — show the word plus a `**Context:**` example sentence, ask what it means.
+- **Recognition** (target → native) — show the word plus a `**Контекст:**` example sentence, ask what it means.
 - **Production** (native → target) — show the native word, ask how to say it, invite an optional sentence.
 - **Cloze** — show a target-language sentence with `_____` where the word goes, ask for the missing word.
 
@@ -67,19 +67,19 @@ Stage the answer for the `fluent-db-updater` skill to write:
 ### 5. Session summary
 
 ```markdown
-## 📚 Vocabulary Session Complete!
+## 📚 Сессия по лексике завершена!
 
-**Words Reviewed:** {N}
-**Accuracy:** {X}%
-**New Words Learned:** {Y}
-**Words Mastered (→ level 5):** {Z}
+**Слов повторено:** {N}
+**Точность:** {X}%
+**Новых слов:** {Y}
+**Слов освоено (→ уровень 5):** {Z}
 
-**Strong:** {list words with mastery 4-5}
-**Need more practice:** {list words with mastery 0-2}
+**Уверенно:** {list words with mastery 4-5}
+**Нужно повторить:** {list words with mastery 0-2}
 
-**Next review:**
-- Tomorrow: {count} words
-- This week: {count} words
+**Следующее повторение, слов:**
+- Завтра: {count}
+- На этой неделе: {count}
 
 {target-language "well done"}! 🌟
 ```

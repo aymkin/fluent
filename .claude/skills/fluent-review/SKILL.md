@@ -30,12 +30,12 @@ The queue comes back as one round: today's due items, most urgent first — `pri
 If the queue is empty:
 
 ```markdown
-🎉 No reviews due today! Your spaced repetition is up to date.
+🎉 На сегодня повторений нет! Интервальные повторения в порядке.
 
-Want to practice something new? Try:
-- `/fluent-learn` — adaptive mixed practice
-- `/fluent-vocab` — learn new words
-- `/fluent-progress` — see your stats
+Хочешь позаниматься чем-то новым? Попробуй:
+- `/fluent-learn` — смешанная адаптивная практика
+- `/fluent-vocab` — новые слова
+- `/fluent-progress` — твоя статистика
 ```
 
 ### 2. Opening
@@ -71,7 +71,7 @@ Match the exercise to `item_type`:
 
 Once an `error_pattern` or `grammar_rule` item that names a target in `.claude/references/level-b1.md` reaches `mastery_level` 3, switch to that target's "done when" test, as that file defines "done".
 
-Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its place in the round (`Item {N}/{round size}`), the item type, days since last review, current mastery, and `fsrs_difficulty`.
+Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its place in the round (`Задание {N}/{round size}`), the item type as «ошибка», «слово» or «правило», days since last review, current mastery, and `fsrs_difficulty`.
 
 ### 4. Evaluate + submit the score
 
@@ -87,11 +87,11 @@ The `update-db.py` script maps the quality to an FSRS rating and reschedules via
 
 ### 5. Progress pulse every 5 items
 
-Items done out of the round, running accuracy, minutes left.
+One line: `Готово {done}/{round size} · точность {X}% · осталось ≈{K} мин`.
 
 ### 6. Session summary
 
-Give: how many were reviewed, accuracy, minutes spent. Then the breakdown — clean (gone for a while), minor slips (back in X days), missed (back within a few days) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
+Give: how many were reviewed, accuracy, minutes spent. Then the breakdown — «чисто» (gone for a while), «мелкие промахи» (back in X days), «пропущено» (back within a few days) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
 
 ### 7. Update all databases
 

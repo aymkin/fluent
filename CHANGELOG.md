@@ -51,8 +51,9 @@ All notable changes to Fluent will be documented in this file.
 - **The tutor's labels are Russian.** The feedback after each answer now reads
   **Исправления**, **Правильный вариант** and **Оценка**, and the category of a
   mistake is named in Russian. The result files keep their English markers, so
-  the next-session planner reads them as before. The session summaries follow
-  skill by skill.
+  the next-session planner reads them as before. The summaries and prompts of
+  `/fluent-grammar`, `/fluent-vocab` and `/fluent-review` are Russian too, and
+  the other skills follow.
 
 ## [0.10.0] — 2026-10-16
 
