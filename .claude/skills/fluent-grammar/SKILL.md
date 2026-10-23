@@ -46,6 +46,8 @@ Teach the rule in the learner's native language, in four parts, in this order:
 3. **Typical pairs** — two everyday sentences a learner at this level really says, each in the native language, then in the simplest target-language version: the shortest sentence, the most frequent verbs.
 4. **One contrast** — the form the rule is confused with, as a ❌ and ✅ pair.
 
+Show the parts under their Russian headings: «Зачем оно нужно», «Что оно говорит», «Типичные пары», «Контраст».
+
 End the message on "go?" and wait.
 
 ```bash
@@ -79,14 +81,14 @@ The five answers count toward `computed.session_cap`; theory is not a graded ans
 ### 6. Session summary
 
 ```markdown
-## 📐 Grammar Session Complete!
+## 📐 Сессия по грамматике завершена!
 
-**Rule:** {rule}
-**Series:** {correct}/5 → {score}/10
-**Time:** {theory minutes} min theory + {exercise minutes} min exercises
+**Правило:** {rule}
+**Серия:** {correct}/5 → {score}/10
+**Время:** {theory minutes} мин теории + {exercise minutes} мин упражнений
 
-**Went well:** {what the learner applied correctly}
-**Next time:** {the one error to watch, or the next rule when the series passed}
+**Получилось:** {what the learner applied correctly}
+**В следующий раз:** {the one error to watch, or the next rule when the series passed}
 
 {target-language "well done"}! 🌟
 ```
