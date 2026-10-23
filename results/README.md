@@ -113,6 +113,10 @@ The `fluent-session-analyzer` skill relies on these exact markers being present:
 
 Do not rename these headings or reorder sections. Changes break the analyzer.
 
+The markers stay English whatever language the chat uses. A chat label such as
+**Оценка** is display copy: the file keeps `**Score:**`, `**Accuracy:**`,
+`**Focus Areas:**` and the category id (`grammar`, not «грамматика»).
+
 ## 🔗 Interaction with the databases
 
 Session files are **markdown narrative**. The JSON databases (`mistakes-db.json`,

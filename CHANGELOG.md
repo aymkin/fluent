@@ -48,6 +48,11 @@ All notable changes to Fluent will be documented in this file.
   exam's pace. The exam format itself is written down in
   `.claude/references/exam-a2.md`, which the speaking, reading and writing
   skills will share.
+- **The tutor's labels are Russian.** The feedback after each answer now reads
+  **Исправления**, **Правильный вариант** and **Оценка**, and the category of a
+  mistake is named in Russian. The result files keep their English markers, so
+  the next-session planner reads them as before. The session summaries follow
+  skill by skill.
 
 ## [0.10.0] — 2026-10-16
 
