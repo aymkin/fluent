@@ -74,11 +74,11 @@ Wait for the letter. Done when the learner has answered.
 ```markdown
 {✅ or ❌} **{right letter}. {right option}**
 
-**The text says:** "{the settling sentence}"
+**В тексте сказано:** "{the settling sentence}"
 
 {why, in the learner's native language: where the text settles it, and what made the distractor tempting}
 
-**Score: {X}/10**
+**Оценка: {X}/10**
 ```
 
 Score 10 for the right letter and 0 for a wrong one, as the exam marks. Stage each wrong answer for the end-of-session update. Done when the learner has the sentence and the explanation. The same message goes on to the next question (step 4), so it ends on that question; after the round's last question, the summary (step 7) follows the feedback instead, with the words (step 6) between.
@@ -88,13 +88,13 @@ Score 10 for the right letter and 0 for a wrong one, as the exam marks. Stage ea
 After the last question, pick 3–5 words from the texts the learner is likely not to know:
 
 ```markdown
-## 📚 Words from the texts
+## 📚 Слова из текстов
 
-| {target_language} | {native_language} | In the text |
+| {target_language} | {native_language} | В тексте |
 |-------|---------|-------------|
 | {word} | {meaning} | "{sentence}" |
 
-**Which of these do you want to save for review?** Reply with the words, "all", or "none".
+**Какие из них сохранить для повторения?** Напиши слова, **all** или **none**.
 ```
 
 Stage each word the learner chose for `new_vocabulary[]`.
@@ -108,25 +108,27 @@ date +%s
 Minutes taken = (this number − the start mark) ÷ 60, rounded up.
 
 ```markdown
-## 📊 Reading Session Complete!
+## 📊 Сессия по чтению завершена!
 
-**Texts:** {T} · **Questions:** {N} · **Correct:** {X} ({percent}%)
-**Time:** {minutes} of {budget} min (exam pace: 2.6 min a question)
+**Текстов:** {T} · **Вопросов:** {N} · **Верно:** {X} ({percent}%)
+**Время:** {minutes} из {budget} мин (темп экзамена: 2,6 мин на вопрос)
 
-### By question kind
-- A fact (when, where, who, how much, what to bring): {x}/{n}
-- Which offer fits a person: {x}/{n}
-- Why the text was written: {x}/{n}
+### По видам вопросов
+- Факт (когда, где, кто, сколько, что взять с собой): {x}/{n}
+- Какое предложение подходит человеку: {x}/{n}
+- Зачем написан текст: {x}/{n}
 
-### By text
+### По текстам
 - {genre}: {x}/{n}
 
-### New words added: {count}
+### Добавлено новых слов: {count}
 {list}
 
-### For next time
+### На следующий раз
 - {suggestion based on the weakest kind}
 ```
+
+`{genre}` is named in Russian («письмо жильцам», «буклет магазина», «правила дома»).
 
 Close with the way to the exam's own material: DUO's practice exams for Lezen (`inburgeren.nl/examen-doen/oefenen.jsp`) hold 25 questions in 65 minutes; one taken under exam conditions shows what a tutor round cannot — and the learner can report the result here. When the round scored above 80%, say it is time for one of them.
 

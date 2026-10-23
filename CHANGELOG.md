@@ -54,7 +54,8 @@ All notable changes to Fluent will be documented in this file.
   the next-session planner reads them as before. The summaries and prompts of
   `/fluent-grammar`, `/fluent-vocab` and `/fluent-review` are Russian too, and
   so are the feedback, rubric tables and summaries of `/fluent-writing` and
-  `/fluent-speaking`; the other skills follow.
+  `/fluent-speaking`, and the feedback, word tables and summaries of
+  `/fluent-reading` and `/fluent-listening`; the other skills follow.
 
 ## [0.10.0] — 2026-10-16
 
