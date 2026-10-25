@@ -14,6 +14,16 @@ All notable changes to Fluent will be documented in this file.
   goes straight to the exercises, and its theory follows a series below 7 out of
   10. The series is one review of the rule, scored out of 10, and the time spent
   on theory counts as grammar time. A project's own rules can name the next rule.
+- **`/fluent-vocab` works with the words you met in Anki today.** Each word
+  comes inside its chunk — the words it usually goes with (`boodschappen doen`,
+  `wachten op`) — and you first write one true sentence about yourself with it.
+  A verb then moves through other persons and tenses, one form per task: a
+  question to a friend with `jij`, the polite `u`, someone close to you,
+  yesterday, tomorrow. Once a round asks why a form is what it is. After the
+  round is saved you see each verb's whole paradigm as a table, and the next
+  round opens by recalling the previous round's chunks. Anki stays as it is:
+  the session only reads it, and a word Anki still has for you today waits
+  until you have reviewed it.
 
 ### Improvements
 
