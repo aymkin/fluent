@@ -48,6 +48,10 @@ All notable changes to Fluent will be documented in this file.
   exam's pace. The exam format itself is written down in
   `.claude/references/exam-a2.md`, which the speaking, reading and writing
   skills will share.
+- **`/fluent-extensive` leaves out the words Anki still has for you today.**
+  A story built on a card you have not reviewed yet would hand you its answer
+  before Anki asks for it. The Anki searches by stage now live in one place,
+  `.claude/references/anki.md`.
 - **The tutor's labels are Russian.** The feedback after each answer reads
   **Исправления**, **Правильный вариант** and **Оценка**, the category of a
   mistake is named in Russian, and so are the menus, prompts, tables and
