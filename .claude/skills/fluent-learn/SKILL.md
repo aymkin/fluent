@@ -1,7 +1,7 @@
 ---
 name: fluent-learn
 description: Main adaptive session across all four skills — warm-up, two weak-pattern drills, one integration task.
-allowed-tools: Read, Write, Bash
+allowed-tools: Read, Write, Bash, mcp__Anki_MCP_Server__findNotes, mcp__Anki_MCP_Server__notesInfo
 disable-model-invocation: true
 ---
 
@@ -40,7 +40,7 @@ Open with the learner's name, their streak, today's review round (due items up t
 ```markdown
 1. 📝 Письмо (экзамен DUO A2: четыре задания, около 40 мин)
 2. 🗣️ Говорение (экзамен DUO A2: два блока, около 18 мин)
-3. 📖 Лексика (карточки)
+3. 📖 Слова из Anki: чанки, лица, времена
 4. 👀 Чтение (экзамен DUO A2: четыре текста, около 26 мин)
 5. 🎧 Аудирование (экзамен DUO A2: четыре фрагмента, около 18 мин)
 6. 🔄 Повторение (сегодняшние элементы)

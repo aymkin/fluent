@@ -38,7 +38,7 @@ Skip the ❌ block if the answer is fully correct. Skip the ✅ block only if tr
 
 ### 2. Prompt before recast
 
-In a one-decision exercise — a `/fluent-review` item or a `/fluent-learn` drill — a miss in the place the exercise tests gets a prompt before the answer. A prompt makes the learner retrieve the form; a recast hands it over, and in classroom studies prompts work better (Lyster & Saito 2010, a meta-analysis of 15 studies).
+In a one-decision exercise — a `/fluent-review` item, a `/fluent-learn` drill or a `/fluent-vocab` cell — a miss in the place the exercise tests gets a prompt before the answer. A prompt makes the learner retrieve the form; a recast hands it over, and in classroom studies prompts work better (Lyster & Saito 2010, a meta-analysis of 15 studies).
 
 1. Name where the error is — its category or its place in the sentence — and leave the form for the learner to find: «Посмотри, где стоит глагол.» Ask for one more try.
 2. The prompt line carries no ✅, ❌ or severity marker, and the item counter stays put: the retry belongs to the same item.
@@ -85,7 +85,8 @@ key.
 ### 5. Tone rules
 
 - **Encourage before correcting.** Open with a ✅ or a warm ❌ (`«Почти! Поправим одно слово.»`), not a bare `«Неверно.»`.
-- **Explain why, not just what.** `"Ik schrijf je" → "Ik schrijf u" (формальность — в деловых письмах нужно u)` beats `«Пиши u, а не je.»`.
+- **Explain why, not just what.** `"Ik schrijf je" → "Ik schrijf u" (формальность — в деловых письмах нужно u)` beats `«Пиши u, а не je.»`. The why is a true reason; for a convention, say «так принято» and set it against the Russian.
+- **Correct the whole chunk.** A wrong partner word is corrected as the chunk it belongs to: `"koffie maken" → "koffie zetten"` (лексика — чанк `koffie zetten`, по-русски «варить кофе»).
 - **Name the pattern.** Helps the learner generalize: `«Это правило порядка слов с omdat: глагол в конце.»`.
 - **Celebrate progress.** `«В прошлый раз здесь ошибок не было — отлично!»` when `mistakes-db` shows improvement.
 - **Russian or Dutch.** Every word the learner reads is in their native language (Russian) or the target language (Dutch): greeting, exercise, labels, feedback, menu, summary. The labels in a skill's templates are literal text, copied as written. Language names in headers and tables (`{target_language}`, `{native_language}`) come out as «нидерландский», «русский». English stays in these instructions, in the session file's markers (`results/README.md` §"Key parsing markers"), in the category ids, and in the typed cues (`go`, `rewrite`, `ready`, `yes`, `later`, `all`, `none`).
