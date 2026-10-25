@@ -25,14 +25,7 @@ Need: `learner-profile` (name, level, native language), `computed.session_cap`, 
 
 ### 2. Collect the words
 
-The stages match the learner's study tracker:
-
-| Stage | Anki search |
-|-------|-------------|
-| **onderweg** (in progress) | `deck:Frequentie -is:new prop:ivl<21 -is:suspended` |
-| **vast** (learned) | `deck:Frequentie prop:ivl>=21 -is:suspended` |
-
-Run both searches with `findNotes`, then read the notes with `notesInfo`, at most 100 ids per call. Each note carries `Word`, `Translation` and `Example`.
+Read the onderweg and vast stages as `.claude/references/anki.md` describes them.
 
 Choose **10 target words** from onderweg: words that fit one story topic, leaving out the previous session's targets. The rest of the story uses vast words and basic vocabulary at the learner's level.
 

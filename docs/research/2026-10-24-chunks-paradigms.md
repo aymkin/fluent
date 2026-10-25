@@ -380,7 +380,7 @@ perfectum; imperfectum впереди (Link+ 12, Link 14) — см. `grammar-roa
 | Self-reference | §2.7 |
 | Paradigm by word class | §2.8, §3.1–3.9 |
 | Cell | §2.1, §2.3; урок «один верный ответ» (`tasks/lessons.md`, 2026-10-19) |
-| A2 tense set | §4 |
+| Time markers and the A2 tense set | §3.3, §3.4, §4 |
 | Acceptance | §3.1, §3.3, §3.4 |
 | Grading traps | §3.10 |
 | Why | §2.6 |
