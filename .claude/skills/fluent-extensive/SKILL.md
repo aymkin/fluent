@@ -37,7 +37,7 @@ Done when 10 targets (or the fallback set) each have a translation.
 
 One story in three episodes, 150-200 words each, at `current_level`.
 
-- Each target appears 2-3 times across the story, in at least 2 different forms and in at least 2 episodes: present and past, perfectum, a split separable verb, singular and plural, an inflected adjective, a new collocation.
+- Each target appears 2-3 times across the story, in at least 2 different forms and in at least 2 episodes: present and past, perfectum, a split separable verb, singular and plural, an inflected adjective, a new collocation. At least one use puts the target inside its chunk (`.claude/references/chunks-nl.md` §Chunk).
 - Each target sits in a fresh context: write sentences of your own, unlike the note's `Example`.
 - Targets look like every other word in the text, so the learner meets them the way a reader does.
 

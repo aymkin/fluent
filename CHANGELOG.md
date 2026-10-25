@@ -23,9 +23,19 @@ All notable changes to Fluent will be documented in this file.
   round is saved you see each verb's whole paradigm as a table, and the next
   round opens by recalling the previous round's chunks. Anki stays as it is:
   the session only reads it, and a word Anki still has for you today waits
-  until you have reviewed it.
+  until you have reviewed it. It is item 3 of the `/fluent-learn` menu.
 
 ### Improvements
+
+- **Words come in chunks, and «почему» gets a true answer.** Every session
+  corrects a wrong word pair as the whole chunk — «koffie maken» comes back as
+  «koffie zetten», set against the Russian «варить кофе» — and answers
+  «почему» with a real rule, or says that this is simply how Dutch says it.
+  The forms you mix up (jij/u, hebben/zijn) come back on later days.
+- **`/fluent-grammar` builds its sentences from your own life.** The facts you
+  wrote about yourself in `/fluent-vocab` become the people, places and
+  routines of the five exercises; the rule stays the only thing tested.
+- **`/fluent-extensive` uses each target word inside its chunk at least once.**
 
 - **The `/fluent-learn` menu names the exam formats.** Writing, speaking,
   reading and listening show their DUO A2 form and about how long each takes.

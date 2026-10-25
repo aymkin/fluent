@@ -23,7 +23,7 @@ If a skill available in this session says to load it before `/fluent-grammar` �
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py"
 ```
 
-Need: `learner-profile` (name, native and target language, level), the `grammar` patterns of `mistakes-db` with `mastery_level <= 2`, and the `grammar_rule` items of `spaced-repetition`. When `target_level` is B1, also the grammar targets of `.claude/references/level-b1.md`.
+Need: `learner-profile` (name, native and target language, level), the `grammar` patterns of `mistakes-db` with `mastery_level <= 2`, and the `grammar_rule` items of `spaced-repetition`. When `target_level` is B1, also the grammar targets of `.claude/references/level-b1.md`. Also, in `.databases.session_log.sessions[]`, the latest entries whose `notes` start with `Слова из Anki:`: their `Факты:` are the learner's own sentences about their life.
 
 If a database is missing, direct the learner to `/fluent-setup` and stop.
 
@@ -60,7 +60,7 @@ A practised rule skips this step and goes to step 4.
 
 ### 4. Five exercises
 
-Present them one at a time. The rule is each exercise's only difficulty; keep the rest of the sentence at the learner's level, and vary the form: complete the sentence, find the error, transform, translate a short line, build from words.
+Present them one at a time. The rule is each exercise's only difficulty: keep the rest of the sentence at the learner's level, built from the learner's life — the `Факты:` of those notes, otherwise an everyday A2 scene. Vary the form: complete the sentence, find the error, transform, translate a short line, build from words.
 
 ```bash
 date +%s

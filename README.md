@@ -121,7 +121,7 @@ menu.
 | `/fluent-setup` | One-time onboarding — name, language, level, goals. Creates your profile. |
 | `/fluent-review` | Today's spaced-repetition queue. **Start every day here.** |
 | `/fluent-learn` | Adaptive mixed practice; the AI picks what you need most. |
-| `/fluent-vocab` | Flashcard drills, both directions plus cloze. |
+| `/fluent-vocab` | Today's Anki words as chunks: a true sentence about yourself, then other persons and tenses. |
 | `/fluent-grammar` | One grammar rule: its theory first when the rule is new, then five exercises scored out of 10. The theory time counts as grammar time. |
 | `/fluent-writing` | The DUO A2 Schrijven exam: four tasks (email, neighbourhood paper, form, note) in 40 minutes, each scored on DUO's rubric. `/fluent-writing b1` for the B1 task. |
 | `/fluent-speaking` | The DUO A2 Spreken exam, typed: two of its four blocks, a question you hear and then pictures, scored on DUO's rubric. `/fluent-speaking b1` for the B1 conversation. |
