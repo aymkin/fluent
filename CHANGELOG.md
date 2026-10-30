@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-30
+
 ### Improvements
 
 - **Чтение A2 — ловушки и перефразировка по умолчанию.** Каждый раунд
