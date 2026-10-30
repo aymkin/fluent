@@ -80,7 +80,7 @@ One graded answer: score = chunks right ÷ chunks asked × 10. The feedback show
 - **Personal task:** `Чанк: {chunk} — {Russian meaning}.` on one line, then «Напиши правду о себе, одно предложение до 6 слов: {что / где / куда question}?»
 - **Cell:** a Russian line with the situation, then the Dutch frame built from the learner's corrected personal sentence (§Cell).
 
-After each answer give feedback with the `fluent-feedback-formatter` skill before the next task. Once in the round, ask the «Почему…?» of §Why — ungraded. Done when `computed.session_cap` answers are graded.
+After each answer give feedback with the `fluent-feedback-formatter` skill before the next task. When that feedback carried an `❌` line, ask the learner to write the full correct sentence once — «Перепиши правильный вариант целиком:» — and wait for it. Acknowledge the rewrite in one line and move on: it is practice, like the prompt-retry in `fluent-feedback-formatter` §2, so it earns no new score, no `❌`/`✅` block and no counter tick. A rewrite that still slips gets the slip named once, then the next task. Once in the round, ask the «Почему…?» of §Why — ungraded. Done when `computed.session_cap` answers are graded.
 
 ### 5. Save
 
