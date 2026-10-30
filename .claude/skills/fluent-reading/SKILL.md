@@ -43,7 +43,7 @@ Greet the learner by name and give: the round's size (four texts, `session_cap` 
 
 Four texts, each in a different genre from §Texts, and none of the genres the last round used. A text carries its questions: 3, 3, 2 and 2.
 
-Write each text and its questions by §Texts and §Questions. Done when every text has its frame, its questions in the order the text settles them, each with its options, its answer and the sentence that settles it.
+Write each text and its questions by §Texts and §Questions. Done when every text has its frame, its questions in the order the text settles them, each with its options, its answer and the sentence that settles it — and each question clears both bars: its answer is a **paraphrase** of the text (no word-match), and every distractor is a **trap** drawn from the wrong part of the text.
 
 ### 4. One question at a time
 
@@ -162,14 +162,15 @@ With everything saved, ask whether the learner wants another round, as CLAUDE.md
 
 - **Genres** — from `.claude/references/exam-a2.md` §Lezen: a letter to residents, a shop or course folder, a letter or email from work, an email from a colleague, a letter from the neighbourhood association, a newspaper item, house rules, tips in a course guide. A round takes four different ones.
 - **Frame** — one line in Dutch about a named person and the text they get or see (`Sabrina krijgt een brief van haar werk.`).
-- **Text** — 60–140 words of A2 Dutch, laid out the way the genre is: a letter with greeting and closing, a folder with a list or a small table of days, prices or courses, house rules as numbered lines. Times, dates, prices and names appear in the text; nothing is left to inference. Topic from `learner-profile` interests when the genre allows it.
+- **Text** — 60–140 words of A2 Dutch, laid out the way the genre is: a letter with greeting and closing, a folder with a list or a small table of days, prices or courses, house rules as numbered lines. Times, dates, prices and names appear in the text, each decidable from it (never inference) — but the fact a question asks for sits inside a sentence, often a subordinate clause, stated once and in words the question will not reuse. Topic from `learner-profile` interests when the genre allows it.
 - **Level** — A2 words and sentences; one or two words above the level are guessable from the sentence.
 
 ## Questions
 
 - **Stem** — a short situation about a named person, then one question about one fact: what to bring, when, whom to ask, how much, which offer fits, what to do. One decision (`fluent-review` §3).
 - **Kinds** — mostly a fact in the text; one question in a round may ask which offer in a folder fits a person's wish, and at most one asks why the text was written.
-- **Options** — A, B and C, short, in the target language; about every second question takes a fourth, D. Each distractor is something the text also says or a plausible value from it, so the answer takes reading the right part. The right letter moves across the options over the round.
+- **Paraphrase** — the correct answer is never a phrase the learner can lift by matching words to the text. Reword it (`op de hoogte brengen` in the text → `informeren` in the option), make it a small computation (`€ 60` and "de helft" → `€ 30`; `07.00 uur` and "een half uur later" → `07.30`), or leave the fact in a subordinate clause the stem rephrases. Word-matching must fail; reading for meaning must land it.
+- **Trap** — options are A, B and C, short, in the target language; about every second question takes a fourth, D. Every distractor is a trap: a value the text really contains, taken from the wrong part of it — the bus time `07.15` for a question about the shift start `07.30`, `bellen` where the text says to `mailen`. No filler option no one would pick. The right letter moves across the options over the round.
 - **Order** — the questions of a text follow the order of the text.
 
 ## B1 round
