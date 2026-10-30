@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-30
+
 ### Improvements
 
 - **`/fluent-vocab` просит переписать правильный вариант.** Когда в ответе есть
