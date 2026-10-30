@@ -101,3 +101,18 @@ After scoring, feed the score into the scheduler via the `fluent-db-updater` ski
 
 - **One score per answer.** Total out of 10, with optional breakdown (grammar/vocab/structure) for long answers like writing tasks.
 - **Always include the «Правильный вариант»**, even after a perfect answer; echoing the target form reinforces motor memory.
+- **Never answer for the learner (no self-answer).** You grade only an answer the
+  learner actually typed. A turn that presents a question ends there; a grading
+  turn may present the *next* question but must then stop — it waits for the
+  learner. A single turn never contains two scores, nor a grade for a question
+  whose answer has not yet arrived. If you are about to write the learner's
+  reply, stop: you have run past the turn boundary.
+  - **Forbidden in your output, always:** a line that begins with `user`,
+    `assistant`, `system` or `human` (role labels); any `<total_tokens>` text or
+    a "tokens left" line; a block that imitates the learner's turn. These are
+    signs the generation is continuing the chat template and fabricating both
+    sides — the exact failure that produced phantom answers on 2026-10-30
+    (grammar 099 Q5, 100 Q5, reading 102 V5/V10). See `tasks/lessons.md`.
+  - **Round end:** present the final question and stop. The summary (and the
+    `fluent-db-updater` save) come only in a later turn, after the learner's real
+    answer to that last question has arrived.

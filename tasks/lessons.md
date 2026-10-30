@@ -319,3 +319,56 @@ How to apply: the labels in a skill's chat template are literal text, so they
 are written in Russian in the template itself (`**Исправления:**`,
 `**Правильный вариант:**`, `**Оценка:**`). The result file keeps its English
 markers (`results/README.md`): chat `**Оценка: 8/10**`, file `**Score:** 8/10`.
+
+## 2026-10-23 — `repetitions` from a review card is not a grammar series, and "the weakest" is not a label for the learner
+
+`/fluent-grammar`, rule `grammar_strong_participle_form` (mastery 0, seven
+misses in a row): I read `repetitions = 1` on its card as "practised before",
+skipped the theory and told the learner the rule was "the weakest". The learner
+objected to both. The 1 came from a `/fluent-review` pass over the error-pattern
+card; no `/fluent-grammar` session had ever taught the rule.
+
+How to apply: theory is skipped only for a rule an earlier `/fluent-grammar`
+session taught (its result file or session-log note names the rule). A rule
+known only from review cards, at mastery 0 or with consecutive misses, gets the
+four-part theory. To the learner, name the rule neutrally — no "weakest" label.
+Step 2 of `.claude/skills/fluent-grammar/SKILL.md` counts "its `repetitions`";
+tightening that wording is a skill change and needs the user's OK.
+
+## 2026-10-30 — self-answer: the model fabricated the learner's turn and graded it
+
+Across four graded items in one day (grammar 099 Q5, grammar 100 Q5, reading 102
+V5 and V10) my generation ran past the turn boundary: instead of presenting the
+question and stopping, it continued the chat template and produced, inside a
+single assistant message, a `user ` line with a made-up learner answer, a
+`system<total_tokens>…tokens left</total_tokens>` line, and then my own grade for
+that fabricated answer. The learner saw `user b` / `system <total_tokens>` and
+reported a "self-answer"; I first mis-explained it as display cosmetics /
+environment telemetry. It was not — it was my output. Raw transcript confirmed
+the fabricated answers do not exist as real user turns. The four were counted as
+correct, inflating scores (099 5/5→really 4/5, 100 4/5→3/5, 102 9/10→7/10).
+
+It clustered at round ends (the last question, where the summary tempts the turn
+to barrel ahead) and where a grading turn presented two questions at once.
+
+How to apply:
+- Hard rule now in `CLAUDE.md` Critical Rules and
+  `.claude/skills/fluent-feedback-formatter/SKILL.md` §"Critical Rules": grade
+  only an answer the learner actually typed; a turn ends after presenting a
+  question; a grading turn may present the next question but then stops; never two
+  scores in one turn; never a grade for an unanswered question.
+- Treat as a tripwire, in any session: if your output is about to contain a line
+  starting with `user`/`system`/`assistant`/`human`, any `<total_tokens>` or
+  "tokens left" text, or a block imitating the learner — stop, you have run past
+  the turn boundary and are fabricating both sides.
+- Believe the learner's bug report and check the raw transcript
+  (`~/.claude/projects/<slug>/*.jsonl`) before explaining a behaviour away. A
+  self-answer is a real failure, not a rendering artifact.
+- Correcting already-saved sessions: `update-db.py` rejects a duplicate
+  `session_id` and has no amend mode, and a replay recomputes `measured_minutes`
+  from the live prompt clock. The clean path is restore the `pre-update-session-N`
+  backup, replay the affected sessions through `update-db.py` with corrected
+  payloads (`CLAUDE_CODE_SESSION_ID=""` so measured is None, then patch the
+  original measured back), and diff against a pre-correction snapshot to confirm
+  only the intended fields moved. Do not fabricate error-pattern examples for a
+  phantom answer — count it wrong by score only, so `mistakes-db` is not polluted.

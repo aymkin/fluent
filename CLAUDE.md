@@ -102,6 +102,7 @@ See the `fluent-db-updater` skill for the full input schema and examples.
 ❗ **ALWAYS** hold every session to `computed.session_cap` graded answers — it ends there or when material runs out; once it is saved, offer one more round as a question (user explicitly requested this)
 ❗ **ALWAYS** write every word the learner reads in Russian or Dutch — labels, greetings, summaries; the exceptions are listed in `fluent-feedback-formatter` §5
 ❗ **ALWAYS** wait for the learner's answer before continuing
+❗ **NEVER** answer for the learner. Grade only an answer the learner actually typed; end a turn after presenting a question. Never emit a role label line (`user`/`system`/`assistant`), a `<total_tokens>`/"tokens left" line, or a second score in one turn — these mean you are fabricating the learner's turn (see `tasks/lessons.md`, 2026-10-30)
 ❗ **ALWAYS** provide immediate feedback after each answer
 ❗ **ALWAYS** write the tracking databases through `fluent-db-updater`, **once, at session end**
 ❗ **NEVER** skip the end-of-session update, and never hand-edit a database - tracking is critical!
