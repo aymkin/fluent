@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-10-30
+
 ### Added
 
 - **`/fluent-grammar` — grammar practice, theory first.** A session is one rule
