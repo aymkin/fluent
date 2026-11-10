@@ -1,6 +1,6 @@
 ---
 name: fluent-feedback-formatter
-description: 'Canonical feedback shape for every graded learner answer: corrections with category and severity, the full correct version, a score out of 10. Use after the learner submits an answer in any practice session.'
+description: 'Canonical feedback shape for every graded learner answer: corrections with category and severity, the full correct version when the answer differs, a score out of 10. Use after the learner submits an answer in any practice session.'
 ---
 
 # Feedback Formatter
@@ -20,7 +20,7 @@ Skip this skill for non-feedback output (greetings, summaries, progress reports)
 ### 1. Standard template
 
 ```markdown
-{✅ or ❌} {one-line encouragement or gentle correction}
+{✅ encouragement | ❌ gentle correction}
 
 **Исправления:**
 - ❌ "{wrong_part}" → **"{correct_part}"** ({category} — {brief_why})
@@ -34,7 +34,9 @@ Skip this skill for non-feedback output (greetings, summaries, progress reports)
 ---
 ```
 
-Skip the ❌ block if the answer is fully correct. Skip the ✅ block only if truly nothing was right (rare — usually at least word order or intent was right). Otherwise use the shape exactly, labels included: they are literal Russian text. Deviations break session-file parsing downstream.
+The header's mark and its words agree: ✅ opens encouragement (`✅ Верно!`), ❌ opens a gentle correction that names the error (`❌ *gaan* в перфекте идёт с *zijn*.`); praise for what went right sits on a ✅ line under **Исправления**.
+
+Skip the ❌ block if the answer is fully correct. Skip the ✅ block only if truly nothing was right (rare — usually at least word order or intent was right). Show **Правильный вариант** when the answer differs from the correct sentence by more than capitals, final punctuation or spacing — a typo counts as a difference; an answer that already is the sentence gets no echo. Otherwise use the shape exactly, labels included: they are literal Russian text. Deviations break session-file parsing downstream.
 
 ### 2. Prompt before recast
 
@@ -42,7 +44,7 @@ In a one-decision exercise — a `/fluent-review` item, a `/fluent-learn` drill 
 
 1. Name where the error is — its category or its place in the sentence — and leave the form for the learner to find: «Посмотри, где стоит глагол.» Ask for one more try.
 2. The prompt line carries no ✅, ❌ or severity marker, and the item counter stays put: the retry belongs to the same item.
-3. After the retry, give the standard template once. Its ❌ line records the first attempt; a ✅ line may credit the self-correction. The **Оценка** is the first attempt's — the retry is practice, not evidence for the scheduler.
+3. After the retry, give the standard template once. A missed first attempt makes the header ❌ (§1), whatever the retry; its ❌ line records the first attempt, and a ✅ line may credit the self-correction. The **Оценка** is the first attempt's — the retry is practice, not evidence for the scheduler.
 
 In the session file, write both attempts on the answer line: `**Your answer:** "{first}" → (after prompt) "{retry}"`.
 
@@ -84,7 +86,7 @@ key.
 
 ### 5. Tone rules
 
-- **Encourage before correcting.** Open with a ✅ or a warm ❌ (`«Почти! Поправим одно слово.»`), not a bare `«Неверно.»`.
+- **Encourage before correcting.** Open with a ✅ or a warm ❌ (`«❌ Почти! Здесь нужен *zijn*.»`), not a bare `«Неверно.»`.
 - **Explain why, not just what.** `"Ik schrijf je" → "Ik schrijf u" (формальность — в деловых письмах нужно u)` beats `«Пиши u, а не je.»`. The why is a true reason; for a convention, say «так принято» and set it against the Russian.
 - **Correct the whole chunk.** A wrong partner word is corrected as the chunk it belongs to: `"koffie maken" → "koffie zetten"` (лексика — чанк `koffie zetten`, по-русски «варить кофе»).
 - **Name the pattern.** Helps the learner generalize: `«Это правило порядка слов с omdat: глагол в конце.»`.
@@ -100,7 +102,6 @@ After scoring, feed the score into the scheduler via the `fluent-db-updater` ski
 ## Critical Rules
 
 - **One score per answer.** Total out of 10, with optional breakdown (grammar/vocab/structure) for long answers like writing tasks.
-- **Always include the «Правильный вариант»**, even after a perfect answer; echoing the target form reinforces motor memory.
 - **Never answer for the learner (no self-answer).** You grade only an answer the
   learner actually typed. A turn that presents a question ends there; a grading
   turn may present the *next* question but must then stop — it waits for the
