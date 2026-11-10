@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-10
+
 ### Improvements
 
 - **Отзыв без лишнего повтора и без противоречий.** После полностью
