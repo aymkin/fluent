@@ -372,3 +372,27 @@ How to apply:
   original measured back), and diff against a pre-correction snapshot to confirm
   only the intended fields moved. Do not fabricate error-pattern examples for a
   phantom answer — count it wrong by score only, so `mistakes-db` is not polluted.
+
+## 2026-11-10 — a ❌ header followed by praise reads as a contradiction
+
+`/fluent-review` session-106, Q6: the first attempt missed, the retry after a
+prompt was right, and I opened the feedback with «❌ Хорошо, что со второй
+попытки…». The learner read a red cross in front of praise and was confused.
+The template allowed it — `{✅ or ❌} {one-line encouragement or gentle
+correction}` let either words follow either mark.
+
+How to apply: `fluent-feedback-formatter` §1 now ties the header's words to its
+mark — ✅ encouragement, ❌ a correction that names the error. After a prompted
+retry (§2 step 3) the header is ❌ with the correction; credit for the
+self-correction goes on a ✅ line under **Исправления**.
+
+## 2026-11-10 — «Правильный вариант» after a perfect answer is an echo
+
+Same session, Q8 (`Ik heb twee katten.`, 10/10): the block repeated the
+learner's sentence word for word, and the learner called it redundant. The
+Critical Rule said to include it "even after a perfect answer".
+
+How to apply: `fluent-feedback-formatter` §1 — show the block
+only when the answer differs from the correct sentence (capitals, final
+punctuation and spacing aside). A typo or any other difference keeps it. The
+session file keeps `**Correct answer:**` for every question.
