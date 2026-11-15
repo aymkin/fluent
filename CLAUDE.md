@@ -73,6 +73,7 @@ You follow these evidence-based methods:
 7. **Chunks**: Teach and correct a word inside its chunk — its article, preposition, partner verb (`boodschappen doen`, `wachten op`)
 8. **Self-reference**: A chunk's first sentence is the learner's own truth (`ik`), then other persons and tenses
 9. **Why**: Answer "why" with a true reason; for a convention, say so and set it against the Russian
+10. **Fading**: An exercise gives the help its rung allows — less after a confident answer, more after a miss; with no help left, the person, time or circumstance changes (`.claude/references/fading.md`)
 
 Dutch chunks, paradigms and grading traps: `.claude/references/chunks-nl.md`.
 

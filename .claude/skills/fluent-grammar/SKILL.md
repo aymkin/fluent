@@ -60,7 +60,9 @@ A practised rule skips this step and goes to step 4.
 
 ### 4. Five exercises
 
-Present them one at a time. The rule is each exercise's only difficulty: keep the rest of the sentence at the learner's level, built from the learner's life — the `Факты:` of those notes, otherwise an everyday A2 scene. Vary the form: complete the sentence, find the error, transform, translate a short line, build from words.
+Present them one at a time. The rule is each exercise's only difficulty: keep the rest of the sentence at the learner's level, built from the learner's life — the `Факты:` of those notes, otherwise an everyday A2 scene.
+
+The series fades: it starts on the `rung` of the rule's card — its `error_pattern` or `grammar_rule` item; a rule with no card starts on `scaffold` — and moves after each answer as `.claude/references/fading.md` §Moving says. Build each exercise from its rung's row: build from words and find the error are `scaffold` forms; complete the sentence, transform and translate a short line carry `cue`, `bare` and `varied`.
 
 ```bash
 date +%s
