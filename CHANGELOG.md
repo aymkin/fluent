@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-11-15
+
 ### New Features
 
 - **Объясни с закрытой книгой.** В `/fluent-grammar` знакомое правило
