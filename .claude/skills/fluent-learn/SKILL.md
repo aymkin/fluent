@@ -89,6 +89,8 @@ Also prompt the learner to **retype** the correct form after a critical mistake 
 Теперь напиши правильный вариант: "{correct_sentence}"
 ```
 
+The drills' misses come back once before the session end (`fluent-feedback-formatter` §2, step 4).
+
 ### 8. Session end
 
 Close with: duration, exercises done, accuracy and how it moved from the session's start, what broke through, what to focus on next time, and the streak.

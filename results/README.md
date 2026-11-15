@@ -98,6 +98,13 @@ When the tutor prompted before giving the answer (`fluent-feedback-formatter`
 `**Your answer:** "{first}" → (after prompt) "{retry}"` — and the question still
 has one `**Score:**`, the first attempt's.
 
+Practice that earns no score goes in its own section after the questions, with
+no `✅`, `❌` or `**Score:**` inside, so the analyzer counts graded answers alone:
+
+- `## Returns` — the returns of `fluent-feedback-formatter` §2, one line each:
+  `- {item_id}: "{answer}" — {верно | the slip}`;
+- `## Why` — the `/fluent-vocab` «Почему…?» and the learner's answer.
+
 ## 🔍 Key parsing markers
 
 The `fluent-session-analyzer` skill relies on these exact markers being present:

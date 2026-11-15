@@ -45,8 +45,9 @@ In a one-decision exercise — a `/fluent-review` item, a `/fluent-learn` drill 
 1. Name where the error is — its category or its place in the sentence — and leave the form for the learner to find: «Посмотри, где стоит глагол.» Ask for one more try.
 2. The prompt line carries no ✅, ❌ or severity marker, and the item counter stays put: the retry belongs to the same item.
 3. After the retry, give the standard template once. A missed first attempt makes the header ❌ (§1), whatever the retry; its ❌ line records the first attempt, and a ✅ line may credit the self-correction. The **Оценка** is the first attempt's — the retry is practice, not evidence for the scheduler.
+4. **Return.** At the round's end, after the last graded item, each item whose first attempt missed comes back once: a new sentence on the same pattern, on the rung of the missed attempt (`.claude/references/fading.md`), with the round's other answers kept out of it. Three returns at most, the lowest scores first. A return is practice, like the retry: no score, no counter tick, no ✅/❌ block — one line confirms it or names the slip.
 
-In the session file, write both attempts on the answer line: `**Your answer:** "{first}" → (after prompt) "{retry}"`.
+In the session file, write both attempts on the answer line: `**Your answer:** "{first}" → (after prompt) "{retry}"`. Returns go in the `## Returns` section (`results/README.md`).
 
 ### 3. Tag severity on every error
 
@@ -114,6 +115,8 @@ After scoring, feed the score into the scheduler via the `fluent-db-updater` ski
     signs the generation is continuing the chat template and fabricating both
     sides — the exact failure that produced phantom answers on 2026-10-30
     (grammar 099 Q5, 100 Q5, reading 102 V5/V10). See `tasks/lessons.md`.
-  - **Round end:** present the final question and stop. The summary (and the
-    `fluent-db-updater` save) come only in a later turn, after the learner's real
-    answer to that last question has arrived.
+  - **Round end:** the turn that receives the round's last graded answer opens
+    with that answer's feedback, as text, before any tool call. The returns
+    (§2, step 4) follow, one per turn; the summary and the `fluent-db-updater`
+    save come only after the learner's real answer to the last of them — or to
+    the last graded question, in a round with no returns.
