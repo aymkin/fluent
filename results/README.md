@@ -103,7 +103,9 @@ no `✅`, `❌` or `**Score:**` inside, so the analyzer counts graded answers al
 
 - `## Returns` — the returns of `fluent-feedback-formatter` §2, one line each:
   `- {item_id}: "{answer}" — {верно | the slip}`;
-- `## Why` — the `/fluent-vocab` «Почему…?» and the learner's answer.
+- `## Why` — the `/fluent-vocab` «Почему…?» and the learner's answer;
+- `## Explanation` — the `/fluent-grammar` closed-book explanations, before and after
+  the series, and the hole the first one showed.
 
 ## 🔍 Key parsing markers
 
