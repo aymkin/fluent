@@ -379,6 +379,34 @@ class UpdateDbSmokeTest(unittest.TestCase):
         item = self._load("spaced-repetition.json")["items"]["nice_to_know"]
         self.assertEqual((item["mastery_level"], item["priority"]), (0, "low"))
 
+    def test_a_card_fades_a_rung_per_confident_review_and_steps_back_on_a_miss(self):
+        """rung is the support a card's next exercise gives (fading.py): a
+        quality 4-5 review fades it one rung toward varied, a miss brings it
+        one back, a quality 3 keeps it; the ladder has a floor and a ceiling."""
+        self.assertEqual(self._run(SESSION_PAYLOAD).returncode, 0)
+        items = self._load("spaced-repetition.json")["items"]
+        self.assertNotIn("rung", items["verb_spreek"])  # created this session, never reviewed
+        self.assertEqual(items["vocab_dag"]["rung"], "bare")  # confident before rungs: cue, then +1
+
+        rungs = []
+        for n, quality in enumerate([1, 5, 5, 3, 1, 5, 5, 5]):
+            proc = self._run(dict(SESSION_PAYLOAD, session_id=f"session-03{n}", errors=[],
+                                  new_vocabulary=[],
+                                  review_results=[{"item_id": "verb_spreek", "quality": quality}]))
+            self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+            rungs.append(self._load("spaced-repetition.json")["items"]["verb_spreek"]["rung"])
+        self.assertEqual(rungs, ["scaffold", "cue", "bare", "bare", "cue", "bare",
+                                 "varied", "varied"])
+
+    def test_a_mistake_brings_its_card_one_rung_back(self):
+        """A mistake on a pattern with a card counts as a missed review
+        (quality 2): it costs the card a rung as it costs a star."""
+        self._seed_known_pattern("verb_spreek")  # no rung yet; last answer confident: cue
+        proc = self._run(dict(SESSION_PAYLOAD, review_results=[]))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        item = self._load("spaced-repetition.json")["items"]["verb_spreek"]
+        self.assertEqual(item["rung"], "scaffold")
+
     def _seed_known_pattern(self, pid):
         """A 5-star card last reviewed two weeks ago and due in a month, with
         its mistakes-db twin: where clean reviews leave a pattern."""

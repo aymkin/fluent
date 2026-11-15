@@ -45,6 +45,7 @@ beside it is only recorded in the item's `review_history`.
 | `stability` | FSRS memory stability (days) |
 | `fsrs_difficulty` | FSRS item difficulty (NOT the CEFR `difficulty` key) |
 | `interval_days` / `due_date` | computed by FSRS, do not set by hand |
+| `rung` | the support the card's next exercise gives: `scaffold`, `cue`, `bare`, `varied` (`.claude/hooks/fading.py`). A quality 4-5 review fades it one rung, a miss brings it one back; `read-db.py` computes it for a card not yet reviewed under rungs |
 
 A legacy SM-2 `easiness_factor` on older items is read by nothing.
 

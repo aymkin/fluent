@@ -160,6 +160,19 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         self.assertEqual((out["computed"]["session_cap"], out["computed"]["review_round"]),
                          (10, 15))
 
+    def test_every_card_carries_its_rung(self):
+        # The skills read one field: a card not yet reviewed under rungs gets
+        # its starting rung computed (fading.py); a stored rung passes through.
+        sr_path = self.tmp / "data" / "spaced-repetition.json"
+        sr = json.loads(sr_path.read_text())
+        sr["items"]["vocab_due"].update(total_reviews=2, last_quality=5)
+        sr["items"]["grammar_referenced"]["rung"] = "varied"
+        sr_path.write_text(json.dumps(sr))
+        for args in ((), ("--review",)):
+            items = self._run(*args)["databases"]["spaced_repetition"]["items"]
+            self.assertEqual({iid: it["rung"] for iid, it in items.items()},
+                             {"vocab_due": "cue", "grammar_referenced": "varied"})
+
     def test_computed_fields_are_exactly_the_documented_six(self):
         # The skills advertise these and only these.
         self.assertEqual(

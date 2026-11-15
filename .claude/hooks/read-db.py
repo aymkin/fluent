@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import fading  # noqa: E402
 import fsrs  # noqa: E402
 from fluent_paths import data_dir, force_utf8_io  # noqa: E402
 from session_cap import REVIEW_ROUND, SESSION_CAP  # noqa: E402
@@ -81,7 +82,11 @@ def main():
 
     sr = databases.get("spaced_repetition", {})
     items = sr.get("items", {})
-    due_items = [iid for iid, item in items.items() if item.get("due_date", "") <= today]
+    # Every card carries its support rung; one not yet reviewed under rungs
+    # gets its starting rung here (fading.py), so the skills read one field.
+    for item in items.values():
+        item["rung"] = fading.rung_of(item)
+    due_items =[iid for iid, item in items.items() if item.get("due_date", "") <= today]
 
     log = databases.get("session_log", {})
     sessions = log.get("sessions", [])
