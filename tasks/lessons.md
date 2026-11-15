@@ -410,3 +410,21 @@ How to apply: build every prompt from the item's `rung`
 (`.claude/references/fading.md`). Base forms, options and words to arrange belong
 to `scaffold` alone; a confident answer earns the next rung; once no help is
 left, change the person, the time marker or the circumstance.
+
+## 2026-11-15 — a prompt that repeats the given cue adds nothing; translate in two steps
+
+Session-109 (`/fluent-review`), Q1: the card `koffie zetten` sat on `scaffold`
+with `(z…)` in the prompt; the learner answered `maak`, and the retry prompt
+pointed back at the same `(z…)`. Alex: «вопрос и вопрос с подсказкой одинаковы —
+эта буква мне не помогла». What would have helped was the line from the
+feedback, «кофе *ставят*»: a Russian-to-Russian step that says what the Dutch
+sentence *thinks*, before the Russian-to-Dutch step. Q11 confirmed it: after
+`(s…)` gave `Sta op`, «нидерландец говорит "выстрели вперёд"» got `Schi(e)t op`.
+Q11 also showed a second flaw: `(s…)` fit the card's known confuser `sta op`.
+
+How to apply: `fluent-feedback-formatter` §2 — the prompt before the retry
+carries information the first prompt lacked. For a chunk partner or a calque,
+that is the two-step translation: rephrase the Russian the way the Dutch chunk
+sees it («кофе ставят», «выстрели вперёд», «время — до "что"»). Before sending
+a first-letter cue, check it against the card's confusion partner in
+`mistakes-db`; if both start with that letter, the cue does not discriminate.
