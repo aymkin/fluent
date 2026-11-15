@@ -20,3 +20,13 @@
   matches the target exactly (keep it when it differs in any way, e.g. a typo or a missing period), update
   §1 and the Critical Rules, and check `fluent-vocab` (release 0.12.0 "переписать правильный вариант")
   and the session-file format, which keeps `**Correct answer:**` per question.
+
+- [ ] **The last answer of a round gets its feedback before the summary.**
+  `/fluent-review` session-107, Q10: the learner answered `Gisteren ochtend heb ik koffie gekookt.` and the tutor
+  started the save first: the learner watched «Running a command» with no feedback on the screen, and the
+  feedback was left for the closing message after the save. In the earlier rounds of the day the last answer's
+  feedback also came only at the very end, after the tool calls.
+  Fix in `.claude/skills/fluent-review/SKILL.md` §6–7 (and the round-end rule in `fluent-feedback-formatter`
+  Critical Rules): the turn that receives the final answer opens with that answer's standard feedback as text,
+  before any tool call; the save and the summary follow. Check the other round-based skills (`fluent-vocab`, `fluent-grammar`, `fluent-reading`,
+  `fluent-listening`, `fluent-learn`) for the same gap.
