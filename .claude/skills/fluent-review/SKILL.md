@@ -23,7 +23,7 @@ If a skill available in this session says to load it before `/fluent-review` —
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py" --review
 ```
 
-The queue comes back as one round: today's due items, the least likely to be recalled first — cards never reviewed, then the lowest FSRS retrievability — cut to the session cap (`computed.session_cap`) and expanded to just the items you will use.
+The queue comes back as one round: today's due items, the least likely to be recalled first — cards never reviewed, then the lowest FSRS retrievability — cut to the review round (`computed.review_round`) and expanded to just the items you will use.
 
 `computed.due_reviews_count` counts everything due today. Whatever this round leaves out stays due and leads the next round.
 
@@ -113,7 +113,7 @@ Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README
 
 ### 8. Offer another round
 
-With the update and the transcript saved, and items still due, ask whether the learner wants another round of `{session_cap}`. On a yes, the learner types `/fluent-review` again: a new session with its own record, and its own start mark for the prompt clock.
+With the update and the transcript saved, and items still due, ask whether the learner wants another round of `{review_round}`. On a yes, the learner types `/fluent-review` again: a new session with its own record, and its own start mark for the prompt clock.
 
 ## Critical Rules
 

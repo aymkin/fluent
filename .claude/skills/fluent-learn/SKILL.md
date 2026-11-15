@@ -35,7 +35,7 @@ Need all 6 DBs. If any missing, direct the learner to `/fluent-setup` and stop.
 
 ### 3. Greet
 
-Open with the learner's name, their streak, today's review round (due items up to the session cap), today's focus area (weakest skill or top weak pattern), and level with progress. Then offer the menu:
+Open with the learner's name, their streak, today's review round (due items up to `computed.review_round`), today's focus area (weakest skill or top weak pattern), and level with progress. Then offer the menu:
 
 ```markdown
 1. 📝 Письмо (экзамен DUO A2: четыре задания, около 40 мин)
