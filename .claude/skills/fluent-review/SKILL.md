@@ -73,7 +73,7 @@ Match the exercise to `item_type`:
 
 Once an `error_pattern` or `grammar_rule` item that names a target in `.claude/references/level-b1.md` reaches `mastery_level` 3, switch to that target's "done when" test, as that file defines "done".
 
-Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its place in the round (`Задание {N}/{round size}`), the item type as «ошибка», «слово» or «правило», days since last review, current mastery, `fsrs_difficulty`, and the rung's label from `fading.md`.
+Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Cards that test one rule — two zijn-perfectum cards, say — stand apart in the round, with other cards between them, so the first does not answer the second. Each prompt carries its place in the round (`Задание {N}/{round size}`), the item type as «ошибка», «слово» or «правило», days since last review, current mastery, `fsrs_difficulty`, and the rung's label from `fading.md`.
 
 ### 4. Evaluate + submit the score
 
