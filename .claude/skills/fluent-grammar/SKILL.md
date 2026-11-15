@@ -60,6 +60,8 @@ A practised rule skips this step and goes to step 4.
 
 ### 4. Five exercises and one from before
 
+**Closed book first.** A rule an earlier `/fluent-grammar` session taught — its result file or session-log note names the rule — opens with «Объясни своими словами, не подглядывая: когда нужно {rule} и как его строить?». The explanation is ungraded. Set it against the rule and name its hole in one or two lines — what is missing or wrong, short of the full theory — and aim at least one exercise of the series at that hole. A rule taught today goes straight to the exercises.
+
 Present them one at a time. The rule is each exercise's only difficulty: keep the rest of the sentence at the learner's level, built from the learner's life — the `Факты:` of those notes, otherwise an everyday A2 scene.
 
 The series fades: it starts on the `rung` of the rule's card — its `error_pattern` or `grammar_rule` item; a rule with no card starts on `scaffold` — and moves after each answer as `.claude/references/fading.md` §Moving says. Build each exercise from its rung's row: build from words and find the error are `scaffold` forms; complete the sentence, transform and translate a short line carry `cue`, `bare` and `varied`.
@@ -78,7 +80,9 @@ Give feedback after each answer with the `fluent-feedback-formatter` skill's tem
 
 Series score = correct answers out of five × 2. `quality` follows from it — see the `fluent-fsrs-reference` skill. The exercise from before keeps its own 0–10 score, for its own card.
 
-A practised rule that scores below 7 gets its theory now, as in step 3, and its minutes join the theory minutes. Done when the score and the quality are set.
+A practised rule that scores below 7 gets its theory now, as in step 3, and its minutes join the theory minutes.
+
+**Explain again.** Then, closed book once more: «Объясни ещё раз — своими словами, не подглядывая.» Ungraded; one line says what is now right or what is still missing. For a rule taught today this is its first explanation. The summary follows the answer. Done when the score and the quality are set and the second explanation is answered.
 
 The six answers count toward `computed.session_cap`; theory is not a graded answer and does not.
 
@@ -107,7 +111,8 @@ Use the `fluent-db-updater` skill:
 - `review_results[]` — one entry for the series on the rule's card: its `item_id`, `quality` and `score`, five answers being one review; and one for the card of the exercise from before, with that answer's `quality` and `score`
 - `new_vocabulary[]` — when today's rule has no card yet, one for it: `item_type: "grammar_rule"`, `item_id: "rule_{name}"`, `content` — the rule in a few words, `answer` — one model sentence from the series, `category: "grammar"`, `initial_quality` — the series' quality. The card falls due tomorrow, and the series goes here instead of into `review_results[]`
 - `errors[]` — one per distinct pattern found, category `grammar`
-- `focus_next_session[]` — the rule when the series scored below 7, else the next rule
+- `focus_next_session[]` — the rule when the series scored below 7, else the next rule; and the hole, while the second explanation still misses it
+- `session_notes` — `Правило: {rule}. Дыра: {what the first explanation missed}. Второе объяснение: {закрыла | осталось: …}.` — the rule's name is how a later session knows it was taught
 
 Save the transcript as `fluent-grammar-session-{NNN}.md` in the
 `results/` directory of the path this prints:
@@ -116,6 +121,6 @@ Save the transcript as `fluent-grammar-session-{NNN}.md` in the
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
 ```
 
-Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. A question is one exercise.
+Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. A question is one exercise; the two explanations and the hole go in its `## Explanation` section.
 
 Done when `fluent-db-updater` reports the write and the transcript file exists.
