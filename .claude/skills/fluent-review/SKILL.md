@@ -93,6 +93,8 @@ One line: `Готово {done}/{round size} · точность {X}% · оста
 
 ### 6. Session summary
 
+The round's last graded item gets its feedback first, then the returns of its misses (`fluent-feedback-formatter` §2, step 4); the summary follows the last return's answer.
+
 Give: how many were reviewed, accuracy, minutes spent. Then the breakdown — «чисто» (gone for a while), «мелкие промахи» (back in X days), «пропущено» (back within a few days) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
 
 ### 7. Update all databases
