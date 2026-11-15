@@ -23,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fluent_paths import ensure_data_dir, ensure_backups_dir, force_utf8_io  # noqa: E402
+import fading  # noqa: E402
 import fsrs  # noqa: E402
 import prompt_clock  # noqa: E402
 
@@ -404,6 +405,7 @@ def update_spaced_repetition(sr: dict, session: dict):
         quality = review["quality"]
         if item_id in items:
             item = items[item_id]
+            rung = fading.rung_of(item)  # before this review rewrites last_quality
             # The quality sets the rating as it sets the stars below, so a
             # review is a miss for both or for neither; a score is only recorded.
             rating = 1 if quality < 3 else 2 if quality < 4 else 3 if quality < 5 else 4
@@ -418,6 +420,7 @@ def update_spaced_repetition(sr: dict, session: dict):
             item["interval_days"] = r["interval_days"]
             item["due_date"] = r["due_date"]
             item["last_rating"] = rating
+            item["rung"] = fading.next_rung(rung, quality)
             item["repetitions"] = item.get("repetitions", 0) + 1 if quality >= 3 else 0
             item["last_reviewed"] = today
             item["last_quality"] = quality
