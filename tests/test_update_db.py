@@ -361,8 +361,7 @@ class UpdateDbSmokeTest(unittest.TestCase):
 
         self.assertEqual(stars, {"clean": [0, 1, 2, 3, 4, 5, 5, 5, 5, 5],
                                  "lapse": [0, 1, 2, 3, 4, 5, 2, 1, 1, 2]})
-        # The first miss takes the card out of "low", which sorts it to the
-        # back of the 10-card review round.
+        # The first miss takes the card out of "low".
         self.assertEqual(priority[5:7], ["low", "medium"])
         # /fluent-learn and /fluent-vocab see the drop: back in their "<= 2".
         self.assertEqual(mirror, stars["lapse"])

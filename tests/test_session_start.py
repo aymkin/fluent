@@ -43,8 +43,8 @@ class SessionStartReviewLineTest(unittest.TestCase):
         return [l for l in proc.stdout.decode("utf-8").splitlines() if "📅" in l]
 
     def test_backlog_over_the_cap_shows_one_round(self):
-        self.assertEqual(self._review_lines(due=12),
-                         ["[Fluent] 📅 Today: 10 reviews (~10 min) — run /fluent-review"])
+        self.assertEqual(self._review_lines(due=17),
+                         ["[Fluent] 📅 Today: 15 reviews (~15 min) — run /fluent-review"])
 
     def test_backlog_under_the_cap_shows_all_of_it(self):
         self.assertEqual(self._review_lines(due=3, later=2),

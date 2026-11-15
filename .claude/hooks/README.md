@@ -46,7 +46,7 @@ could not say.
 session end), `fsrs.py` (the FSRS-6 scheduler), `prompt_clock.py` (the prompt
 clock's arithmetic), `fluent_paths.py` (path resolution), `ensure_data_dir.py`
 (prints the data dir, creating it if needed), `session_cap.py` (the most
-exercises one session holds).
+exercises one session holds, and the most cards one review round serves).
 
 ## 🔧 Registration
 

@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fluent_paths import data_dir, force_utf8_io  # noqa: E402
-from session_cap import SESSION_CAP  # noqa: E402
+from session_cap import REVIEW_ROUND  # noqa: E402
 
 force_utf8_io()
 
@@ -61,7 +61,7 @@ def main():
                 # Today's round, not the backlog: a big number is what puts
                 # the learner off starting.
                 if due_count > 0:
-                    n = min(due_count, SESSION_CAP)
+                    n = min(due_count, REVIEW_ROUND)
                     noun = "review" if n == 1 else "reviews"
                     print(f"[Fluent] 📅 Today: {n} {noun} (~{n} min) — run /fluent-review")
 

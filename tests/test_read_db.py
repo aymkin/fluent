@@ -129,7 +129,7 @@ class ReadDbReviewTrimTest(unittest.TestCase):
             f"card_{n}": {"type": "error_pattern", "priority": "high",
                           "due_date": "2026-07-01", "last_reviewed": seen,
                           "stability": 10.0 + n}
-            for n in range(1, 10)
+            for n in range(1, 15)
         }
         items["vocab_faded"] = {"type": "vocabulary", "priority": "medium",
                                 "due_date": "2026-07-15", "last_reviewed": seen,
@@ -151,20 +151,21 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         sr = out["databases"]["spaced_repetition"]
         served = sr["review_queue"]["today"]
 
-        self.assertEqual(len(served), 10)
+        self.assertEqual(len(served), 15)           # the review round, not the session cap
         # never reviewed first, then the lowest recall — priority no longer leads
         self.assertEqual(served[:3], ["fresh", "vocab_faded", "card_1"])
-        self.assertNotIn("card_9", served)          # the best-remembered due card waits
+        self.assertNotIn("card_14", served)         # the best-remembered due card waits
         self.assertNotIn("reviewed_since", served)  # no longer due
         self.assertEqual(set(sr["items"]), set(served))
-        self.assertEqual(out["computed"]["session_cap"], 10)
+        self.assertEqual((out["computed"]["session_cap"], out["computed"]["review_round"]),
+                         (10, 15))
 
-    def test_computed_fields_are_exactly_the_documented_five(self):
+    def test_computed_fields_are_exactly_the_documented_six(self):
         # The skills advertise these and only these.
         self.assertEqual(
             set(self._run()["computed"]),
             {"today", "due_reviews_count", "next_session_id", "streak_active",
-             "session_cap"},
+             "session_cap", "review_round"},
         )
 
 

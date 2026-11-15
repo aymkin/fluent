@@ -64,7 +64,7 @@ python3 .claude/hooks/read-db.py
 
 `read-db.py --review` returns it: today's due items, the least likely to be
 recalled first — cards never reviewed, then the lowest FSRS retrievability — cut
-to the session cap (`computed.session_cap`).
+to the review round (`computed.review_round`), the greeting's `{round}`.
 
 ### Step 4: Generate a session plan
 

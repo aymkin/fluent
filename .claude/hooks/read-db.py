@@ -8,7 +8,7 @@ Usage:
     python3 .claude/hooks/read-db.py --review   # serve one round: today's
                                                   # due items, the least likely
                                                   # to be recalled first, cut
-                                                  # to SESSION_CAP;
+                                                  # to REVIEW_ROUND;
                                                   # and drop DB sections the
                                                   # review flow never reads
                                                   # (mastery_db, progress_db,
@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import fsrs  # noqa: E402
 from fluent_paths import data_dir, force_utf8_io  # noqa: E402
-from session_cap import SESSION_CAP  # noqa: E402
+from session_cap import REVIEW_ROUND, SESSION_CAP  # noqa: E402
 
 force_utf8_io()
 DATA_DIR = data_dir()
@@ -98,6 +98,7 @@ def main():
             "next_session_id": next_session_id(sessions),
             "streak_active": streak_active,
             "session_cap": SESSION_CAP,
+            "review_round": REVIEW_ROUND,
         },
     }
 
@@ -119,7 +120,7 @@ def main():
             elapsed = (now - datetime.strptime(seen, "%Y-%m-%d")).days
             return (1, fsrs.retrievability(elapsed, item["stability"]), due)
 
-        capped = sorted(due_items, key=recall_order)[:SESSION_CAP]
+        capped = sorted(due_items, key=recall_order)[:REVIEW_ROUND]
         sr.setdefault("review_queue", {})["today"] = capped
         sr["items"] = {iid: items[iid] for iid in capped}
 
