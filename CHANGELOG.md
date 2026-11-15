@@ -4,6 +4,8 @@ All notable changes to Fluent will be documented in this file.
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-15
+
 ### New Features
 
 - **Подсказки убираются по мере уверенности.** У каждой карточки повторения
