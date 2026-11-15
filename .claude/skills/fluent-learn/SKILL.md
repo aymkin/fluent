@@ -73,9 +73,11 @@ Steps 1-3 of the mix are **one decision** each, as defined in `fluent-review` §
 
 Set the starting point from the skill's `mastery_level`: **0-1 → easy**, **2-3 → medium**, **4-5 → hard**. Then check rolling accuracy every 3-4 exercises:
 
-- **<50%** → drop difficulty (smaller chunks, more scaffolding, offer hints)
+- **<50%** → drop difficulty (shorter sentences, commoner words)
 - **50-70%** → hold — this is the target zone
-- **>70%** → raise difficulty (longer sentences, less scaffolding, rarer vocabulary)
+- **>70%** → raise difficulty (longer sentences, rarer vocabulary)
+
+Help — a base form, options, a cue — follows the rungs of `.claude/references/fading.md` answer by answer: each drill starts on its pattern card's `rung` and moves as that file's §Moving says.
 
 ### 7. Per-answer feedback
 

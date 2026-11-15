@@ -63,15 +63,17 @@ Each item has:
 
 **Every exercise is one decision.** The learner's answer differs from your prompt in exactly the place this item tests, and nowhere else; build the rest out of forms they already own. Count the decisions your prompt demands before you send it — at two or more, cut it down.
 
+**Its rung sets the help.** Each item comes with its `rung`; build the prompt from that rung's row in `.claude/references/fading.md`.
+
 Match the exercise to `item_type`:
 
 - **error_pattern**: load the pattern from `mistakes-db` and build a scenario that forces the correct form. Keep that form out of the prompt — naming it is the whole test.
-- **vocabulary**: recognition (target → native), production (native → target), or cloze — rotate modes.
-- **grammar_rule**: cloze, or find the one error.
+- **vocabulary**: recognition (target → native), production (native → target), or cloze — rotate the direction; the rung sets the help.
+- **grammar_rule**: cloze, or find the one error (a `scaffold` exercise).
 
 Once an `error_pattern` or `grammar_rule` item that names a target in `.claude/references/level-b1.md` reaches `mastery_level` 3, switch to that target's "done when" test, as that file defines "done".
 
-Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its place in the round (`Задание {N}/{round size}`), the item type as «ошибка», «слово» or «правило», days since last review, current mastery, and `fsrs_difficulty`.
+Present one item, wait for the answer, then the next; a rushed item scores as a false positive. Each prompt carries its place in the round (`Задание {N}/{round size}`), the item type as «ошибка», «слово» or «правило», days since last review, current mastery, `fsrs_difficulty`, and the rung's label from `fading.md`.
 
 ### 4. Evaluate + submit the score
 

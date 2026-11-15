@@ -396,3 +396,17 @@ How to apply: `fluent-feedback-formatter` §1 — show the block
 only when the answer differs from the correct sentence (capitals, final
 punctuation and spacing aside). A typo or any other difference keeps it. The
 session file keeps `**Correct answer:**` for every question.
+
+## 2026-11-15 — a prompt that hands over the base form, the options or the chunk tests copying
+
+Alex, on the video «5 законов памяти»: many exercises carry so much given data
+that it pulls the answer out. In `/fluent-review` sessions 105–108, 23 of 40
+prompts held a base form in brackets (`(bellen)`, `(willen)`), the words to
+assemble, two options (de/het) or the chunk itself — session-107 Q10 printed
+`(koffie zetten)` on the card that tests that very chunk. A right answer to
+such a prompt can be a copy, and the scheduler reads it as memory.
+
+How to apply: build every prompt from the item's `rung`
+(`.claude/references/fading.md`). Base forms, options and words to arrange belong
+to `scaffold` alone; a confident answer earns the next rung; once no help is
+left, change the person, the time marker or the circumstance.
