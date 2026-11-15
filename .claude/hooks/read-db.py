@@ -6,8 +6,9 @@ Loads all 6 learning databases and outputs a single JSON object to stdout.
 Usage:
     python3 .claude/hooks/read-db.py
     python3 .claude/hooks/read-db.py --review   # serve one round: today's
-                                                  # due items, most urgent
-                                                  # first, cut to SESSION_CAP;
+                                                  # due items, the least likely
+                                                  # to be recalled first, cut
+                                                  # to SESSION_CAP;
                                                   # and drop DB sections the
                                                   # review flow never reads
                                                   # (mastery_db, progress_db,
@@ -25,9 +26,8 @@ import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
-PRIORITY_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import fsrs  # noqa: E402
 from fluent_paths import data_dir, force_utf8_io  # noqa: E402
 from session_cap import SESSION_CAP  # noqa: E402
 
@@ -102,15 +102,24 @@ def main():
     }
 
     if "--review" in sys.argv[1:]:
-        # One round: today's due items, most urgent first — priority, then the
-        # longest overdue. Drawn from the items themselves, not from
-        # review_queue.today: only update-db.py rebuilds that list, so between
-        # sessions it misses cards that have fallen due since.
-        capped = sorted(
-            due_items,
-            key=lambda iid: (PRIORITY_RANK.get(items[iid].get("priority"), 4),
-                             items[iid].get("due_date", "")),
-        )[:SESSION_CAP]
+        # One round: today's due items, the least likely to be recalled first.
+        # Cards never reviewed (fresh mistakes) lead, oldest first; the rest go
+        # by FSRS retrievability, lowest first — under a daily review limit that
+        # order kept the most cards remembered in FSRS's sort-order simulator
+        # (open-spaced-repetition/review-sort-order-comparison). Drawn from the
+        # items themselves, not from review_queue.today: only update-db.py
+        # rebuilds that list, so between sessions it misses cards that have
+        # fallen due since.
+        def recall_order(iid):
+            item = items[iid]
+            due = item.get("due_date", "")
+            if item.get("stability") is None:
+                return (0, 0.0, due)
+            seen = item.get("last_reviewed") or today
+            elapsed = (now - datetime.strptime(seen, "%Y-%m-%d")).days
+            return (1, fsrs.retrievability(elapsed, item["stability"]), due)
+
+        capped = sorted(due_items, key=recall_order)[:SESSION_CAP]
         sr.setdefault("review_queue", {})["today"] = capped
         sr["items"] = {iid: items[iid] for iid in capped}
 
