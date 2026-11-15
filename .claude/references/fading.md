@@ -47,4 +47,6 @@ is wrong.
 - **A series or a drill** starts on its card's `rung` — a rule or pattern with no card starts on `scaffold` —
   and moves the same way after each answer, so a confident series reaches `varied` before it ends.
 
-Before sending, check the prompt against its rung's row: it gives what that row gives, and no more.
+Before sending, check the prompt against its rung's row: it gives what that row gives, and no more. A first
+letter must also rule out the card's known confuser in `mistakes-db`: `(s…)` fits both *schiet op* and *sta op*,
+so it does not tell them apart; for such a pair, the cue is the Russian line said the Dutch way («выстрели вперёд»).
