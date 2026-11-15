@@ -1,6 +1,6 @@
 ---
 name: fluent-grammar
-description: Grammar practice — the theory of one rule, then five exercises on it, scored.
+description: Grammar practice — the theory of one rule, then five exercises on it and one on a rule from before, scored.
 allowed-tools: Read, Write, Bash
 disable-model-invocation: true
 ---
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 ## Overview
 
-A session is one rule and one series of five exercises on it. A rule the learner meets for the first time opens with its theory; a rule they have practised before opens with the exercises, because the series tests what they remember, and its theory comes only after a weak series. The time spent on theory counts as grammar time.
+A session is one rule and one series of five exercises on it, with one exercise on a rule from before mixed in. A rule the learner meets for the first time opens with its theory; a rule they have practised before opens with the exercises, because the series tests what they remember, and its theory comes only after a weak series. The time spent on theory counts as grammar time.
 
 ## Instructions
 
@@ -58,11 +58,13 @@ Theory minutes = (this number − the first) ÷ 60, rounded up. Done when the me
 
 A practised rule skips this step and goes to step 4.
 
-### 4. Five exercises
+### 4. Five exercises and one from before
 
 Present them one at a time. The rule is each exercise's only difficulty: keep the rest of the sentence at the learner's level, built from the learner's life — the `Факты:` of those notes, otherwise an everyday A2 scene.
 
 The series fades: it starts on the `rung` of the rule's card — its `error_pattern` or `grammar_rule` item; a rule with no card starts on `scaffold` — and moves after each answer as `.claude/references/fading.md` §Moving says. Build each exercise from its rung's row: build from words and find the error are `scaffold` forms; complete the sentence, transform and translate a short line carry `cue`, `bare` and `varied`.
+
+**One from before.** As the third or fourth exercise, put one on another grammar rule the learner has a card for — the one most easily confused with today's: the same verb group, the same slot in the sentence, a pair from `.claude/references/chunks-nl.md` §Grading traps; with none like that, the grammar card due soonest. Its help follows its own card's `rung`. Exercises carry no rule name, so the learner has to see which rule the sentence asks for. It is graded like the others and stays out of the series score.
 
 ```bash
 date +%s
@@ -70,15 +72,15 @@ date +%s
 
 Mark the time when each exercise is sent and when its answer arrives. Exercise minutes = the sum of those gaps in seconds ÷ 60, rounded up once for the whole stretch.
 
-Give feedback after each answer with the `fluent-feedback-formatter` skill's template, before the next exercise. Done when five answers are graded.
+Give feedback after each answer with the `fluent-feedback-formatter` skill's template, before the next exercise. Done when six answers are graded: five on today's rule, one from before.
 
 ### 5. Score the series
 
-Series score = correct answers out of five × 2. `quality` follows from it — see the `fluent-fsrs-reference` skill.
+Series score = correct answers out of five × 2. `quality` follows from it — see the `fluent-fsrs-reference` skill. The exercise from before keeps its own 0–10 score, for its own card.
 
 A practised rule that scores below 7 gets its theory now, as in step 3, and its minutes join the theory minutes. Done when the score and the quality are set.
 
-The five answers count toward `computed.session_cap`; theory is not a graded answer and does not.
+The six answers count toward `computed.session_cap`; theory is not a graded answer and does not.
 
 ### 6. Session summary
 
@@ -87,6 +89,7 @@ The five answers count toward `computed.session_cap`; theory is not a graded ans
 
 **Правило:** {rule}
 **Серия:** {correct}/5 → {score}/10
+**Из пройденного:** {the rule from before} — {its score}/10
 **Время:** {theory minutes} мин теории + {exercise minutes} мин упражнений
 
 **Получилось:** {what the learner applied correctly}
@@ -100,8 +103,9 @@ The five answers count toward `computed.session_cap`; theory is not a graded ans
 Use the `fluent-db-updater` skill:
 
 - `command_used: "/fluent-grammar"`, `skills_practiced: ["grammar"]`
-- `skill_scores.grammar: {exercises: 5, correct, time_minutes}`, with `time_minutes` = theory minutes + exercise minutes
-- `review_results[]` — one entry for the series: the rule's `item_id`, its `quality` and `score`; five answers are one review
+- `skill_scores.grammar: {exercises: 6, correct, time_minutes}`, with `time_minutes` = theory minutes + exercise minutes
+- `review_results[]` — one entry for the series on the rule's card: its `item_id`, `quality` and `score`, five answers being one review; and one for the card of the exercise from before, with that answer's `quality` and `score`
+- `new_vocabulary[]` — when today's rule has no card yet, one for it: `item_type: "grammar_rule"`, `item_id: "rule_{name}"`, `content` — the rule in a few words, `answer` — one model sentence from the series, `category: "grammar"`, `initial_quality` — the series' quality. The card falls due tomorrow, and the series goes here instead of into `review_results[]`
 - `errors[]` — one per distinct pattern found, category `grammar`
 - `focus_next_session[]` — the rule when the series scored below 7, else the next rule
 
