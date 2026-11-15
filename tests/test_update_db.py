@@ -407,6 +407,19 @@ class UpdateDbSmokeTest(unittest.TestCase):
         item = self._load("spaced-repetition.json")["items"]["verb_spreek"]
         self.assertEqual(item["rung"], "scaffold")
 
+    def test_a_rule_without_a_card_gets_one_through_new_vocabulary(self):
+        """/fluent-grammar stages a rule that has no card as new_vocabulary with
+        item_type grammar_rule: the card falls due tomorrow, graded by the series."""
+        rule = {"item_id": "rule_perfectum_zijn", "item_type": "grammar_rule",
+                "content": "perfectum met zijn bij beweging naar een doel",
+                "answer": "Ik ben naar huis gefietst.", "category": "grammar",
+                "difficulty": "A2", "initial_quality": 4}
+        proc = self._run(dict(SESSION_PAYLOAD, new_vocabulary=[rule], review_results=[]))
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr)
+        item = self._load("spaced-repetition.json")["items"]["rule_perfectum_zijn"]
+        self.assertEqual((item["type"], item["due_date"], item["last_quality"]),
+                         ("grammar_rule", day(1), 4))
+
     def _seed_known_pattern(self, pid):
         """A 5-star card last reviewed two weeks ago and due in a month, with
         its mistakes-db twin: where clean reviews leave a pattern."""
