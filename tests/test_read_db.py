@@ -118,26 +118,31 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         # plain mode does not trim learner_profile
         self.assertIn("achievements", out["databases"]["learner_profile"])
 
-    def test_review_round_is_the_session_cap_drawn_from_live_due_items(self):
+    def test_review_round_serves_the_least_likely_recall_first(self):
         # review_queue.today is rebuilt only by update-db.py, so between sessions
-        # it goes stale: here it misses a card that fell due since (crit) and
+        # it goes stale: here it misses a card that fell due since (fresh) and
         # still lists one reviewed after it was built (reviewed_since).
+        # All reviewed cards were last seen on one day, so a lower stability
+        # means a lower recall probability today, whatever today is.
+        seen = "2026-06-01"
         items = {
-            f"high_{n}": {"type": "error_pattern", "priority": "high",
-                          "due_date": f"2026-07-{10 + n:02d}"}
+            f"card_{n}": {"type": "error_pattern", "priority": "high",
+                          "due_date": "2026-07-01", "last_reviewed": seen,
+                          "stability": 10.0 + n}
             for n in range(1, 10)
         }
-        items["high_old"] = {"type": "error_pattern", "priority": "high",
-                             "due_date": "2026-06-01"}
-        items["low_1"] = {"type": "error_pattern", "priority": "low",
-                          "due_date": "2026-06-15"}
+        items["vocab_faded"] = {"type": "vocabulary", "priority": "medium",
+                                "due_date": "2026-07-15", "last_reviewed": seen,
+                                "stability": 2.0}
         items["reviewed_since"] = {"type": "error_pattern", "priority": "critical",
-                                   "due_date": "2099-01-01"}
-        items["crit"] = {"type": "grammar_rule", "priority": "critical",
-                         "due_date": "2026-07-20"}
+                                   "due_date": "2099-01-01", "last_reviewed": seen,
+                                   "stability": 1.0}
+        items["fresh"] = {"type": "error_pattern", "priority": "high",
+                          "due_date": "2026-07-20", "last_reviewed": "2026-07-19",
+                          "stability": None}
         (self.tmp / "data" / "spaced-repetition.json").write_text(json.dumps({
             "daily_limits": {"review_items_per_day": 45},
-            "review_queue": {"today": [iid for iid in items if iid != "crit"],
+            "review_queue": {"today": [iid for iid in items if iid != "fresh"],
                              "tomorrow": [], "this_week": [], "later": []},
             "items": items,
         }))
@@ -147,9 +152,9 @@ class ReadDbReviewTrimTest(unittest.TestCase):
         served = sr["review_queue"]["today"]
 
         self.assertEqual(len(served), 10)
-        self.assertEqual(served[:2], ["crit", "high_old"])  # priority, then most overdue
-        self.assertNotIn("high_9", served)          # least overdue high is cut
-        self.assertNotIn("low_1", served)           # low ranks below every high
+        # never reviewed first, then the lowest recall — priority no longer leads
+        self.assertEqual(served[:3], ["fresh", "vocab_faded", "card_1"])
+        self.assertNotIn("card_9", served)          # the best-remembered due card waits
         self.assertNotIn("reviewed_since", served)  # no longer due
         self.assertEqual(set(sr["items"]), set(served))
         self.assertEqual(out["computed"]["session_cap"], 10)

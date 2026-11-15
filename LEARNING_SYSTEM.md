@@ -62,9 +62,9 @@ python3 .claude/hooks/read-db.py
 
 ### Step 3: Take today's review round
 
-`read-db.py --review` returns it: today's due items, most urgent first —
-`priority` (critical > high > medium > low), then the longest overdue — cut to
-the session cap (`computed.session_cap`).
+`read-db.py --review` returns it: today's due items, the least likely to be
+recalled first — cards never reviewed, then the lowest FSRS retrievability — cut
+to the session cap (`computed.session_cap`).
 
 ### Step 4: Generate a session plan
 

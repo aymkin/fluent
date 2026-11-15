@@ -23,7 +23,7 @@ If a skill available in this session says to load it before `/fluent-review` —
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.py" --review
 ```
 
-The queue comes back as one round: today's due items, most urgent first — `priority`, then the longest overdue — cut to the session cap (`computed.session_cap`) and expanded to just the items you will use.
+The queue comes back as one round: today's due items, the least likely to be recalled first — cards never reviewed, then the lowest FSRS retrievability — cut to the session cap (`computed.session_cap`) and expanded to just the items you will use.
 
 `computed.due_reviews_count` counts everything due today. Whatever this round leaves out stays due and leads the next round.
 
@@ -118,7 +118,7 @@ With the update and the transcript saved, and items still due, ask whether the l
 ## Critical Rules
 
 - **Let the learner struggle.** If they don't remember, that is useful data (quality 0-2) — the algorithm needs honest signals. A guess scored as knowledge pushes the item weeks out and takes the schedule with it, so when the learner says they guessed, score the guess.
-- **Daily.** The spacing assumes a session every day. After a gap the backlog comes back round by round, most urgent first; one round is a full session.
+- **Daily.** The spacing assumes a session every day. After a gap the backlog comes back round by round, the most forgotten first; one round is a full session.
 
 ## What the Schedule Means
 
