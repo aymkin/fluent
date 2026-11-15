@@ -43,11 +43,12 @@ If a database is missing, direct the learner to `/fluent-setup` and stop.
 
 Search Anki stage by stage, as `.claude/references/anki.md` describes: new today, then reviewed today, then new this week, leaving out the words an earlier round drilled. When both "today" stages are empty and cards still wait in Anki, tell the learner how many wait and ask: Anki first, or this week's words now.
 
-Take verbs first, then other words; skip proper names, numbers and particles; put words alike in meaning into different rounds. Keep taking words while the opener (when there is an earlier round), one personal task per word and two cells per verb still fit in `computed.session_cap`. Answers left over become a verb's third cell. The words that do not fit lead the next round.
+Take verbs first, then other words; skip proper names, numbers and particles; put words alike in meaning into different rounds. Keep taking words while the opener (when there is an earlier round), the mid-round recall (when there are two), one personal task per word and two cells per verb still fit in `computed.session_cap`. Answers left over become a verb's third cell. The words that do not fit lead the next round.
 
 Give each word its chunk (`.claude/references/chunks-nl.md` §Chunk) and plan the round privately — the learner sees one task at a time:
 
 - the opener, when there is an earlier round;
+- the mid-round recall, when there are two earlier rounds, after the first two tasks on new words;
 - one personal task per word (§Self-reference);
 - the cells (§Paradigm by word class, §Cell), each with its frame, its time marker or person, and its one valid answer plus the variants §Acceptance allows; a word's next task comes after a task on another word.
 
@@ -66,6 +67,8 @@ Done when every cell has exactly one valid answer and every personal task has it
 ```
 
 One graded answer: score = chunks right ÷ chunks asked × 10. The feedback shows every missed chunk whole. Skip this step in a first round.
+
+**Mid-round recall.** With two earlier rounds, the chunks of the round before last come back the same way, as one graded answer headed `## Задание {N}/{session_cap} · чанки позапрошлого раунда`, between tasks on new words. Known and new interleave, and every chunk is recalled three times: in its own round, in the next round's opener, and here.
 
 ### 4. One task at a time
 
@@ -87,7 +90,7 @@ After each answer give feedback with the `fluent-feedback-formatter` skill befor
 Save before the final message, with the `fluent-db-updater` skill:
 
 - `command_used: "/fluent-vocab"` (`"/fluent-learn"` when the round was started from its menu), `skills_practiced: ["vocabulary", "grammar"]`
-- `skill_scores.vocabulary` — the opener and the personal tasks; `skill_scores.grammar` — the cells; each `{exercises, correct, time_minutes}`
+- `skill_scores.vocabulary` — the opener, the mid-round recall and the personal tasks; `skill_scores.grammar` — the cells; each `{exercises, correct, time_minutes}`
 - `errors[]` — form errors (category `grammar`, `articles` or `spelling`), with the `pattern_id` `mistakes-db` already has for the same mistake. A miss on the Anki word itself — its meaning, its partner word — goes to the transcript and the notes only: Anki owns the word.
 - `review_results[]` — one entry for each cell aimed at an `error_pattern` card whose `last_reviewed` is not today, right or wrong, with the cell's `quality`
 - `new_vocabulary[]` — empty

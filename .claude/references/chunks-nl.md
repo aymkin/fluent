@@ -115,5 +115,7 @@ while `Ik ga voor brood` means «выбираю хлеб».
 
 - The next task on a word comes after a task on another word: the pause turns it into retrieval.
 - Words alike in meaning go to different rounds.
-- A round opens with free recall of the previous round's chunks; the missed ones are shown whole.
-  Confusable pairs — jij and u questions, hebben and zijn — come back in later rounds.
+- A round opens with free recall of the previous round's chunks and, between its tasks on new words,
+  recalls the chunks of the round before last; the missed ones are shown whole. Known and new interleave,
+  and every chunk is recalled three times. Confusable pairs — jij and u questions, hebben and zijn — come
+  back in later rounds.

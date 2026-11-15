@@ -63,7 +63,7 @@ Plan the session cap as four blocks:
 3. **Targeted drill 2** — second weak pattern. Same structure.
 4. **Integration** — 1 exercise: a short writing or speaking task that forces both patterns together.
 
-The two drills share the exercises left between warm-up and integration evenly.
+The two drills share the exercises left between warm-up and integration evenly, interleaved — A, B, A, B — so each pattern comes back after an exercise on the other, and the learner has to tell which one the sentence asks for.
 
 Choose the patterns with `fluent-session-analyzer`. Give each exercise its feedback via `fluent-feedback-formatter` before the next one.
 
