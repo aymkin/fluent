@@ -251,7 +251,7 @@ reached item 10, the card `vocab_vrijwilliger`. A recall test on that word was
 already contaminated — a correct answer would be a copy, a false positive for
 the scheduler.
 
-How to apply: before building any exercise in a round, read the round's other
+How to apply: before item 1, list the round's other
 `content` / `answer` fields and keep those words out of every prompt and
 sentence frame until their own card has been graded. Build filler sentences
 from words the learner owns that are not due today.
