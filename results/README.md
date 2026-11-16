@@ -105,7 +105,9 @@ no `✅`, `❌` or `**Score:**` inside, so the analyzer counts graded answers al
   `- {item_id}: "{answer}" — {верно | the slip}`;
 - `## Why` — the `/fluent-vocab` «Почему…?» and the learner's answer;
 - `## Explanation` — the `/fluent-grammar` closed-book explanations, before and after
-  the series, and the hole the first one showed.
+  the series, and the hole the first one showed;
+- `## Voided` — an item whose prompt gave the answer away or admitted a second
+  answer, taken out of the record after the fact: `- {item_id}: «{prompt}» — {why}`.
 
 ## 🔍 Key parsing markers
 
