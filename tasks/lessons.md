@@ -443,3 +443,22 @@ question, no `Прогноз:` in `session_notes` or the session file's `## Sess
 Summary`. Don't reintroduce a metacognitive/calibration step into this
 learner's sessions on the strength of research alone; it has to earn its
 place by the learner finding it useful in practice.
+
+## 2026-11-16 — a hint is checked before it is sent, where it is built
+
+Alex, session-111: «ты вводишь меня в заблуждение такими подсказками» — the
+`(с…)` cue for *schulden* was a Cyrillic letter. The audit of sessions 110–111
+found 14 misleading prompts and hints; the rest went unflagged: retry hints that
+handed over the form (`«Здесь "nieuw" — без -e»`) or pointed at a sound where
+only the letters differ (*grappich*/*grappig*), word banks listed in the
+answer's order (Q2, Q5 — voided), `(артикль)` on a zero-article answer,
+«разговаривали» admitting both *praten* and *spreken*, and a «why» copied from
+the card id (`zich_before_infinitive`) that the sentence contradicted. Most of
+these rules already existed — in lessons.md (2026-10-14, 2026-10-19) or in the
+formatter, which is read when grading — but not at the step that builds the
+prompt.
+
+How to apply: every prompt passes `fading.md` §Before sending; every retry
+hint follows `fluent-feedback-formatter` §2.1–2.2; every «why» is read off the
+sentence on the page (§5). A new hint rule goes into one of those three places,
+not only here.
