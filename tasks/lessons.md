@@ -428,3 +428,18 @@ that is the two-step translation: rephrase the Russian the way the Dutch chunk
 sees it («кофе ставят», «выстрели вперёд», «время — до "что"»). Before sending
 a first-letter cue, check it against the card's confusion partner in
 `mistakes-db`; if both start with that letter, the cue does not discriminate.
+
+## 2026-11-16 — the round-opening prediction had no payoff for this learner
+
+`/fluent-review` asked «Как думаешь, сколько из {N} вспомнишь?» before every
+round. Alex, session-111: «не вижу смысла отвечать на этот вопрос... угадайка
+зачем?» The step was meant as calibration — session-110 showed the gap
+concretely (predicted 11/15, actual 7/15) — but a number guessed with no
+stake and no feedback loop the learner values isn't active recall, and asking
+it anyway just adds friction before the real exercises.
+
+How to apply: removed from `fluent-review/SKILL.md` — no more prediction
+question, no `Прогноз:` in `session_notes` or the session file's `## Session
+Summary`. Don't reintroduce a metacognitive/calibration step into this
+learner's sessions on the strength of research alone; it has to earn its
+place by the learner finding it useful in practice.

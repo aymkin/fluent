@@ -40,7 +40,7 @@ If the queue is empty:
 
 ### 2. Opening
 
-Greet the learner by name and give: the round's size, its minutes (about one per item), and how many items wait for later rounds. Then ask for a prediction — «Как думаешь, сколько из {round size} вспомнишь?» — and wait for the number. It is ungraded; start the round once it arrives.
+Greet the learner by name and give: the round's size, its minutes (about one per item), and how many items wait for later rounds. Then begin the round with the first exercise.
 
 ### 3. Generate one exercise per item
 
@@ -95,7 +95,7 @@ One line: `Готово {done}/{round size} · точность {X}% · оста
 
 The round's last graded item gets its feedback first, then the returns of its misses (`fluent-feedback-formatter` §2, step 4); the summary follows the last return's answer.
 
-Give: how many were reviewed, accuracy, minutes spent, and the prediction beside the result — «Прогноз: {X} из {N}, вышло: {Y}». When the prediction ran higher, one line says why that is common: a card that feels familiar is not yet a card you can recall. Then the breakdown — «чисто» (gone for a while), «мелкие промахи» (back in X days), «пропущено» (back within a few days) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
+Give: how many were reviewed, accuracy, minutes spent. Then the breakdown — «чисто» (gone for a while), «мелкие промахи» (back in X days), «пропущено» (back within a few days) — followed by how many fall due tomorrow, this week, and next week, the streak, and one line of advice pitched at today's accuracy.
 
 ### 7. Update all databases
 
@@ -106,7 +106,7 @@ Use the `fluent-db-updater` skill:
 - `review_results[]` — every item reviewed, with `quality`
 - `errors[]` — only patterns where the learner got it wrong (bumps frequency; a pattern this round did not review takes a missed review on its card)
 - `focus_next_session[]` — the 2-3 items with lowest quality this session
-- `session_notes` — `Прогноз: {X}/{N}, вышло: {Y}/{N}.`
+- `session_notes` — `Повторено: {Y}/{N}, точность {X}%.`
 
 Save the transcript as `fluent-review-session-{NNN}.md` in the `results/` directory of the path this prints:
 
@@ -114,7 +114,7 @@ Save the transcript as `fluent-review-session-{NNN}.md` in the `results/` direct
 python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/fluent_paths.py"
 ```
 
-Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`. Its `## Session Summary` carries `- Prediction: {X}` beside `- Correct:`.
+Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README.md`.
 
 ### 8. Offer another round
 
