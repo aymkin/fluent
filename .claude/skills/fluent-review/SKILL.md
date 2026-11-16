@@ -25,6 +25,8 @@ python3 "${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/.claude/hooks/read-db.p
 
 The queue comes back as one round: today's due items, the least likely to be recalled first — cards never reviewed, then the lowest FSRS retrievability — cut to the review round (`computed.review_round`) and expanded to just the items you will use.
 
+The output is about 20 KB: read it straight from the command's result.
+
 `computed.due_reviews_count` counts everything due today. Whatever this round leaves out stays due and leads the next round.
 
 If the queue is empty:
@@ -40,9 +42,11 @@ If the queue is empty:
 
 ### 2. Opening
 
-Greet the learner by name and give: the round's size, its minutes (about one per item), and how many items wait for later rounds. Then begin the round with the first exercise.
+The opening turn is the greeting and item 1. Greet the learner by name, give the round's size, its minutes (about one per item) and how many items wait for later rounds, then present item 1.
 
 ### 3. Generate one exercise per item
+
+**Build each exercise in the turn that presents it.** The only work done ahead of item 1: settle the round's order and note every card's `answer` words, so that until a card is graded its words stay out of every other prompt.
 
 Each item has:
 
@@ -118,7 +122,7 @@ Required format: `${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}/results/README
 
 ### 8. Offer another round
 
-With the update and the transcript saved, and items still due, ask whether the learner wants another round of `{review_round}`. On a yes, the learner types `/fluent-review` again: a new session with its own record, and its own start mark for the prompt clock.
+With the update and the transcript saved, and items still due, offer the next round of `{review_round}` as the command to type: «Ещё раунд — набери `/fluent-review`». The command opens a new session with its own record and its own start mark for the prompt clock; a round started without it runs on the previous round's clock.
 
 ## Critical Rules
 
