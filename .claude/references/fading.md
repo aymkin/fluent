@@ -28,7 +28,7 @@ help in whichever direction comes up.
   `koffie z…`, `neemt een medewerker a…`, `wachten o…`. Options would pair the word with false partners, and
   learners keep those (`chunks-nl.md` §Chunk).
 - **Spelling:** the word with its tricky letters blanked, `va_antie`.
-- **Word order:** the words in a neutral order, the first word named; the other order checked wrong.
+- **Word order:** the words shuffled, the first word named; the other order checked wrong.
 - **A word to recall:** two or three options — Dutch words for RU → NL, Russian meanings for NL → RU.
 - **Find the error, find the subject:** scaffold exercises, since the answer's material is on the page.
 
@@ -37,8 +37,7 @@ help in whichever direction comes up.
 The card's own sentence (`content`, `answer`) with one change: the person, the time marker, or the
 circumstance — the place, the object, the companion. Every other word is one the learner owns. The gap holds
 the tested form alone: a new person moves the auxiliary into the frame, so the decision stays the one the card
-tests. The change keeps exactly one valid answer: before sending, write down the other candidate and check it
-is wrong.
+tests. The change keeps exactly one valid answer (§Before sending, line 2).
 
 ## Moving
 
@@ -47,6 +46,21 @@ is wrong.
 - **A series or a drill** starts on its card's `rung` — a rule or pattern with no card starts on `scaffold` —
   and moves the same way after each answer, so a confident series reaches `varied` before it ends.
 
-Before sending, check the prompt against its rung's row: it gives what that row gives, and no more. A first
-letter must also rule out the card's known confuser in `mistakes-db`: `(s…)` fits both *schiet op* and *sta op*,
-so it does not tell them apart; for such a pair, the cue is the Russian line said the Dutch way («выстрели вперёд»).
+## Before sending
+
+Every prompt — an exercise, a series step, a drill, a return — passes each line before it goes out:
+
+1. **One decision.** The gap holds the one form the card tests; every other word stands in the frame or is
+   one the learner owns.
+2. **One answer.** Write down the strongest rival and confirm the frame or the Russian line rules it out: a
+   synonym (*laatste* for *afgelopen*), another verb (*spreken* for *praten*), another order (*het eten nu* —
+   a definite object lets the time word stand on either side).
+3. **The bracket names what the gap holds.** When the right answer is no article, it reads «(артикль или без)».
+4. **The answer fits the frame.** Read the finished sentence: every word around the gap still stands.
+5. **The word bank is shuffled.** On `scaffold`, the words to arrange come in an order the answer does not use.
+6. **Latin letters.** A first-letter cue is typed in the Latin alphabet, the letter the Dutch word starts with.
+7. **Later answers stay out.** No word from the `answer` of a card still to come this session appears in the
+   prompt.
+8. **The rung's row, no more.** The prompt gives what its row gives. A first letter also rules out the card's
+   known confuser in `mistakes-db`: `(s…)` fits both *schiet op* and *sta op*; for such a pair, the cue is the
+   Russian line said the Dutch way («выстрели вперёд»).

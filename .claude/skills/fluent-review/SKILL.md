@@ -46,7 +46,7 @@ The opening turn is the greeting and item 1. Greet the learner by name, give the
 
 ### 3. Generate one exercise per item
 
-**Build each exercise in the turn that presents it.** The only work done ahead of item 1: settle the round's order and note every card's `answer` words, so that until a card is graded its words stay out of every other prompt.
+**Build each exercise in the turn that presents it.** The only work done ahead of item 1: settle the round's order and note every card's `answer` words — the list `fading.md` §Before sending, line 7, checks against.
 
 Each item has:
 
@@ -67,7 +67,7 @@ Each item has:
 
 **Every exercise is one decision.** The learner's answer differs from your prompt in exactly the place this item tests, and nowhere else; build the rest out of forms they already own. Count the decisions your prompt demands before you send it — at two or more, cut it down.
 
-**Its rung sets the help.** Each item comes with its `rung`; build the prompt from that rung's row in `.claude/references/fading.md`.
+**Its rung sets the help.** Each item comes with its `rung`; build the prompt from that rung's row in `.claude/references/fading.md`, then run that file's §Before sending on it — returns included.
 
 Match the exercise to `item_type`:
 
